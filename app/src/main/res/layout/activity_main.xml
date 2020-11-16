@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/nativeAdBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="Native Ad Demo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/nativeBannerAdBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="Native Banner Ad Demo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/nativeSplashAdBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="Native Splash Ad Demo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/nativeListBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="Native List Ad Demo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/rewardedVideoBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="RewardedVideo Demo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/bannerBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="Banner Demo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/interstitialBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="Interstitial Demo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/splashBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="Splash Demo"
+            android:textSize="15dp" />
+    </LinearLayout>
+</ScrollView>
