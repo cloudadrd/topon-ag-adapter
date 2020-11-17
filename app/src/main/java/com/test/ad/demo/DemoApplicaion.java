@@ -12,8 +12,8 @@ import com.facebook.stetho.Stetho;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a5aa1f9deda26d";
-    public static final String appKey = "4f7b9ac17decb9babec83aac078742c7";
+    public static final String appid = "a5fb2226d93961";
+    public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b5aa1fa2cae775";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
     public static final String mPLacementId_native_automatic_rending_mintegral = "b5ee8aeb8f3458";
@@ -26,7 +26,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_native_oneway = "b5f22761b35766";
 
     //RewardedVideo
-    public static final String mPlacementId_rewardvideo_all = "b5b449fb3d89d7";
+    public static final String mPlacementId_rewardvideo_all = "b5fb2228113cf7";
     public static final String mPlacementId_rewardvideo_mintegral = "b5b449f2f58cd7";
     public static final String mPlacementId_rewardvideo_GDT = "b5c2c880cb9d52";
     public static final String mPlacementId_rewardvideo_toutiao = "b5b728e7a08cd4";

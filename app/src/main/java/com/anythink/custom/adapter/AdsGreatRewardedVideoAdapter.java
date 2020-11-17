@@ -174,7 +174,7 @@ public class AdsGreatRewardedVideoAdapter extends CustomRewardVideoAdapter {
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, final Map<String, Object> localExtra) {
         String appId = (String) serverExtra.get("app_id");
-        slotId = (String) serverExtra.get("slot_id");
+            slotId = (String) serverExtra.get("slot_id");
 
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
