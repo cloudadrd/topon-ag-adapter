@@ -213,4 +213,6 @@ public class AdsGreatRewardedVideoAdapter extends CustomRewardVideoAdapter {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / (scale <= 0 ? 1 : scale) + 0.5f);
     }
+
+
 }
