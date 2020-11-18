@@ -59,6 +59,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_interstitial_kuaishou = "b5d6745b8133f2";
     public static final String mPlacementId_interstitial_sigmob = "b5d7614ab30695";
     public static final String mPlacementId_interstitial_myoffer = "b5db6c39aed9c5";
+    public static final String mPlacementId_interstitial_AdsGreat = "b5fb222c36cb86";
 
     //Splash
     public static final String mPlacementId_splash_all = "b5bea7cc9a4497";
@@ -68,6 +69,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_splash_sigmob = "b5d76150bab3ad";
     public static final String mPlacementId_splash_mintegral = "b5ee8ae8611366";
     public static final String mPlacementId_splash_kuaishou = "b5f22758d9eae6";
+    public static final String mPlacementId_splash_AdsGreat = "b5fb2229fdd388";
 
     @Override
     public void onCreate() {

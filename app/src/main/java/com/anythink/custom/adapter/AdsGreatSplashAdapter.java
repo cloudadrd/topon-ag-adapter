@@ -172,7 +172,7 @@ public class AdsGreatSplashAdapter extends CustomSplashAdapter{
 
     @Override
     public String getNetworkName() {
-        return PangleInitManager.getInstance().getNetworkName();
+        return Const.getVersionNumber();
     }
 
     @Override
