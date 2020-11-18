@@ -3,12 +3,13 @@ package com.anythink.custom.adapter;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import com.adsgreat.base.core.AdvanceNative;
 import com.anythink.nativead.unitgroup.api.CustomNativeAd;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdsGreatNativeAd extends CustomNativeAd {
@@ -26,10 +27,7 @@ public class AdsGreatNativeAd extends CustomNativeAd {
         setTitle(mAgNative.getTitle());
         setDescriptionText(mAgNative.getDesc());
         setIconImageUrl(mAgNative.getIconUrl());
-        ArrayList<String> imageStringList = new ArrayList<>();
         setMainImageUrl(mAgNative.getImageUrl());
-//        imageStringList.add(mAgNative.getImageUrl());
-//        setImageUrlList(imageStringList);
         setCallToActionText(mAgNative.getButtonStr());
         try {
             setStarRating(Double.parseDouble(mAgNative.getRate()));
@@ -40,14 +38,20 @@ public class AdsGreatNativeAd extends CustomNativeAd {
 
     @Override
     public void prepare(final View view, FrameLayout.LayoutParams layoutParams) {
-        if(mAgNative!=null){
+        if (mAgNative != null) {
             mAgNative.registeADClickArea(view);
         }
     }
 
     @Override
     public void prepare(View view, List<View> clickViewList, FrameLayout.LayoutParams layoutParams) {
+        if (mAgNative != null && clickViewList != null && clickViewList.size() > 1) {
+            ViewParent parentView = clickViewList.get(0).getParent();
+            if (parentView instanceof ViewGroup) {
+                mAgNative.registeADClickArea((ViewGroup) parentView);
+            }
 
+        }
     }
 
 
@@ -86,8 +90,6 @@ public class AdsGreatNativeAd extends CustomNativeAd {
             mAgNative = null;
         }
     }
-
-
 
 
 }
