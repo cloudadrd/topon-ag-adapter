@@ -19,7 +19,7 @@ public class AdsGreatNativeAdapter extends CustomNativeAdapter {
 
     private String slotId;
 
-    private AdsGreatNativeExpressAd nativeExpressAd;
+    private AdsGreatNativeAd nativeExpressAd;
 
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, final Map<String, Object> localExtra) {
@@ -57,7 +57,7 @@ public class AdsGreatNativeAdapter extends CustomNativeAdapter {
                 return;
             }
             AdvanceNative advanceNative = (AdvanceNative) agNative;
-            nativeExpressAd = new AdsGreatNativeExpressAd(advanceNative);
+            nativeExpressAd = new AdsGreatNativeAd(advanceNative);
             if (mLoadListener != null) {
                 mLoadListener.onAdCacheLoaded(nativeExpressAd);
             }
@@ -92,6 +92,8 @@ public class AdsGreatNativeAdapter extends CustomNativeAdapter {
     public void destory() {
 
     }
+
+
 
     @Override
     public String getNetworkPlacementId() {

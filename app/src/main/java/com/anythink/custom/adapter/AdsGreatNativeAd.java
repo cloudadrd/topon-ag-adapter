@@ -1,6 +1,5 @@
 package com.anythink.custom.adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
@@ -9,21 +8,41 @@ import android.widget.FrameLayout;
 import com.adsgreat.base.core.AdvanceNative;
 import com.anythink.nativead.unitgroup.api.CustomNativeAd;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class AdsGreatNativeExpressAd extends CustomNativeAd {
+public class AdsGreatNativeAd extends CustomNativeAd {
 
-    private static final String TAG = AdsGreatNativeExpressAd.class.getSimpleName();
+    private static String TAG = "OM-AG-Native:";
     private AdvanceNative mAgNative;
 
 
-    public AdsGreatNativeExpressAd(AdvanceNative agNative) {
+    public AdsGreatNativeAd(AdvanceNative agNative) {
         mAgNative = agNative;
+        setAdData();
     }
 
+    public void setAdData() {
+        setTitle(mAgNative.getTitle());
+        setDescriptionText(mAgNative.getDesc());
+        setIconImageUrl(mAgNative.getIconUrl());
+        ArrayList<String> imageStringList = new ArrayList<>();
+        setMainImageUrl(mAgNative.getImageUrl());
+//        imageStringList.add(mAgNative.getImageUrl());
+//        setImageUrlList(imageStringList);
+        setCallToActionText(mAgNative.getButtonStr());
+        try {
+            setStarRating(Double.parseDouble(mAgNative.getRate()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void prepare(final View view, FrameLayout.LayoutParams layoutParams) {
+        if(mAgNative!=null){
+            mAgNative.registeADClickArea(view);
+        }
     }
 
     @Override
@@ -32,8 +51,9 @@ public class AdsGreatNativeExpressAd extends CustomNativeAd {
     }
 
 
-    public void onClick(){
+    public void onClick() {
         notifyAdClicked();
+        Log.d(TAG, "onClick");
     }
 
     @Override
@@ -48,15 +68,15 @@ public class AdsGreatNativeExpressAd extends CustomNativeAd {
 
     @Override
     public View getAdMediaView(Object... object) {
-        if (mAgNative != null) {
-            return mAgNative;
-        }
+//        if (mAgNative != null) {
+//            return mAgNative;
+//        }
         return null;
     }
 
     @Override
     public boolean isNativeExpress() {
-        return true;
+        return false;
     }
 
     @Override
@@ -66,6 +86,8 @@ public class AdsGreatNativeExpressAd extends CustomNativeAd {
             mAgNative = null;
         }
     }
+
+
 
 
 }
