@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.anythink.adsgreat">
 
-
+    <uses-sdk tools:overrideLibrary="com.bun.miitmdid"/>
     <application>
         <!-- Necessary -->
         <activity android:name="com.adsgreat.base.view.InnerWebViewActivity" />
