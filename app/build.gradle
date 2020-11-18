@@ -282,11 +282,11 @@ def fileReader(path) {
     def readerString = "";
     new File(path).withReader('UTF-8') { reader ->
         reader.eachLine {
-            if (it.find("minSdkVersion")
-                    || it.find("uses-sdk")
-                    || it.find("overrideLibrary")) {
-                it = ""
-            }
+//            if (it.find("minSdkVersion")
+//                    || it.find("uses-sdk")
+//                    || it.find("overrideLibrary")) {
+//                it = ""
+//            }
 
             readerString <<= it
             readerString << '\n'
