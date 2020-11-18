@@ -3,6 +3,7 @@ package com.anythink.custom.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.adsgreat.base.callback.EmptyAdEventListener;
@@ -29,6 +30,7 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
     String slotId = null;
     private AGNative agnv = null;
     private boolean isDestroyed;
+    private String TAG = "AdsGreatIntersititialAdapter:";
     @Override
     public boolean isAdReady() {
         if (isDestroyed) {
@@ -46,6 +48,7 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
 
         if (AdsgreatSDK.isInterstitialAvailable(agnv)) {
             AdsgreatSDK.showInterstitialAd(agnv);
+            Log.d(TAG, "InterstitialAvailable show.");
             if (mImpressListener != null) {
                 mImpressListener.onInterstitialAdShow();
             }
@@ -62,12 +65,16 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
         slotId = (String) serverExtra.get("slot_id");
         if ( TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
-                mLoadListener.onAdLoadError("", "slot_id is empty!");
+                mLoadListener.onAdLoadError(TAG, "slot_id is empty!");
             }
             return;
         }
         AdsgreatSDK.initialize(context, slotId);
         AdsgreatSDK.preloadInterstitialAd(context, slotId, new InterstitialAdListener(){
+            @Override
+            public void onShowSucceed(AGNative result) {
+                super.onShowSucceed(result);
+            }
             @Override
             public void onReceiveAdSucceed(AGNative agNative) {
                 super.onReceiveAdSucceed(agNative);
@@ -75,12 +82,15 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
                     return;
                 }
 
+                Log.d(TAG, "onAdDataLoaded.");
                 if (agNative != null && agNative.isLoaded()) {
                     agnv = agNative;
                     if (mLoadListener != null) {
-                        mLoadListener.onAdDataLoaded();
+                        mLoadListener.onAdCacheLoaded();
+//                        mLoadListener.onAdDataLoaded();
                     }
                 }else {
+                    Log.d(TAG, "Back parameter error.");
                     if (mLoadListener != null) {
                         mLoadListener.onAdLoadError("","Back parameter error.");
                     }
@@ -90,6 +100,7 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
             @Override
             public void onLandPageShown(AGNative var1) {
                 super.onLandPageShown(var1);
+                Log.d(TAG, "onLandPageShown");
             }
 
             @Override
@@ -99,6 +110,7 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
                     return;
                 }
                 if (mImpressListener != null) {
+                    Log.d(TAG, "onInterstitialAdClicked");
                     mImpressListener.onInterstitialAdClicked();
                 }
             }
@@ -106,6 +118,7 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
             @Override
             public void onReceiveAdFailed(AGNative var1) {
                 super.onReceiveAdFailed(var1);
+                Log.d(TAG, "onReceiveAdFailed");
                 if (isDestroyed) {
                     return;
                 }
@@ -115,6 +128,7 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
                         err = var1.getErrorsMsg();
                     }
                     mLoadListener.onAdLoadError("",err);
+
                 }
             }
 
@@ -125,6 +139,7 @@ public class AdsGreatInterstitialAdapter extends CustomInterstitialAdapter {
                 if (isDestroyed) {
                     return;
                 }
+                Log.d(TAG, "onInterstitialAdClose");
                 if (mImpressListener != null) {
                     mImpressListener.onInterstitialAdClose();
                 }
