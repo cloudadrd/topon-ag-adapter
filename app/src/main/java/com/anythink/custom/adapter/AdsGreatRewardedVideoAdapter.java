@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.adsgreat.base.callback.VideoAdLoadListener;
+import com.adsgreat.base.config.Const;
 import com.adsgreat.base.core.AGError;
 import com.adsgreat.base.core.AGNative;
 import com.adsgreat.base.core.AGVideo;
@@ -174,7 +175,7 @@ public class AdsGreatRewardedVideoAdapter extends CustomRewardVideoAdapter {
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, final Map<String, Object> localExtra) {
         String appId = (String) serverExtra.get("app_id");
-            slotId = (String) serverExtra.get("slot_id");
+        slotId = (String) serverExtra.get("slot_id");
 
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
@@ -206,11 +207,7 @@ public class AdsGreatRewardedVideoAdapter extends CustomRewardVideoAdapter {
 
     @Override
     public String getNetworkSDKVersion() {
-        return PangleInitManager.getInstance().getNetworkVersion();
+        return Const.getVersionNumber();
     }
 
-    private static int px2dip(Context context, float pxValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (pxValue / (scale <= 0 ? 1 : scale) + 0.5f);
-    }
 }
