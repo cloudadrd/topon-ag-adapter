@@ -52,6 +52,8 @@
 
 -printmapping ..//outputs/mapping.txt
 
+-keep class com.anythink.custom.** {*;}
+
 
 #引入依赖包rt.jar（jdk路径）
 #-libraryjars //Library//Java//JavaVirtualMachines//jdk1.7.0_67.jdk//Contents//Home//jre//lib//rt.jar
