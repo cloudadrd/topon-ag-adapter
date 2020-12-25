@@ -49,9 +49,10 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_banner_toutiao = "b5baca45138428";
     public static final String mPlacementId_banner_uniplay = "b5baca4aebcb93";
     public static final String mPLacementId_banner_baidu = "b5c0508c4c073f";
+    public static final String mPlacementId_banner_myoffer = "b5f33a1409b96b";
 
     //Interstitial
-    public static final String mPlacementId_interstitial_all = "b5baca53984692";
+    public static final String mPlacementId_interstitial_all = "b5fb222c36cb86";
     public static final String mPlacementId_interstitial_mintegral = "b5bbdc725768fa";
     public static final String mPlacementId_interstitial_video_mintegral = "b5bbdc855a1506";
     public static final String mPlacementId_interstitial_GDT = "b5baca561bc100";
@@ -66,15 +67,15 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_interstitial_AdsGreat = "b5fb222c36cb86";
 
     //Splash
-    public static final String mPlacementId_splash_all = "b5bea7cc9a4497";
-    public static final String mPlacementId_splash_gdt = "b5bea7bfd93f01";
-    public static final String mPlacementId_splash_toutiao = "b5bea7c1b653ef";
-    public static final String mPlacementId_splash_baidu = "b5c05090192a58";
-    public static final String mPlacementId_splash_sigmob = "b5d76150bab3ad";
-    public static final String mPlacementId_splash_mintegral = "b5ee8ae8611366";
-    public static final String mPlacementId_splash_kuaishou = "b5f22758d9eae6";
+    public static final String mPlacementId_splash_all = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_gdt = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_toutiao = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_baidu = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_sigmob = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_mintegral = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_kuaishou = "b5fb2229fdd388";
     public static final String mPlacementId_splash_AdsGreat = "b5fb2229fdd388";
-    public static final String mPlacementId_splash_myoffer = "b5f33a1598fe94";
+    public static final String mPlacementId_splash_myoffer = "b5fb2229fdd388";
 
     @Override
     public void onCreate() {

@@ -26,8 +26,8 @@ public class InterstitialAdActivity extends Activity {
             , DemoApplicaion.mPlacementId_interstitial_baidu
             , DemoApplicaion.mPlacementId_interstitial_kuaishou
             , DemoApplicaion.mPlacementId_interstitial_sigmob
-            , DemoApplicaion.mPlacementId_interstitial_myoffer
             , DemoApplicaion.mPlacementId_interstitial_AdsGreat
+            , DemoApplicaion.mPlacementId_interstitial_myoffer
     };
 
     String unitGroupName[] = new String[]{
@@ -40,6 +40,7 @@ public class InterstitialAdActivity extends Activity {
             "Baidu",
             "Kuaishou",
             "Sigmob",
+            "AdsGreat",
             "Myoffer"
     };
 
