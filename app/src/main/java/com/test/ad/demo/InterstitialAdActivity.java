@@ -16,15 +16,13 @@ import com.anythink.interstitial.api.ATInterstitialListener;
 public class InterstitialAdActivity extends Activity {
 
     private static String TAG = "InterstitialAdActivity";
-    String unitIds[] = new String[]{
+    String placementIds[] = new String[]{
             DemoApplicaion.mPlacementId_interstitial_all
             , DemoApplicaion.mPlacementId_interstitial_mintegral
             , DemoApplicaion.mPlacementId_interstitial_video_mintegral
             , DemoApplicaion.mPlacementId_interstitial_GDT
             , DemoApplicaion.mPlacementId_interstitial_video_toutiao
             , DemoApplicaion.mPlacementId_interstitial_toutiao
-            , DemoApplicaion.mPlacementId_interstitial_uniplay
-            , DemoApplicaion.mPlacementId_interstitial_oneway
             , DemoApplicaion.mPlacementId_interstitial_baidu
             , DemoApplicaion.mPlacementId_interstitial_kuaishou
             , DemoApplicaion.mPlacementId_interstitial_sigmob
@@ -39,13 +37,10 @@ public class InterstitialAdActivity extends Activity {
             "GDT",
             "Toutiao video",
             "Toutiao",
-            "Uniplay",
-            "Oneway",
             "Baidu",
             "Kuaishou",
             "Sigmob",
-            "Myoffer",
-            "AdsGreat"
+            "Myoffer"
     };
 
     RadioGroup mRadioGroup;
@@ -63,7 +58,7 @@ public class InterstitialAdActivity extends Activity {
 
         mRadioGroup = (RadioGroup) findViewById(R.id.placement_select_group);
 
-        for (int i = 0; i < unitIds.length; i++) {
+        for (int i = 0; i < placementIds.length; i++) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setPadding(20, 20, 20, 20);
             radioButton.setText(unitGroupName[i]);
@@ -111,7 +106,7 @@ public class InterstitialAdActivity extends Activity {
 
 
     private void init() {
-        mInterstitialAd = new ATInterstitial(this, unitIds[mCurrentSelectIndex]);
+        mInterstitialAd = new ATInterstitial(this, placementIds[mCurrentSelectIndex]);
         addSetting();
         mInterstitialAd.setAdListener(new ATInterstitialListener() {
             @Override

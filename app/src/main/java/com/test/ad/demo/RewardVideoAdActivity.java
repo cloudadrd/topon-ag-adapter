@@ -20,14 +20,11 @@ import java.util.Map;
 public class RewardVideoAdActivity extends Activity {
 
     private static String TAG = "RewardVideoAdActivity";
-    String unitIds[] = new String[]{
+    String placementIds[] = new String[]{
             DemoApplicaion.mPlacementId_rewardvideo_all
             , DemoApplicaion.mPlacementId_rewardvideo_mintegral
             , DemoApplicaion.mPlacementId_rewardvideo_GDT
             , DemoApplicaion.mPlacementId_rewardvideo_toutiao
-            , DemoApplicaion.mPlacementId_rewardvideo_uniplay
-            , DemoApplicaion.mPlacementId_rewardvideo_oneway
-            , DemoApplicaion.mPlacementId_rewardvideo_ksyun
             , DemoApplicaion.mPlacementId_rewardvideo_baidu
             , DemoApplicaion.mPlacementId_rewardvideo_ks
             , DemoApplicaion.mPlacementId_rewardvideo_sigmob
@@ -39,9 +36,6 @@ public class RewardVideoAdActivity extends Activity {
             "Mintegral",
             "GDT",
             "Toutiao",
-            "Uniplay",
-            "Oneway",
-            "Ksyun",
             "Baidu",
             "Kuaishou",
             "Sigmob",
@@ -63,7 +57,7 @@ public class RewardVideoAdActivity extends Activity {
 
         mRadioGroup = (RadioGroup) findViewById(R.id.placement_select_group);
 
-        for (int i = 0; i < unitIds.length; i++) {
+        for (int i = 0; i < placementIds.length; i++) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setPadding(20, 20, 20, 20);
             radioButton.setText(unitGroupName[i]);
@@ -111,7 +105,7 @@ public class RewardVideoAdActivity extends Activity {
 
 
     private void init() {
-        mRewardVideoAd = new ATRewardVideoAd(this, unitIds[mCurrentSelectIndex]);
+        mRewardVideoAd = new ATRewardVideoAd(this, placementIds[mCurrentSelectIndex]);
         String userid = "test_userid_001";
         String userdata = "test_userdata_001";
 //        mRewardVideoAd.setUserData(userid, userdata);

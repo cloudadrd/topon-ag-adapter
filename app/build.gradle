@@ -14,13 +14,8 @@ ArrayList<String> networkLibsPath = new ArrayList<>();
 
 networkLibsPath.add("baidu");
 networkLibsPath.add("gdt");
-networkLibsPath.add("ksyun");
-networkLibsPath.add("luomi");
 networkLibsPath.add("mintegral");
-networkLibsPath.add("oneway");
 networkLibsPath.add("pangle");
-networkLibsPath.add("uniplay");
-
 networkLibsPath.add("kuaishou");
 networkLibsPath.add("sigmob");
 
@@ -31,17 +26,33 @@ networkLibsPath.add("adsgreat");
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.superapp.filemanager"
+        applicationId "com.bxnll.mobi"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         multiDexEnabled = true
     }
+    signingConfigs {
+        demo {
+            keyAlias 'bxnll'
+            keyPassword 'bxnll123'
+            storeFile file('bxnll.jks')
+            storePassword 'bxnll123'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.demo
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.demo
+
         }
     }
     sourceSets {

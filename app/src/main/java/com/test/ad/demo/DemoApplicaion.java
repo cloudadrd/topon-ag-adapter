@@ -7,6 +7,9 @@ import android.webkit.WebView;
 import com.anythink.core.api.ATSDK;
 import com.facebook.stetho.Stetho;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Z on 2018/1/10.
  */
@@ -24,6 +27,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_native_kuaishou = "b5e4105d4f21b6";
     public static final String mPlacementId_native_kuaishou_drawer = "b5e5dc4110310f";
     public static final String mPlacementId_native_oneway = "b5f22761b35766";
+    public static final String mPlacementId_native_myoffer = "b5f33a12982b7f";
 
     //RewardedVideo
     public static final String mPlacementId_rewardvideo_all = "b5fb2228113cf7";
@@ -70,6 +74,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_splash_mintegral = "b5ee8ae8611366";
     public static final String mPlacementId_splash_kuaishou = "b5f22758d9eae6";
     public static final String mPlacementId_splash_AdsGreat = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_myoffer = "b5f33a1598fe94";
 
     @Override
     public void onCreate() {
@@ -89,6 +94,19 @@ public class DemoApplicaion extends MultiDexApplication {
         Stetho.initializeWithDefaults(getApplicationContext());
         ATSDK.setNetworkLogDebug(true);
         ATSDK.integrationChecking(getApplicationContext());
+
+        Map<String, Object> custommap = new HashMap<String, Object>();
+        custommap.put("key1","initCustomMap1");
+        custommap.put("key2","initCustomMap2");
+        ATSDK.initCustomMap(custommap);
+
+        Map<String, Object> subcustommap = new HashMap<String, Object>();
+        subcustommap.put("key1","initPlacementCustomMap1");
+        subcustommap.put("key2","initPlacementCustomMap2");
+        ATSDK.initPlacementCustomMap("b5aa1fa4165ea3",subcustommap);//native  facebook
+
+        ATSDK.setChannel("testChannle");
+        ATSDK.setSubChannel("testSubChannle");
 
         ATSDK.init(this, appid, appKey);
 
