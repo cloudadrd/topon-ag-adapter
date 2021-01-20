@@ -1,6 +1,7 @@
 package com.test.ad.demo;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -216,7 +217,8 @@ public class NativeAdActivity extends Activity {
         anyThinkNativeAdView.setPadding(padding, padding, padding, padding);
 
         anyThinkNativeAdView.setVisibility(View.GONE);
-        ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+        RoundRainbowFrameLayout frameLayout = findViewById(R.id.ad_container);
+        frameLayout.addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
     }
 
     @Override

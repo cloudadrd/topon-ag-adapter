@@ -2,6 +2,8 @@ package com.test.ad.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
@@ -81,15 +83,15 @@ public class RewardVideoAdActivity extends Activity {
         findViewById(R.id.is_ad_ready_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isReady = mRewardVideoAd.isAdReady();
-                Toast.makeText(RewardVideoAdActivity.this, "video ad ready status:" + isReady, Toast.LENGTH_SHORT).show();
+//                boolean isReady = mRewardVideoAd.isAdReady();
+//                Toast.makeText(RewardVideoAdActivity.this, "video ad ready status:" + isReady, Toast.LENGTH_SHORT).show();
             }
         });
 
         findViewById(R.id.loadAd_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRewardVideoAd.load();
+//                mRewardVideoAd.load();
             }
         });
 
@@ -97,73 +99,29 @@ public class RewardVideoAdActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                mRewardVideoAd.show(RewardVideoAdActivity.this);
-                mRewardVideoAd.show(RewardVideoAdActivity.this, "f5e5492eca9668");
+//                mRewardVideoAd.show(RewardVideoAdActivity.this, "f5e5492eca9668");
+                boolean result = rewardLoadManager.showReward(RewardVideoAdActivity.this);
+                if (!result) {
+                    Log.i("RewardLoadManager", "show fail, no ad");
+                }
             }
         });
 
     }
 
+
+    RewardLoadManager rewardLoadManager = null;
 
     private void init() {
-        mRewardVideoAd = new ATRewardVideoAd(this, placementIds[mCurrentSelectIndex]);
-        String userid = "test_userid_001";
-        String userdata = "test_userdata_001";
-//        mRewardVideoAd.setUserData(userid, userdata);
-        Map<String, Object> localMap = new HashMap<>();
-        localMap.put(ATAdConst.KEY.USER_ID, userid);
-        localMap.put(ATAdConst.KEY.USER_CUSTOM_DATA, userdata);
-        mRewardVideoAd.setLocalExtra(localMap);
-        mRewardVideoAd.setAdListener(new ATRewardVideoListener() {
-            @Override
-            public void onRewardedVideoAdLoaded() {
-                Log.i(TAG, "onRewardedVideoAdLoaded");
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRewardedVideoAdFailed(AdError errorCode) {
-                Log.i(TAG, "onRewardedVideoAdFailed error:" + errorCode.printStackTrace());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdFailed:" + errorCode.printStackTrace(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRewardedVideoAdPlayStart(ATAdInfo entity) {
-                Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayStart", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRewardedVideoAdPlayEnd(ATAdInfo entity) {
-                Log.i(TAG, "onRewardedVideoAdPlayEnd:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayEnd", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRewardedVideoAdPlayFailed(AdError errorCode, ATAdInfo entity) {
-                Log.i(TAG, "onRewardedVideoAdPlayFailed error:" + errorCode.printStackTrace());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayFailed:" + errorCode.printStackTrace(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRewardedVideoAdClosed(ATAdInfo entity) {
-                Log.i(TAG, "onRewardedVideoAdClosed:\n" + entity.toString() );
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRewardedVideoAdPlayClicked(ATAdInfo entity) {
-                Log.i(TAG, "onRewardedVideoAdPlayClicked:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayClicked", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onReward(ATAdInfo entity) {
-                Log.e(TAG, "onReward:\n" + entity.toString() );
-                Toast.makeText(RewardVideoAdActivity.this, "onReward", Toast.LENGTH_SHORT).show();
-            }
-        });
+        rewardLoadManager = RewardLoadManager.getInstance(this);
+        rewardLoadManager.loopLoadStart();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        rewardLoadManager.clean();
+    }
 
     @Override
     protected void onResume() {

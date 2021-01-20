@@ -1,0 +1,111 @@
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <style type="text/css">
+      .wwimg{
+        width: 100px;
+        height: auto;
+        display: block;
+      }
+    </style>
+    <script type="text/javascript">
+
+        function showVideo(){
+            android.showAd("callbackfun");
+        }
+
+        function callbackfun(posid,logType){
+            var desc=document.querySelector("#desc");
+            var msgStr="none";
+            if(logType=="12"){
+                msgStr = "视频加载成功";
+
+            }else if(logType=="5"){
+                msgStr = "视频曝光成功";
+
+            }else if(logType=="6"){
+                msgStr = "视频播放完成关闭";
+
+            }else if(logType=="7"){
+                msgStr = "视频广告点击";
+
+            }else if(logType=="8"){
+                msgStr = "视频奖励";
+
+            }else if(logType=="11"){
+                msgStr = "视频播放失败";
+
+            }
+
+            desc.innerHTML = msgStr;
+
+            android.printLog(msgStr);
+
+        }
+
+        function goBack(){
+            android.goBack();
+        }
+
+        function xmActivityRefresh(){
+            console.log("返回上一个页面刷新后，回调成功");
+        }
+
+        function takePhoto(){
+            android.takePhoto();
+        }
+
+        function takeCamera(){
+            android.takeCamera();
+        }
+
+        window.onload=function(){
+              const upload_btn = document.querySelector('#upload_btn')
+              const addImgFn = (url) => {
+                let img = document.createElement('img')
+                img.src = url
+                img.setAttribute('class', 'wwimg')
+                document.body.appendChild(img)
+              }
+              upload_btn.onchange = function (e) {
+                const files = this.files
+                for (const iterator of files) {
+                  console.log(iterator)
+                  const url = window.URL.createObjectURL(iterator)
+                  console.log(url)
+                  // 添加到body
+                  addImgFn(url)
+                }
+              }
+        }
+
+
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+</head>
+
+<body>
+
+<div>
+    <button onclick="showVideo()">showVideo</button>
+</div>
+<br>
+<div>
+<!--    <input class="upload-input"  accept="image/*" multiple required type="file">-->
+    <input type="file" accept="image/*" multiple="multiple" name="" id="upload_btn">
+</div>
+
+<br>
+<div>
+    <button onclick="goBack()">goBack</button>
+</div>
+<br><br>
+<div id="desc">未显示</div>
+
+</body>
+
+</html>

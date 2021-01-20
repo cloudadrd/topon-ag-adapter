@@ -25,7 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".InnerWebViewActivity"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar" android:screenOrientation="portrait"/>
         <activity
             android:name=".NativeAdActivity"
             android:label="AT Native"
@@ -65,6 +66,15 @@
         <activity android:name=".NativeListActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize|screenLayout"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.takePhotoFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/take_photo_file_paths" />
+        </provider>
     </application>
 
 </manifest>

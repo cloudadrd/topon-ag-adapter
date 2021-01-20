@@ -29,7 +29,7 @@
             android:layout_toRightOf="@id/loadAd_btn"
             android:text="Show Native Ad" />
 
-        <FrameLayout
+        <com.test.ad.demo.RoundRainbowFrameLayout
             android:id="@+id/ad_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
