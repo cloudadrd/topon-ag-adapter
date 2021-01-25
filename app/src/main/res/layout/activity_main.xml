@@ -89,5 +89,14 @@
             android:gravity="center"
             android:text="CustomWebView Demo"
             android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/contentBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="ContentAd Demo"
+            android:textSize="15dp" />
     </LinearLayout>
 </ScrollView>
