@@ -35,7 +35,7 @@ public class ContentAdActivity extends AppCompatActivity {
         ATContentAd = new ATNative(this,DemoApplicaion. mPlacementId_content_KS, new ATNativeNetworkListener() {
             @Override
             public void onNativeAdLoaded() {
-                final NativeDemoRender anyThinkRender = new NativeDemoRender(ContentAdActivity.this);
+                final ContentRender anyThinkRender = new ContentRender();
                 mNativeAd = ATContentAd.getNativeAd();
                 if (null != mNativeAd) {
                     anyThinkNativeAdView = new ATNativeAdView(ContentAdActivity.this);

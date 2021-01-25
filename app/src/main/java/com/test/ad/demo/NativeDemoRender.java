@@ -149,12 +149,6 @@ public class NativeDemoRender implements ATNativeAdRenderer<CustomNativeAd> {
     public List<View> getClickView() {
         return mClickView;
     }
-
-    public Fragment getContentFragment(){
-       if (null != mediaView){
-           return (Fragment)mediaView.getTag();
-       }
-       return null;
-    }
+    
 
 }
