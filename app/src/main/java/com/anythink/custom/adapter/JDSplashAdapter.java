@@ -3,6 +3,7 @@ package com.anythink.custom.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import com.jd.ad.sdk.imp.JadListener;
 import com.jd.ad.sdk.imp.splash.SplashAd;
 import com.jd.ad.sdk.work.JadPlacementParams;
 import com.anythink.splashad.unitgroup.api.CustomSplashAdapter;
-import com.anythink.splashad.unitgroup.api.CustomSplashEventListener;
+//import com.anythink.splashad.unitgroup.api.CustomSplashEventListener;
 
 import java.util.Map;
 
@@ -20,37 +21,28 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
 
     SplashAd splashAd;
     private ViewGroup contentView;
-    private JadPlacementParams adParams;
     String slotId = null;
-    private CountDownTimer timer;
-    private int fetchDelay = 3000;
-    private boolean isTimerOut;
-    private boolean isDestroyed;
-    private static boolean isSplashReaday;
     private Activity activity;
+    private float tolerateTime = (float) 3.5;
+    private int skipTime = 5;
 
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
-        if (serverExtra.containsKey("slot_id")) {
-            slotId = (String) serverExtra.get("slot_id");
-            if (slotId == null) {
-                if (mLoadListener != null) {
-                    mLoadListener.onAdLoadError("", " slot_id is empty!");
-                }
-                return;
-            }
-        }else{
+        String appId = (String) serverExtra.get("app_id");
+        slotId = (String) serverExtra.get("slot_id");
+        String appName = (String) serverExtra.get("app_name");
+
+        tolerateTime = Float.parseFloat((String) serverExtra.get("tolerate_time"));
+        skipTime = Integer.parseInt((String) serverExtra.get("skip_time"));
+        //检测传入参数
+        if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
-                mLoadListener.onAdLoadError("", " slot_id is empty!");
+                mLoadListener.onAdLoadError(TAG, "app_id or slot_id is empty!");
             }
             return;
         }
-        if (serverExtra.containsKey("fetchDelay")){
-            try {
-                fetchDelay = Integer.parseInt((String) serverExtra.get("fetchDelay"));
-            } catch (Exception e) {
-            }
-        }
+
+        JDUtils.JDSDKInit(appId,context);
         startLoad(context,slotId);
     }
 
@@ -58,11 +50,11 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
         int width = JDSplashAdapter.getScreenWidth(context);
         int height = JDSplashAdapter.getScreenHeight(context);
         JadPlacementParams jadParams = new JadPlacementParams.Builder()
-                .setPlacementId("2525")
+                .setPlacementId(slotId)
                 .setSize(width, height)
-                .setTolerateTime(3.5f)
+                .setTolerateTime(tolerateTime)
                 .setSupportDeepLink(false)
-                .setSkipTime(5)
+                .setSkipTime(skipTime)
                 .build();
         activity = (Activity) context;
         splashAd = new SplashAd(activity, jadParams, JDSplashAdapter.this);
@@ -72,6 +64,11 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
     @Override
     public String getNetworkName() {
         return null;
+    }
+
+    @Override
+    public boolean isAdReady() {
+        return false;
     }
 
     @Override
@@ -150,5 +147,10 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
         if (mImpressionListener != null) {
             mImpressionListener.onSplashAdDismiss();
         }
+    }
+
+    @Override
+    public void show(Activity activity, ViewGroup viewGroup) {
+
     }
 }

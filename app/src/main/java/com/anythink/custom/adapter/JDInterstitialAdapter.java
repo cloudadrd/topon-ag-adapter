@@ -18,6 +18,7 @@ import java.util.Map;
 public class JDInterstitialAdapter extends CustomInterstitialAdapter {
     private int adWidth;
     private int adHeight;
+    private String slotId;
     private InterstitialAd interstitialAd;
     private boolean adIsReady;
     private boolean isDestroyed;
@@ -54,8 +55,21 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
         adIsReady = false;
         adWidth = JDUtils.getScreenWidth(context);
         adHeight = JDUtils.getScreenHeight(context);
+
+        String appId = (String) serverExtra.get("app_id");
+        slotId = (String) serverExtra.get("slot_id");
+        String appName = (String) serverExtra.get("app_name");
+        //检测传入参数
+        if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
+            if (mLoadListener != null) {
+                mLoadListener.onAdLoadError(TAG, "app_id or slot_id is empty!");
+            }
+            return;
+        }
+
+        JDUtils.JDSDKInit(appId,context);
         JadPlacementParams jadSlot = new JadPlacementParams.Builder()
-                .setPlacementId("2534")
+                .setPlacementId(slotId)
                 .setSize(adWidth, adHeight)
                 .setSupportDeepLink(false)
                 .build();
