@@ -23,7 +23,9 @@ public class AdVideoMediation {
 
     private boolean isLoad;
 
-    public boolean isReadyLoad = false;
+    private boolean isReadyLoad;
+
+    public boolean isReadyLoadForInterfaceIsNull = false;
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -63,16 +65,19 @@ public class AdVideoMediation {
             @Override
             public void onRewardedVideoAdLoaded() {
                 Log.i(TAG, "onRewardedVideoAdLoaded");
+                isReadyLoad = true;
                 if (mAdVideoInterface != null) {
                     mAdVideoInterface.trackState(AdLogType.LOAD_SUCCESS);
                     return;
                 }
-                isReadyLoad = true;
+                isReadyLoadForInterfaceIsNull = true;
             }
 
             @Override
             public void onRewardedVideoAdFailed(AdError errorCode) {
                 Log.i(TAG, "onRewardedVideoAdFailed error:" + errorCode.printStackTrace());
+                isReadyLoad = false;
+                isReadyLoadForInterfaceIsNull = false;
                 loadDelay();
             }
 
@@ -102,6 +107,7 @@ public class AdVideoMediation {
             @Override
             public void onRewardedVideoAdPlayFailed(AdError errorCode, ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayFailed error:" + errorCode.printStackTrace());
+                isReadyLoadForInterfaceIsNull = false;
                 isReadyLoad = false;
                 if (mAdVideoInterface != null) {
                     mAdVideoInterface.trackState(AdLogType.PLAY_FAIL);
@@ -112,6 +118,7 @@ public class AdVideoMediation {
             @Override
             public void onRewardedVideoAdClosed(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdClosed:\n" + entity.toString());
+                isReadyLoadForInterfaceIsNull = false;
                 isReadyLoad = false;
                 if (mAdVideoInterface != null) {
                     mAdVideoInterface.trackState(AdLogType.PLAY_END_CLOSE);
@@ -142,8 +149,10 @@ public class AdVideoMediation {
     public boolean show(Activity activity) {
         if (mRewardVideoAd.isAdReady()) {
             mRewardVideoAd.show(activity);
+            Log.d(TAG, "call show, show success. isReadyLoadForInterfaceIsNull=" + isReadyLoadForInterfaceIsNull + ",isReadyLoad=" + isReadyLoad);
             return true;
         }
+        Log.d(TAG, "call show, reward is not ready. isReadyLoadForInterfaceIsNull=" + isReadyLoadForInterfaceIsNull + ",isReadyLoad=" + isReadyLoad);
         return false;
     }
 
