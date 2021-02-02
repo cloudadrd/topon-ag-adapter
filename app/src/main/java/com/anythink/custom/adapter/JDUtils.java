@@ -56,14 +56,16 @@ public class JDUtils {
         return context.getResources().getDisplayMetrics().heightPixels;
     }
 
-    public static void JDSDKInit(String appid){
+    public static void JDSDKInit(String appid, Context context){
         JadYunSdkConfig config = new JadYunSdkConfig
                 .Builder()
                 .setAppId(appid)
                 .setEnableLog(true)
                 .build();
-        JadYunSdk.init(JDUtils.getApplicationInner(), config);
-        MdidSdkHelper.InitSdk(JDUtils.getApplicationInner(), true, new IIdentifierListener() {
+
+        Application application =  (Application)context.getApplicationContext();
+        JadYunSdk.init(application, config);
+        MdidSdkHelper.InitSdk(application, true, new IIdentifierListener() {
             @Override
             public void OnSupport(boolean b, final IdSupplier idSupplier) {
                 if (idSupplier != null && idSupplier.isSupported()) {
