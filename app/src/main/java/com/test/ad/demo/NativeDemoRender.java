@@ -149,6 +149,6 @@ public class NativeDemoRender implements ATNativeAdRenderer<CustomNativeAd> {
     public List<View> getClickView() {
         return mClickView;
     }
-    
+
 
 }
