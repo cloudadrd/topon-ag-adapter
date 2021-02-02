@@ -20,7 +20,7 @@ networkLibsPath.add("kuaishou");
 networkLibsPath.add("sigmob");
 
 networkLibsPath.add("adsgreat");
-
+networkLibsPath.add("jingdong");
 
 
 android {
