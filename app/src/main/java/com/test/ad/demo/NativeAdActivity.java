@@ -1,7 +1,13 @@
+/*
+ * Copyright © 2018-2020 TopOn. All rights reserved.
+ * https://www.toponad.com
+ * Licensed under the TopOn SDK License Agreement
+ * https://github.com/toponteam/TopOn-Android-SDK/blob/master/LICENSE
+ */
+
 package com.test.ad.demo;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +24,7 @@ import com.anythink.core.api.AdError;
 import com.anythink.nativead.api.ATNative;
 import com.anythink.nativead.api.ATNativeAdView;
 import com.anythink.nativead.api.ATNativeDislikeListener;
-import com.anythink.nativead.api.ATNativeEventListener;
+import com.anythink.nativead.api.ATNativeEventExListener;
 import com.anythink.nativead.api.ATNativeNetworkListener;
 import com.anythink.nativead.api.NativeAd;
 
@@ -27,7 +33,7 @@ import java.util.Map;
 
 public class NativeAdActivity extends Activity {
 
-    private static String TAG = "NativeAdActivity";
+    private static final String TAG = NativeAdActivity.class.getSimpleName();
 
     String placementIds[] = new String[]{
             DemoApplicaion.mPlacementId_native_all
@@ -109,8 +115,8 @@ public class NativeAdActivity extends Activity {
 
                 @Override
                 public void onNativeAdLoadFail(AdError adError) {
-                    Log.i(TAG, "onNativeAdLoadFail, " + adError.printStackTrace());
-                    Toast.makeText(NativeAdActivity.this, "load fail...：" + adError.printStackTrace(), Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "onNativeAdLoadFail, " + adError.getFullErrorInfo());
+                    Toast.makeText(NativeAdActivity.this, "load fail...：" + adError.getFullErrorInfo(), Toast.LENGTH_LONG).show();
 
                 }
             });
@@ -121,19 +127,6 @@ public class NativeAdActivity extends Activity {
             // since v5.6.4
             localMap.put(ATAdConst.KEY.AD_WIDTH, adViewWidth);
             localMap.put(ATAdConst.KEY.AD_HEIGHT, adViewHeight);
-
-            // since v5.6.2
-//            localMap.put(ATNative.KEY_WIDTH, adViewWidth);
-//            localMap.put(ATNative.KEY_HEIGHT, adViewHeight);
-//
-//            // before v5.6.2
-//            //Pangle
-//            localMap.put(TTATConst.NATIVE_AD_IMAGE_WIDTH, adViewWidth);
-//            localMap.put(TTATConst.NATIVE_AD_IMAGE_HEIGHT, adViewHeight);
-//            //Mintegral
-//            localMap.put(MintegralATConst.AUTO_RENDER_NATIVE_WIDTH, adViewWidth);
-//            localMap.put(MintegralATConst.AUTO_RENDER_NATIVE_HEIGHT, adViewHeight);
-            // before v5.6.2
 
             atNatives[i].setLocalExtra(localMap);
 
@@ -164,7 +157,12 @@ public class NativeAdActivity extends Activity {
                         mNativeAd.destory();
                     }
                     mNativeAd = nativeAd;
-                    mNativeAd.setNativeEventListener(new ATNativeEventListener() {
+                    mNativeAd.setNativeEventListener(new ATNativeEventExListener() {
+                        @Override
+                        public void onDeeplinkCallback(ATNativeAdView view, ATAdInfo adInfo, boolean isSuccess) {
+                            Log.i(TAG, "onDeeplinkCallback:" + adInfo.toString() + "--status:" + isSuccess);
+                        }
+
                         @Override
                         public void onAdImpressed(ATNativeAdView view, ATAdInfo entity) {
                             Log.i(TAG, "native ad onAdImpressed:\n" + entity.toString());
@@ -217,8 +215,7 @@ public class NativeAdActivity extends Activity {
         anyThinkNativeAdView.setPadding(padding, padding, padding, padding);
 
         anyThinkNativeAdView.setVisibility(View.GONE);
-        RoundRainbowFrameLayout frameLayout = findViewById(R.id.ad_container);
-        frameLayout.addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+        ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
     }
 
     @Override

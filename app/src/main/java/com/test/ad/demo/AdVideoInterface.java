@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.support.annotation.MainThread;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * s
@@ -42,7 +44,7 @@ public class AdVideoInterface {
     @MainThread
     private void showInterfaceForMain(String callback) {
         this.callback = callback;
-        if (mAdVideoMediationHelper.isReadyLoad) {
+        if (mAdVideoMediationHelper.isReadyLoadForInterfaceIsNull) {
             trackState(AdLogType.LOAD_SUCCESS);
         }
         showAd();
@@ -77,6 +79,18 @@ public class AdVideoInterface {
         }
     }
 
+    @JavascriptInterface
+    public void tracking(String name, String action) {
+        try {
+            JSONObject properties = new JSONObject();
+            properties.put("action", action);
+//            AppActivity.app.biInstance.track(name, properties);
+            Log.d(TAG, "tracking name=" + name + ",action=" + action);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @JavascriptInterface
     public void printLog(String str) {
@@ -89,9 +103,12 @@ public class AdVideoInterface {
     public void showAd() {
         boolean flag = false;
         if (webView.getCustomContext() instanceof Activity) {
+            Log.d(TAG, "call showAd, webView.getCustomContext() is Activity.");
             Activity activity = (Activity) webView.getCustomContext();
             if (!activity.isDestroyed()) {
                 flag = mAdVideoMediationHelper.show(activity);
+            } else {
+                Log.d(TAG, "call showAd, Activity is destroyed.");
             }
         }
         if (!flag) {
