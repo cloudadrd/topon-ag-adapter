@@ -48,6 +48,12 @@
             android:launchMode="singleTask"/>
 
         <activity
+            android:name=".ContentAdActivity"
+            android:label="AT Content"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:launchMode="singleTask"/>
+
+        <activity
             android:name=".SplashAdActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize|screenLayout"/>
 

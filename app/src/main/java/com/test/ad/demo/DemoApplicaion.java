@@ -28,6 +28,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_native_kuaishou_drawer = "b5e5dc4110310f";
     public static final String mPlacementId_native_oneway = "b5f22761b35766";
     public static final String mPlacementId_native_myoffer = "b5f33a12982b7f";
+    public static final String mPlacementId_content_KS = "b600a40062eae1";
 
     //RewardedVideo
     public static final String mPlacementId_rewardvideo_all = "b5fb2228113cf7";
@@ -109,8 +110,10 @@ public class DemoApplicaion extends MultiDexApplication {
         ATSDK.setChannel("testChannle");
         ATSDK.setSubChannel("testSubChannle");
 
-        ATSDK.init(this, appid, appKey);
+//        ATSDK.init(this, appid, appKey);
 
+
+        ATSDK.init(this, "a5ff2b6c1c6fc5", "be9b2e39d03dd60ed17870594123d7f4");
     }
 
 }

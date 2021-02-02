@@ -8,6 +8,7 @@
 package com.test.ad.demo;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,8 @@ public class NativeDemoRender implements ATNativeAdRenderer<CustomNativeAd> {
     View mDevelopView;
 
     int mNetworkType;
+
+    private View mediaView;
 
     @Override
     public View createView(Context context, int networkType) {
@@ -68,7 +71,7 @@ public class NativeDemoRender implements ATNativeAdRenderer<CustomNativeAd> {
         iconArea.removeAllViews();
         logoView.setImageDrawable(null);
 
-        View mediaView = ad.getAdMediaView(contentArea, contentArea.getWidth());
+        mediaView = ad.getAdMediaView(contentArea, contentArea.getWidth());
 
         if (ad.isNativeExpress()) {//是 个性化模板
             titleView.setVisibility(View.GONE);
@@ -158,4 +161,6 @@ public class NativeDemoRender implements ATNativeAdRenderer<CustomNativeAd> {
     public List<View> getClickView() {
         return mClickView;
     }
+    
+
 }

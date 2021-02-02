@@ -82,6 +82,14 @@ public class MainActivity extends Activity {
                 InnerWebViewActivity.launch(MainActivity.this, cacheWebView);
             }
         });
+
+        findViewById(R.id.contentBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ContentAdActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

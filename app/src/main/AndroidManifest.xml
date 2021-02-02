@@ -60,6 +60,11 @@
             android:label="AT Banner"
             android:launchMode="singleTask" />
         <activity
+            android:name="com.test.ad.demo.ContentAdActivity"
+            android:label="AT Content"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
             android:name="com.test.ad.demo.SplashAdActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize|screenLayout" />
         <activity
