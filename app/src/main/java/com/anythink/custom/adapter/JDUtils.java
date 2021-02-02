@@ -3,6 +3,13 @@ package com.anythink.custom.adapter;
 import android.app.Application;
 import android.content.Context;
 
+import com.bun.miitmdid.core.MdidSdkHelper;
+import com.bun.miitmdid.interfaces.IIdentifierListener;
+import com.bun.miitmdid.interfaces.IdSupplier;
+import com.jd.ad.sdk.JadYunSdk;
+import com.jd.ad.sdk.JadYunSdkConfig;
+import com.jd.ad.sdk.widget.JadCustomController;
+
 import java.lang.reflect.Method;
 
 public class JDUtils {
@@ -47,5 +54,27 @@ public class JDUtils {
 
     public static int getScreenHeight(Context context) {
         return context.getResources().getDisplayMetrics().heightPixels;
+    }
+
+    public static void JDSDKInit(String appid){
+        JadYunSdkConfig config = new JadYunSdkConfig
+                .Builder()
+                .setAppId(appid)
+                .setEnableLog(true)
+                .build();
+        JadYunSdk.init(JDUtils.getApplicationInner(), config);
+        MdidSdkHelper.InitSdk(JDUtils.getApplicationInner(), true, new IIdentifierListener() {
+            @Override
+            public void OnSupport(boolean b, final IdSupplier idSupplier) {
+                if (idSupplier != null && idSupplier.isSupported()) {
+                    JadYunSdk.setCustomController(new JadCustomController() {
+                        @Override
+                        public String getOaid() {
+                            return idSupplier.getOAID();
+                        }
+                    });
+                }
+            }
+        });
     }
 }
