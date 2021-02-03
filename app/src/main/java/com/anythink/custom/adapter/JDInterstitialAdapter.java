@@ -39,9 +39,6 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
 
         if (isAdReady()){
             interstitialAd.showAd(null);
-            if (mImpressListener != null) {
-                mImpressListener.onInterstitialAdShow();
-            }
         }
     }
 
@@ -119,6 +116,9 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
             @Override
             public void onAdExposure() {
                 Log.d(TAG, "onAdExposure.");
+                if (mImpressListener != null) {
+                    mImpressListener.onInterstitialAdShow();
+                }
             }
 
             @Override

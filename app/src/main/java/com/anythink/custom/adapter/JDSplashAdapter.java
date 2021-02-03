@@ -117,9 +117,7 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
         Log.d(TAG, "onAdRenderSuccess.");
         contentView = activity.findViewById(android.R.id.content);
         splashAd.showAd(contentView);
-        if (mImpressionListener != null) {
-            mImpressionListener.onSplashAdShow();
-        }
+
     }
 
     @Override
@@ -138,6 +136,9 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
     @Override
     public void onAdExposure() {
         Log.d(TAG, "onAdExposure.");
+        if (mImpressionListener != null) {
+            mImpressionListener.onSplashAdShow();
+        }
 
     }
 
