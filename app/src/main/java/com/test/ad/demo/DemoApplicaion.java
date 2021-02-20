@@ -29,7 +29,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_native_oneway = "b5f22761b35766";
     public static final String mPlacementId_native_myoffer = "b5f33a12982b7f";
     public static final String mPlacementId_content_KS = "b600a40062eae1";
-    public static final String mPlacementId_native_JD = "b6018ee0bde8cd";
+    public static final String mPlacementId_native_JD = "b601f9516ed70f";
 
 
     //RewardedVideo
@@ -68,7 +68,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_interstitial_sigmob = "b5d7614ab30695";
     public static final String mPlacementId_interstitial_myoffer = "b5db6c39aed9c5";
     public static final String mPlacementId_interstitial_AdsGreat = "b5fb222c36cb86";
-    public static final String mPlacementId_interstitial_JD = "b6018edb749e03";
+    public static final String mPlacementId_interstitial_JD = "b601f94e7b83b4";
 
     //Splash
     public static final String mPlacementId_splash_all = "b5fb2229fdd388";
@@ -80,7 +80,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_splash_kuaishou = "b5fb2229fdd388";
     public static final String mPlacementId_splash_AdsGreat = "b5fb2229fdd388";
     public static final String mPlacementId_splash_myoffer = "b5fb2229fdd388";
-    public static final String mPlacementId_splash_JD = "b6018d05c9b74a";
+    public static final String mPlacementId_splash_JD = "b601f94b030f4b";
 
     @Override
     public void onCreate() {
@@ -118,7 +118,7 @@ public class DemoApplicaion extends MultiDexApplication {
 
 
 //        ATSDK.init(this, "a5ff2b6c1c6fc5", "be9b2e39d03dd60ed17870594123d7f4");
-        ATSDK.init(this, "a5ff2b9464c121", "be9b2e39d03dd60ed17870594123d7f4");
+        ATSDK.init(this, "a6009317f33591", "be9b2e39d03dd60ed17870594123d7f4");
 
     }
 

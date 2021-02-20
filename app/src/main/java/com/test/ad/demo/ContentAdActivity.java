@@ -21,6 +21,7 @@ public class ContentAdActivity extends AppCompatActivity {
     ATNative ATContentAd;
     NativeAd mNativeAd;
     private FragmentTransaction fragmentTransaction;
+    private ContentRender anyThinkRender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +33,22 @@ public class ContentAdActivity extends AppCompatActivity {
 
 
     private void  requestContentAd(){
+        if (null != ATContentAd && null != ATContentAd.getNativeAd()) {
+            ATContentAd.getNativeAd().destory();
+        }
+
         ATContentAd = new ATNative(this,DemoApplicaion. mPlacementId_content_KS, new ATNativeNetworkListener() {
             @Override
             public void onNativeAdLoaded() {
-                final ContentRender anyThinkRender = new ContentRender();
+                if(null != anyThinkRender) {
+                    anyThinkRender.destoryRender();
+                    anyThinkRender =null;
+                }
+                if (null != mNativeAd){
+                    mNativeAd.destory();
+                }
+
+                anyThinkRender = new ContentRender();
                 mNativeAd = ATContentAd.getNativeAd();
                 if (null != mNativeAd) {
                     anyThinkNativeAdView = new ATNativeAdView(ContentAdActivity.this);
@@ -65,7 +78,22 @@ public class ContentAdActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (null!= anyThinkNativeAdView){
+            anyThinkNativeAdView = null;
+        }
+        if (null!= ATContentAd){
+            ATContentAd = null;
+        }
+        if (null!= mNativeAd){
+            mNativeAd = null;
+        }
+        if (null!= fragmentTransaction){
+            fragmentTransaction = null;
+        }
 
+        if (null!= anyThinkRender){
+            anyThinkRender = null;
+        }
     }
 
     @Override

@@ -44,9 +44,21 @@ public class ContentRender implements ATNativeAdRenderer<CustomNativeAd> {
 
     public Fragment getContentFragment(){
        if (null != mediaView){
-           return (Fragment)mediaView.getTag();
+           Fragment fragment = (Fragment)mediaView.getTag();
+           mediaView.setTag(null);
+           return fragment;
        }
        return null;
+    }
+
+    public void destoryRender() {
+        if (null== mediaView){
+            mediaView.setTag(null);
+            mediaView = null;
+        }
+        if (null== mDevelopView){
+            mDevelopView = null;
+        }
     }
 
 }

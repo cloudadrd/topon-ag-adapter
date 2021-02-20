@@ -26,7 +26,7 @@ networkLibsPath.add("jingdong");
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.bxnll.mobi"
+        applicationId "com.hbasc.mobi"//"com.bxnll.mobi"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1

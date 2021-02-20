@@ -129,7 +129,12 @@ public class KSContentAdapter extends CustomNativeAdapter {
 
     @Override
     public void destory() {
-
+        if(null != mKsContentPage){
+            mKsContentPage = null;
+        }
+        if(null != mKSCAd) {
+            mKSCAd = null;
+        }
     }
 
     @Override
