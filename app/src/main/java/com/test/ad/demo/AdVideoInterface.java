@@ -5,6 +5,9 @@ import android.support.annotation.MainThread;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
+
+import com.baidu.mobads.AppActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -75,7 +78,7 @@ public class AdVideoInterface {
     @JavascriptInterface
     public void close() {
         if (webView.getCustomContext() instanceof InnerWebViewActivity) {
-            ((InnerWebViewActivity) webView.getContext()).finish();
+            ((InnerWebViewActivity) webView.getCustomContext()).finish();
         }
     }
 
@@ -84,7 +87,7 @@ public class AdVideoInterface {
         try {
             JSONObject properties = new JSONObject();
             properties.put("action", action);
-//            AppActivity.app.biInstance.track(name, properties);
+            AppActivity.app.biInstance.track(name, properties);
             Log.d(TAG, "tracking name=" + name + ",action=" + action);
         } catch (JSONException e) {
             e.printStackTrace();

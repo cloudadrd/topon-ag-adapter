@@ -15,7 +15,7 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a5fb2226d93961";
+    public static final String appid = "a5ff2b9464c121";
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b5fb222b3279b0";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
