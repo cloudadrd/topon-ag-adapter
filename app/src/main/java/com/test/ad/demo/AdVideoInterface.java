@@ -87,7 +87,7 @@ public class AdVideoInterface {
         try {
             JSONObject properties = new JSONObject();
             properties.put("action", action);
-            AppActivity.app.biInstance.track(name, properties);
+//            AppActivity.app.biInstance.track(name, properties);
             Log.d(TAG, "tracking name=" + name + ",action=" + action);
         } catch (JSONException e) {
             e.printStackTrace();
