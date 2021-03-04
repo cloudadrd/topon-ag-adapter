@@ -25,6 +25,10 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
     private Activity activity;
     private float tolerateTime = (float) 3.5;
     private int skipTime = 5;
+    float maxRate = (float) 0.0;
+    float miniRate = (float) 0.0;
+    float floatUpDown = (float) 0.0;
+    //"max_rate":"0.61","mini_rate":"0.49","float_up_down":"0.05"
 
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
@@ -34,6 +38,10 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
 
         tolerateTime = Float.parseFloat((String) serverExtra.get("tolerate_time"));
         skipTime = Integer.parseInt((String) serverExtra.get("skip_time"));
+        maxRate = Float.parseFloat((String) serverExtra.get("max_rate"));
+        miniRate = Float.parseFloat((String) serverExtra.get("mini_rate"));
+        floatUpDown = Float.parseFloat((String) serverExtra.get("float_up_down"));
+
         //检测传入参数
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
@@ -47,8 +55,17 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
     }
 
     private void startLoad(Context context,String slotID) {
-        int width = JDSplashAdapter.getScreenWidth(context);
-        int height = JDSplashAdapter.getScreenHeight(context);
+        int width = JDUtils.getScreenWidth(context);
+        int height = JDUtils.getScreenHeight(context);
+
+        if(((float)width/(float)height) > maxRate  && ((float)width/(float)height) < maxRate + floatUpDown){
+            width = (int)((float)height * maxRate)-1;
+        }
+
+        if(((float)width/(float)height) < miniRate  && ((float)width/(float)height) > miniRate - floatUpDown){
+            width = (int)((float)height * miniRate)+1;
+        }
+
         JadPlacementParams jadParams = new JadPlacementParams.Builder()
                 .setPlacementId(slotId)
                 .setSize(width, height)

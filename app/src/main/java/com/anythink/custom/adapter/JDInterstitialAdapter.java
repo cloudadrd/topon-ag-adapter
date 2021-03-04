@@ -50,12 +50,17 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, final Map<String, Object> localExtra) {
         adIsReady = false;
-        adWidth = JDUtils.getScreenWidth(context);
-        adHeight = JDUtils.getScreenHeight(context);
+        adWidth = 1;
+        adHeight = 100;
 
         String appId = (String) serverExtra.get("app_id");
         slotId = (String) serverExtra.get("slot_id");
         String appName = (String) serverExtra.get("app_name");
+        String w = (String) serverExtra.get("width");
+        if (null != w && !w.isEmpty()) adWidth = Integer.parseInt(w);
+        String h = (String) serverExtra.get("height");
+        if (null != h && !h.isEmpty()) adHeight = Integer.parseInt(h);
+
         //检测传入参数
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
