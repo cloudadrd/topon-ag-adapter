@@ -21,12 +21,12 @@ networkLibsPath.add("sigmob");
 
 networkLibsPath.add("adsgreat");
 networkLibsPath.add("jingdong");
-
+networkLibsPath.add("ifly");
 
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.hbasc.mobi"//"com.bxnll.mobi"
+        applicationId "com.storm.keclean"//"com.bxnll.mobi"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
@@ -66,6 +66,7 @@ android {
             res.srcDirs += 'network/pangle/res'
             res.srcDirs += 'network/uniplay/res'
             res.srcDirs += 'network/sigmob/res'
+            res.srcDirs += 'network/ifly/res'
         }
     }
 

@@ -15,7 +15,7 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a5ff2b9464c121";
+    public static final String appid = "a5ff2b6c1c6fc5";
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b5fb222b3279b0";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
@@ -23,7 +23,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_native_GDT = "b5ab8590d44f82";
     public static final String mPlacementId_native_toutiao = "b5c2c97629da0d";
     public static final String mPlacementId_native_toutiao_drawer = "b5c355d79ef9be";
-    public static final String mPlacementId_native_baidu = "b5d148f9f2e47d";
+    public static final String mPlacementId_native_baidu = "b60360e3ced743";
     public static final String mPlacementId_native_kuaishou = "b5e4105d4f21b6";
     public static final String mPlacementId_native_kuaishou_drawer = "b5e5dc4110310f";
     public static final String mPlacementId_native_oneway = "b5f22761b35766";
@@ -118,7 +118,7 @@ public class DemoApplicaion extends MultiDexApplication {
 
 
 //        ATSDK.init(this, "a5ff2b6c1c6fc5", "be9b2e39d03dd60ed17870594123d7f4");
-        ATSDK.init(this, "a6009317f33591", "be9b2e39d03dd60ed17870594123d7f4");
+        ATSDK.init(this, appid, "be9b2e39d03dd60ed17870594123d7f4");
 
     }
 

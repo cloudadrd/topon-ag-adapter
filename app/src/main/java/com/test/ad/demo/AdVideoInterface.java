@@ -1,6 +1,7 @@
 package com.test.ad.demo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.MainThread;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
@@ -43,6 +44,51 @@ public class AdVideoInterface {
         });
     }
 
+    @JavascriptInterface
+    public void isLoad() {
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mAdVideoMediationHelper.isReadyLoad) {
+                    trackState(AdLogType.LOAD_SUCCESS);
+                } else {
+                    trackState(AdLogType.LOAD_NO_READY);
+                }
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void customCall(int event, String params) {
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                customCallForMain(event, params);
+            }
+        });
+    }
+
+    @MainThread
+    private void customCallForMain(int event, String params) {
+        switch (event) {
+            case 1://关闭webview，去绑定微信页面
+                if (webView.getCustomContext() instanceof InnerWebViewActivity) {
+                    Log.d(TAG, "call customCallForMain, type is 2, webView.getCustomContext() is InnerWebViewActivity.");
+                    InnerWebViewActivity activity = (InnerWebViewActivity) webView.getCustomContext();
+                    if (!activity.isDestroyed()) {
+//                        activity.startActivity(new Intent(activity,AppActivity.class));
+//                        activity.finish();
+                        //调微信
+                    } else {
+                        Log.d(TAG, "call showAd, Activity is destroyed.");
+                    }
+                }
+                break;
+            case 2://
+                break;
+        }
+    }
+
 
     @MainThread
     private void showInterfaceForMain(String callback) {
@@ -52,6 +98,7 @@ public class AdVideoInterface {
         }
         showAd();
     }
+
 
     @JavascriptInterface
     public void goBack() {
@@ -120,8 +167,8 @@ public class AdVideoInterface {
     }
 
     public void trackState(AdLogType adLogType) {
-        if (callback == null || adLogType == null) return;
-        String loadStr = String.format("javascript:%s('%s','%s')", callback, AdVideoMediation.POSID, adLogType.getTypeId());
+        if (adLogType == null) return;
+        String loadStr = String.format("javascript:%s('%s','%s')", "callbackfun", AdVideoMediation.POSID, adLogType.getTypeId());
         Log.d(TAG, "trackState loaStr=" + loadStr);
         webView.loadUrl(loadStr);
     }

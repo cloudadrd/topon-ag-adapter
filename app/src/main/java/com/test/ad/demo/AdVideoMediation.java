@@ -23,7 +23,7 @@ public class AdVideoMediation {
 
     private boolean isLoad;
 
-    private boolean isReadyLoad;
+    public boolean isReadyLoad;
 
     public boolean isReadyLoadForInterfaceIsNull = false;
 
