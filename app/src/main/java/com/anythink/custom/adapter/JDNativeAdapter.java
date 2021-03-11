@@ -25,10 +25,11 @@ public class JDNativeAdapter extends CustomNativeAdapter {
 
     private int width = 0;
     private int height = 0;
+    private String appId;
 
     @Override
     public void loadCustomNetworkAd(Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
-        String appId = (String) serverExtra.get("app_id");
+        appId = (String) serverExtra.get("app_id");
         slotId = (String) serverExtra.get("slot_id");
 
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
@@ -63,9 +64,10 @@ public class JDNativeAdapter extends CustomNativeAdapter {
     }
 
     private void loadAd(Activity activity) {
+        Log.d(TAG, "request width=" + width + ",height=" + height + ",appid=" + appId + ",slotId=" + slotId);
         JadPlacementParams params = new JadPlacementParams.Builder()
                 .setPlacementId(slotId)//代码位ID
-                .setSize(width, height)//期望个性化模板广告view的size,单位dp，注意这里要保证传入尺寸符合申请的模版要求的比例
+                .setSize(1020, 773)//期望个性化模板广告view的size,单位dp，注意这里要保证传入尺寸符合申请的模版要求的比例
                 .setSupportDeepLink(true)// true: 支持deeplink；  false：不支持deeplink
                 .setCloseHide(true)//true:隐藏关闭按钮  false:显示关闭按钮
                 .build();

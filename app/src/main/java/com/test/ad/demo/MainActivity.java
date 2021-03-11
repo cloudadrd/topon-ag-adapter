@@ -2,6 +2,7 @@ package com.test.ad.demo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,21 @@ public class MainActivity extends Activity {
         findViewById(R.id.nativeAdBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
+//                startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri.Builder uriBuilder = Uri.parse("https://play.google.com/store/apps/details")
+                        .buildUpon()
+                        .appendQueryParameter("id", "com.jinqbd.compassed")
+                        .appendQueryParameter("launch", "true");
+
+// Optional parameters, such as referrer, are passed onto the launched
+// instant app. You can retrieve these parameters using
+// Activity.getIntent().getData().
+                uriBuilder.appendQueryParameter("referrer", "exampleCampaignId");
+
+                intent.setData(uriBuilder.build());
+                intent.setPackage("com.android.vending");
+                startActivity(intent);
             }
         });
 

@@ -248,4 +248,5 @@ public class NativeAdActivity extends Activity {
         float scale = this.getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
     }
+
 }
