@@ -15,7 +15,7 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a5ff2b6c1c6fc5";
+    public static final String appid = "a6018fd6ba9165";
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b5fb222b3279b0";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
@@ -30,6 +30,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_native_myoffer = "b5f33a12982b7f";
     public static final String mPlacementId_content_KS = "b600a40062eae1";
     public static final String mPlacementId_native_JD = "b601f9516ed70f";
+    public static final String mPlacementId_native_IFLY = "b604887777333b";
 
 
     //RewardedVideo

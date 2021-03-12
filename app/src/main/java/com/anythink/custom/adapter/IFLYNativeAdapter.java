@@ -2,9 +2,16 @@ package com.anythink.custom.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.adsgreat.base.callback.EmptyAdEventListener;
+import com.adsgreat.base.config.Const;
+import com.adsgreat.base.core.AGNative;
+import com.adsgreat.base.core.AdsgreatSDK;
+import com.adsgreat.base.core.AdsgreatSDKInternal;
+import com.adsgreat.base.core.AdvanceNative;
 import com.anythink.nativead.unitgroup.api.CustomNativeAdapter;
 import com.anythink.network.baidu.BaiduATConst;
 import com.baidu.mobad.feeds.BaiduNativeManager;
@@ -15,26 +22,34 @@ import com.baidu.mobad.feeds.XAdNativeResponse;
 import com.baidu.mobads.component.FeedNativeView;
 import com.baidu.mobads.component.StyleParams;
 import com.baidu.mobads.rewardvideo.RewardVideoAd;
+import com.bun.miitmdid.core.MdidSdkHelper;
+import com.bun.miitmdid.interfaces.IIdentifierListener;
+import com.bun.miitmdid.interfaces.IdSupplier;
+import com.jd.ad.sdk.JadYunSdk;
+import com.jd.ad.sdk.widget.JadCustomController;
+import com.shu.priory.IFLYAdSDK;
+import com.shu.priory.IFLYNativeAd;
+import com.shu.priory.config.AdError;
+import com.shu.priory.config.AdKeys;
+import com.shu.priory.conn.NativeDataRef;
+import com.shu.priory.listener.IFLYNativeListener;
 
 import java.util.List;
 import java.util.Map;
 
 public class IFLYNativeAdapter extends CustomNativeAdapter {
 
-    private final String TAG = getClass().getSimpleName();
+    private static String TAG = "OM-AG-Native:";
+
     private String slotId;
 
-    private BaiduNativeManager mBaiduNativeManager;
-    //    private View mNativeView;
-    private NativeResponse nativeAd;
+    private IFLYNative nativeExpressAd;
 
-    private BaiduNativeAd baiduNativeAd;
-
-    private int width = 0;
-    private int height = 0;
+    private String oaid = "";
 
     @Override
-    public void loadCustomNetworkAd(Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
+    public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, final Map<String, Object> localExtra) {
+
         String appId = (String) serverExtra.get("app_id");
         slotId = (String) serverExtra.get("slot_id");
 
@@ -44,113 +59,81 @@ public class IFLYNativeAdapter extends CustomNativeAdapter {
             }
             return;
         }
-        try {
-            if (localExtra.containsKey("bdad_width")) {
-                width = Integer.parseInt(localExtra.get("bdad_width").toString());
-            } else if (localExtra.containsKey("key_width")) {
-                width = Integer.parseInt(localExtra.get("key_width").toString());
-            }
-
-            if (localExtra.containsKey("bdad_height")) {
-                height = Integer.parseInt(localExtra.get("bdad_height").toString());
-            } else if (localExtra.containsKey("key_height")) {
-                height = Integer.parseInt(localExtra.get("key_height").toString());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        RewardVideoAd.setAppSid(appId);
-        Log.d(TAG, "setAppsID " + appId);
-        if (mBaiduNativeManager == null) {
-            Log.d(TAG, "insk = " + slotId);
-            mBaiduNativeManager = new BaiduNativeManager(context.getApplicationContext(), slotId);//mInstancesKey
-        }
-        if (context instanceof Activity) {
-            requestAd(context.getApplicationContext());
-        } else {
-            if (mLoadListener != null) {
-                mLoadListener.onAdLoadError(TAG, "context class type is not Activity...");
-            }
-        }
-    }
-
-    /**
-     * 请求Feed默认模板广告数据
-     */
-    private void requestAd(Context context) {
-        // 若与百度进行相关合作，可使用如下接口上报广告的上下文
-        RequestParameters requestParameters = new RequestParameters.Builder()
-                .downloadAppConfirmPolicy(RequestParameters.DOWNLOAD_APP_CONFIRM_ONLY_MOBILE)
-                .build();
-        mBaiduNativeManager.loadFeedAd(requestParameters, new BaiduNativeManager.NativeLoadListener() {
+        MdidSdkHelper.InitSdk(context.getApplicationContext(), true, new IIdentifierListener() {
             @Override
-            public void onNativeLoad(List<NativeResponse> nativeResponses) {
-                Log.d(TAG, "onNativeLoad");
-                if (nativeResponses != null && nativeResponses.size() > 0) {
-                    nativeAd = nativeResponses.get(0);
-                    if (mLoadListener != null) {
-                        mLoadListener.onAdDataLoaded();
-                        baiduNativeAd = renderAd(context);
-                        mLoadListener.onAdCacheLoaded(baiduNativeAd);
-                    }
-                } else {
-                    if (mLoadListener != null) {
-                        mLoadListener.onAdLoadError(TAG, "no ad fill");
-                    }
+            public void OnSupport(boolean b, final IdSupplier idSupplier) {
+                if (idSupplier != null && idSupplier.isSupported()) {
+                    oaid = idSupplier.getOAID();
                 }
-            }
-
-            @Override
-            public void onLoadFail(String message, String errorCode) {
-                Log.d(TAG, "onLoadFail reason:" + message + "errorCode:" + errorCode);
-                if (mLoadListener != null) {
-                    mLoadListener.onAdLoadError(TAG, "code=" + errorCode + ", error=" + message);
-                }
-            }
-
-            @Override
-            public void onNativeFail(NativeErrorCode errorCode) {
-                // 建议使用onLoadFail回调获取详细的请求失败的原因
-                Log.d(TAG, "onNativeFail reason:" + errorCode.name());
-            }
-
-            @Override
-            public void onVideoDownloadSuccess() {
-                Log.d(TAG, "onVideoDownloadSuccess");
-            }
-
-            @Override
-            public void onVideoDownloadFailed() {
-                Log.d(TAG, "onVideoDownloadFailed");
-            }
-
-            @Override
-            public void onLpClosed() {
-                Log.d(TAG, "onLpClosed");
-//                if (baiduNativeAd != null) {
-//                    baiduNativeAd.onAdDismissed();
-//                }
             }
         });
+        //进行SDK初始化
+        IFLYAdSDK.init(context.getApplicationContext());
+
+        loadNativeAd(context, slotId);
+
     }
 
-    private BaiduNativeAd renderAd(Context context) {
-        FeedNativeView newAdView = new FeedNativeView(context);
-        newAdView.setAdData((XAdNativeResponse) nativeAd);
-        StyleParams params = new StyleParams.Builder()
-                .build();
-        newAdView.changeViewLayoutParams(params);
+    private void loadNativeAd(Context context, String codeId) {
+        //创建信息流广告：adUnitId：开发者在讯飞AI营销云平台(http://www.voiceads.cn/)申请的信息流广告位ID
+        IFLYNativeAd nativeAd = new IFLYNativeAd(context, codeId, mListener);
 
-        return new BaiduNativeAd(newAdView, nativeAd);
+//设置oaid，获取方式见 -> 4.常见问题
+        nativeAd.setParameter(AdKeys.OAID, oaid);
+
+//请求广告
+        nativeAd.loadAd();
+
+
+    }
+
+    IFLYNativeListener mListener = new IFLYNativeListener() {
+        @Override
+        public void onAdFailed(AdError error) {
+            // 广告请求失败
+            String msg = null;
+            if (error != null) {
+                msg = error.getErrorDescription();
+            }
+            if (mLoadListener != null) {
+                mLoadListener.onAdLoadError(TAG, msg);
+            }
+        }
+
+        @Override
+        public void onAdLoaded(NativeDataRef dataRef) {
+            if (dataRef == null) {
+                return;
+            }
+            // 广告请求成功,后续操作参考Demo
+            nativeExpressAd = new IFLYNative(dataRef);
+            if (mLoadListener != null) {
+                mLoadListener.onAdCacheLoaded(nativeExpressAd);
+            }
+        }
+
+        @Override
+        public void onCancel() {
+            // 下载类广告，下载提示框 “取消”
+        }
+
+        @Override
+        public void onConfirm() {
+            // 下载类广告，下载提示框 “确认”
+        }
+    };
+
+
+    @Override
+    public String getNetworkName() {
+        return "AdsGreat Custom";
     }
 
     @Override
     public void destory() {
-        nativeAd = null;
-        if (baiduNativeAd != null)
-            baiduNativeAd.destroy();
-        mBaiduNativeManager = null;
+
     }
+
 
     @Override
     public String getNetworkPlacementId() {
@@ -159,11 +142,6 @@ public class IFLYNativeAdapter extends CustomNativeAdapter {
 
     @Override
     public String getNetworkSDKVersion() {
-        return BaiduATConst.getNetworkVersion();
-    }
-
-    @Override
-    public String getNetworkName() {
-        return "Baidu Custom";
+        return Const.getVersionNumber();
     }
 }

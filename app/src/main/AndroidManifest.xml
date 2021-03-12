@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name="com.test.ad.demo.DemoApplicaion"
@@ -160,6 +161,18 @@
             android:exported="false" /> <!-- for adsgreat interstitial ads -->
         <activity android:name="com.adsgreat.base.view.InterstitialActivity" />
         <activity android:name="com.adsgreat.base.view.SplashAdActivity" />
+        <activity
+            android:name="com.shu.priory.request.IFLYBrowser"
+            android:screenOrientation="portrait" /> <!-- android:authorities="${applicationId}.iFlyFileProvider",注意iFlyFileProvider大小写需严格匹配 -->
+        <provider
+            android:name="com.shu.priory.download.IFlyFileProvider"
+            android:authorities="${applicationId}.iFlyFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>
