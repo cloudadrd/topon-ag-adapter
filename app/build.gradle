@@ -18,10 +18,10 @@ networkLibsPath.add("mintegral");
 networkLibsPath.add("pangle");
 networkLibsPath.add("kuaishou");
 networkLibsPath.add("sigmob");
-
+networkLibsPath.add("ifly");
 networkLibsPath.add("adsgreat");
 networkLibsPath.add("jingdong");
-networkLibsPath.add("ifly");
+
 
 android {
     compileSdkVersion 28
@@ -64,9 +64,9 @@ android {
             res.srcDirs += 'network/mintegral/res'
             res.srcDirs += 'network/oneway/res'
             res.srcDirs += 'network/pangle/res'
+            res.srcDirs += 'network/ifly/res'
             res.srcDirs += 'network/uniplay/res'
             res.srcDirs += 'network/sigmob/res'
-            res.srcDirs += 'network/ifly/res'
         }
     }
 

@@ -107,6 +107,7 @@ public class SplashAdShowActivity extends FragmentActivity implements ATSplashEx
     @Override
     public void onAdLoaded() {
         Log.i(TAG, "onAdLoaded---------");
+        Log.d(TAG,splashAd.toString());
         splashAd.show(this, container);
     }
 

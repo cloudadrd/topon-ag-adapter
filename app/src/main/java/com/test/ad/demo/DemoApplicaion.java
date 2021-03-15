@@ -15,7 +15,7 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a5ff2b6c1c6fc5";
+    public static final String appid = "a6018fd6ba9165";//"a5ff2b6c1c6fc5";
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b5fb222b3279b0";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
@@ -53,6 +53,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_banner_uniplay = "b5baca4aebcb93";
     public static final String mPLacementId_banner_baidu = "b5c0508c4c073f";
     public static final String mPlacementId_banner_myoffer = "b5f33a1409b96b";
+    public static final String mPlacementId_banner_IFLY = "b6048875baf056";
 
     //Interstitial
     public static final String mPlacementId_interstitial_all = "b5fb222c36cb86";
@@ -81,6 +82,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_splash_AdsGreat = "b5fb2229fdd388";
     public static final String mPlacementId_splash_myoffer = "b5fb2229fdd388";
     public static final String mPlacementId_splash_JD = "b601f94b030f4b";
+    public static final String mPlacementId_splash_IFLY = "b604887461e0f4";
 
     @Override
     public void onCreate() {

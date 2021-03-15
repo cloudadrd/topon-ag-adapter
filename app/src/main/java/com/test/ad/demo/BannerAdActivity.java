@@ -33,6 +33,7 @@ public class BannerAdActivity extends Activity {
             , DemoApplicaion.mPlacementId_banner_mintegral
             , DemoApplicaion.mPLacementId_banner_baidu
             , DemoApplicaion.mPlacementId_banner_myoffer
+            , DemoApplicaion.mPlacementId_banner_IFLY
     };
 
     String unitGroupName[] = new String[]{
@@ -41,7 +42,8 @@ public class BannerAdActivity extends Activity {
             "Toutiao",
             "Mintegral",
             "Baidu",
-            "MyOffer"
+            "MyOffer",
+            "IFLY"
     };
 
     ATBannerView mBannerView;

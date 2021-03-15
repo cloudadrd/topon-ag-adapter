@@ -26,7 +26,8 @@ public class SplashAdActivity extends Activity {
             DemoApplicaion.mPlacementId_splash_mintegral,
             DemoApplicaion.mPlacementId_splash_kuaishou,
             DemoApplicaion.mPlacementId_splash_myoffer,
-            DemoApplicaion.mPlacementId_splash_JD
+            DemoApplicaion.mPlacementId_splash_JD,
+            DemoApplicaion.mPlacementId_splash_IFLY
     };
 
     String unitGroupName[] = new String[]{
@@ -38,7 +39,8 @@ public class SplashAdActivity extends Activity {
             "Mintegral",
             "Kuaishou",
             "MyOffer",
-            "JD"
+            "JD",
+            "IFLY"
     };
 
     int mCurrentSelectIndex;
