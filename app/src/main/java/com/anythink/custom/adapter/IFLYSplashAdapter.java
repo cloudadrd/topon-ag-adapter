@@ -23,12 +23,7 @@ import java.util.Map;
 public class IFLYSplashAdapter extends CustomSplashAdapter {
     private final String TAG = "IFLYSplashAdapter:";
     private IFLYSplashAd mSplashAd;
-    private ViewGroup contentView;
     String slotId = null;
-    private Activity activity;
-    private float tolerateTime = (float) 3.5;
-    private int skipTime = 5;
-    //"max_rate":"0.61","mini_rate":"0.49","float_up_down":"0.05"
 
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
@@ -86,6 +81,9 @@ public class IFLYSplashAdapter extends CustomSplashAdapter {
             @Override
             public void onAdTimeOver() {
                 Log.d(TAG, "onAdTimeOver.");
+                if (mImpressionListener != null) {
+                    mImpressionListener.onSplashAdDismiss();
+                }
             }
 
             @Override
@@ -111,7 +109,7 @@ public class IFLYSplashAdapter extends CustomSplashAdapter {
 
     @Override
     public String getNetworkName() {
-        return null;
+        return "IFLY Custom";
     }
 
     @Override
@@ -121,6 +119,7 @@ public class IFLYSplashAdapter extends CustomSplashAdapter {
 
     @Override
     public void destory() {
+        mSplashAd = null;
 
     }
 

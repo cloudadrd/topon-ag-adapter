@@ -41,7 +41,7 @@ public class IFLYBannerAdapter extends CustomBannerAdapter {
 
     @Override
     public String getNetworkName() {
-        return null;
+        return "IFLY Custom";
     }
 
     @Override
@@ -75,6 +75,7 @@ public class IFLYBannerAdapter extends CustomBannerAdapter {
     @Override
     public void destory() {
         mBannerView = null;
+        mAdListener = null;
     }
 
     @Override
