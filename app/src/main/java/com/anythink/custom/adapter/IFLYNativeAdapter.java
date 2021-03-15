@@ -1,6 +1,8 @@
 package com.anythink.custom.adapter;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import com.adsgreat.base.config.Const;
@@ -50,7 +52,17 @@ public class IFLYNativeAdapter extends CustomNativeAdapter {
         //进行SDK初始化
         IFLYAdSDK.init(context.getApplicationContext());
 
-        loadNativeAd(context, slotId);
+        if (!TextUtils.isEmpty(oaid)) {
+            loadNativeAd(context, slotId);
+            return;
+        }
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadNativeAd(context, slotId);
+            }
+        }, 1000);
+
 
     }
 
