@@ -47,6 +47,7 @@ public class NativeAdActivity extends Activity {
             , DemoApplicaion.mPlacementId_native_kuaishou_drawer
             , DemoApplicaion.mPlacementId_native_myoffer
             , DemoApplicaion.mPlacementId_native_JD
+            , DemoApplicaion.mPlacementId_native_IFLY
 
     };
 
@@ -61,7 +62,8 @@ public class NativeAdActivity extends Activity {
             "Kuaishou",
             "Kuaishou-draw",
             "MyOffer",
-            "JD"
+            "JD",
+            "IFLY"
     };
 
     ATNative atNatives[] = new ATNative[placementIds.length];
