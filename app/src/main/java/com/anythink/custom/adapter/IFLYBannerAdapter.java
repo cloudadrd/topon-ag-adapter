@@ -96,7 +96,7 @@ public class IFLYBannerAdapter extends CustomBannerAdapter {
                 if (idSupplier != null && idSupplier.isSupported()) {
                     String oaidStr = idSupplier.getOAID();
                     mBannerView.setParameter(AdKeys.OAID, oaidStr);
-                    mBannerView.setParameter(AdKeys.DEBUG_MODE, true);
+                    mBannerView.setParameter(AdKeys.DEBUG_MODE, false);
                     mBannerView.loadAd(mAdListener);
                 }
             }

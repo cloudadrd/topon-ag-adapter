@@ -24,12 +24,17 @@ public class IFLYSplashAdapter extends CustomSplashAdapter {
     private final String TAG = "IFLYSplashAdapter:";
     private IFLYSplashAd mSplashAd;
     String slotId = null;
+    private int countDown = 5;
 
     @Override
     public void loadCustomNetworkAd(final Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
         String appId = (String) serverExtra.get("app_id");
         slotId = (String) serverExtra.get("slot_id");
         String appName = (String) serverExtra.get("app_name");
+        String cd = (String) serverExtra.get("count_down");
+       if (null != cd && !cd.isEmpty()) {
+           countDown = Integer.parseInt(cd);
+       }
         //检测传入参数
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
@@ -146,8 +151,8 @@ public class IFLYSplashAdapter extends CustomSplashAdapter {
                 if (idSupplier != null && idSupplier.isSupported()) {
                     String oaidStr = idSupplier.getOAID();
                     mSplashAd.setParameter(AdKeys.OAID, oaidStr);
-                    mSplashAd.setParameter(AdKeys.COUNT_DOWN, 5);
-                    mSplashAd.setParameter(AdKeys.DEBUG_MODE, true);
+                    mSplashAd.setParameter(AdKeys.COUNT_DOWN, countDown);
+                    mSplashAd.setParameter(AdKeys.DEBUG_MODE, false);
                     mSplashAd.loadAd();
                 }
             }
