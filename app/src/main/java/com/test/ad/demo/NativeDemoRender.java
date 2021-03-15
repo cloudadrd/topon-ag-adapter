@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anythink.nativead.api.ATNativeAdRenderer;
@@ -99,12 +100,19 @@ public class NativeDemoRender implements ATNativeAdRenderer<CustomNativeAd> {
 
 
         final ATNativeImageView iconView = new ATNativeImageView(mContext);
-        if (adiconView == null) {
-            iconArea.addView(iconView);
-            iconView.setImage(ad.getIconImageUrl());
-            mClickView.add(iconView);
+        if (!TextUtils.isEmpty(ad.getIconImageUrl())) {
+            if (adiconView == null) {
+                iconArea.addView(iconView);
+                iconView.setImage(ad.getIconImageUrl());
+                mClickView.add(iconView);
+            } else {
+                iconArea.addView(adiconView);
+            }
         } else {
-            iconArea.addView(adiconView);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) iconArea.getLayoutParams();
+            layoutParams.width=1;
+            layoutParams.rightMargin=0;
+            iconArea.setLayoutParams(layoutParams);
         }
 
 
