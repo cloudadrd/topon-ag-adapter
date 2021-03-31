@@ -2,19 +2,19 @@ package com.anythink.custom.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.anythink.splashad.unitgroup.api.CustomSplashAdapter;
 import com.jd.ad.sdk.imp.JadListener;
 import com.jd.ad.sdk.imp.splash.SplashAd;
 import com.jd.ad.sdk.work.JadPlacementParams;
-import com.anythink.splashad.unitgroup.api.CustomSplashAdapter;
-//import com.anythink.splashad.unitgroup.api.CustomSplashEventListener;
 
 import java.util.Map;
+
+//import com.anythink.splashad.unitgroup.api.CustomSplashEventListener;
 
 public class JDSplashAdapter extends CustomSplashAdapter implements JadListener {
     private final String TAG = "JDSplashAdapter:";
@@ -57,14 +57,19 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
     private void startLoad(Context context,String slotID) {
         int width = JDUtils.getScreenWidth(context);
         int height = JDUtils.getScreenHeight(context);
+        width = JDUtils.px2dip(context,width);
+        height = JDUtils.px2dip(context,height);
 
-        if(((float)width/(float)height) > maxRate  && ((float)width/(float)height) < maxRate + floatUpDown){
-            width = (int)((float)height * maxRate)-1;
+        if(floatUpDown >0.00){
+            if(((float)width/(float)height) > maxRate  && ((float)width/(float)height) < maxRate + floatUpDown){
+                width = (int)((float)height * maxRate)-1;
+            }
+
+            if(((float)width/(float)height) < miniRate  && ((float)width/(float)height) > miniRate - floatUpDown){
+                width = (int)((float)height * miniRate)+1;
+            }
         }
 
-        if(((float)width/(float)height) < miniRate  && ((float)width/(float)height) > miniRate - floatUpDown){
-            width = (int)((float)height * miniRate)+1;
-        }
 
         JadPlacementParams jadParams = new JadPlacementParams.Builder()
                 .setPlacementId(slotId)
@@ -80,17 +85,17 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
 
     @Override
     public String getNetworkName() {
-        return null;
+        return "JD Custom";
     }
 
     @Override
     public boolean isAdReady() {
-        return false;
+        return splashAd != null;
     }
 
     @Override
     public void destory() {
-
+        splashAd = null;
     }
 
     @Override
@@ -116,9 +121,7 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
     @Override
     public void onAdLoadSuccess() {
         Log.d(TAG, "onAdLoadSuccess.");
-        if (mLoadListener != null) {
-            mLoadListener.onAdCacheLoaded();
-        }
+
     }
 
     @Override
@@ -132,14 +135,20 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
     @Override
     public void onAdRenderSuccess(View view) {
         Log.d(TAG, "onAdRenderSuccess.");
-        contentView = activity.findViewById(android.R.id.content);
-        splashAd.showAd(contentView);
+//        contentView = activity.findViewById(android.R.id.content);
+        if (mLoadListener != null) {
+            mLoadListener.onAdCacheLoaded();
+        }
+
 
     }
 
     @Override
     public void onAdRenderFailed(int i, String s) {
         Log.d(TAG, "onAdRenderFailed.");
+        if (mLoadListener != null) {
+            mLoadListener.onAdLoadError(TAG,s);
+        }
     }
 
     @Override
@@ -169,6 +178,7 @@ public class JDSplashAdapter extends CustomSplashAdapter implements JadListener 
 
     @Override
     public void show(Activity activity, ViewGroup viewGroup) {
-
+        Log.d(TAG, "show.");
+        splashAd.showAd(viewGroup);
     }
 }

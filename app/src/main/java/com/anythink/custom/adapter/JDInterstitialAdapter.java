@@ -1,18 +1,16 @@
 package com.anythink.custom.adapter;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.anythink.interstitial.unitgroup.api.CustomInterstitialAdapter;
 import com.jd.ad.sdk.imp.JadListener;
 import com.jd.ad.sdk.imp.interstitial.InterstitialAd;
 import com.jd.ad.sdk.work.JadPlacementParams;
-import com.anythink.interstitial.unitgroup.api.CustomInterstitialAdapter;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public class JDInterstitialAdapter extends CustomInterstitialAdapter {
@@ -44,7 +42,7 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
 
     @Override
     public String getNetworkName() {
-       return  null;
+        return "JD Custom";
     }
 
     @Override
@@ -60,6 +58,9 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
         if (null != w && !w.isEmpty()) adWidth = Integer.parseInt(w);
         String h = (String) serverExtra.get("height");
         if (null != h && !h.isEmpty()) adHeight = Integer.parseInt(h);
+
+        adWidth = JDUtils.px2dip(context,adWidth);
+        adHeight = JDUtils.px2dip(context,adHeight);
 
         //检测传入参数
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
@@ -147,7 +148,7 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
 
     @Override
     public String getNetworkPlacementId() {
-        return null;
+        return slotId;
     }
 
     @Override
