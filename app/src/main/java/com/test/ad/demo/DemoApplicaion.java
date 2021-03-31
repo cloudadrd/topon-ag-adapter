@@ -29,7 +29,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_native_oneway = "b5f22761b35766";
     public static final String mPlacementId_native_myoffer = "b5f33a12982b7f";
     public static final String mPlacementId_content_KS = "b600a40062eae1";
-    public static final String mPlacementId_native_JD = "b600931dc45a91";
+    public static final String mPlacementId_native_JD = "b601f9516ed70f";
     public static final String mPlacementId_native_IFLY = "b604887777333b";
 
 

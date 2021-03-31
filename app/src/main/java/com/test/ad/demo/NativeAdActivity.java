@@ -102,7 +102,7 @@ public class NativeAdActivity extends Activity {
         });
 
         int padding = dip2px(10);
-        final int containerHeight = dip2px(340);
+        final int containerHeight = dip2px(268);
         final int adViewWidth = getResources().getDisplayMetrics().widthPixels - 2 * padding;
         final int adViewHeight = containerHeight - 2 * padding;
 

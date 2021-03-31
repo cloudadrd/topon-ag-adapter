@@ -51,6 +51,9 @@ public class JDNativeAdapter extends CustomNativeAdapter {
             } else if (localExtra.containsKey("key_height")) {
                 height = Integer.parseInt(localExtra.get("key_height").toString());
             }
+            width = JDUtils.px2dip(context,width);
+            height = JDUtils.px2dip(context,height);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,7 +70,7 @@ public class JDNativeAdapter extends CustomNativeAdapter {
         Log.d(TAG, "request width=" + width + ",height=" + height + ",appid=" + appId + ",slotId=" + slotId);
         JadPlacementParams params = new JadPlacementParams.Builder()
                 .setPlacementId(slotId)//代码位ID
-                .setSize(1020, 773)//期望个性化模板广告view的size,单位dp，注意这里要保证传入尺寸符合申请的模版要求的比例
+                .setSize(width, height)//期望个性化模板广告view的size,单位dp，注意这里要保证传入尺寸符合申请的模版要求的比例
                 .setSupportDeepLink(true)// true: 支持deeplink；  false：不支持deeplink
                 .setCloseHide(true)//true:隐藏关闭按钮  false:显示关闭按钮
                 .build();
