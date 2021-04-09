@@ -55,9 +55,18 @@ public class JDInterstitialAdapter extends CustomInterstitialAdapter {
         slotId = (String) serverExtra.get("slot_id");
         String appName = (String) serverExtra.get("app_name");
         String w = (String) serverExtra.get("width");
-        if (null != w && !w.isEmpty()) adWidth = Integer.parseInt(w);
+        if (null != w && !w.isEmpty()) {
+            adWidth = Integer.parseInt(w);
+        }else{
+            adWidth = JDUtils.getScreenWidth(context);
+        }
+
         String h = (String) serverExtra.get("height");
-        if (null != h && !h.isEmpty()) adHeight = Integer.parseInt(h);
+        if (null != h && !h.isEmpty()) {
+            adHeight = Integer.parseInt(h);
+        }else {
+            adHeight = JDUtils.getScreenHeight(context);
+        }
 
         adWidth = JDUtils.px2dip(context,adWidth);
         adHeight = JDUtils.px2dip(context,adHeight);
