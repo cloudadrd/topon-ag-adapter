@@ -2,11 +2,23 @@ package com.test.ad.demo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.webkit.DownloadListener;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import com.adsgreat.base.config.Const;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -14,11 +26,27 @@ public class CacheWebView extends WebView {
 
     private AdVideoMediation mediationHelper = null;
 
+    private AdVideoInterface adVideoInterface = null;
+
     public Context getCustomContext() {
         return context;
     }
 
     private Context context;
+
+    private boolean is302 = false;
+
+    public boolean isLoadFinish() {
+        return isLoadFinish;
+    }
+
+    private long startTime;
+
+    public void setLoadFinish(boolean loadFinish) {
+        isLoadFinish = loadFinish;
+    }
+
+    private boolean isLoadFinish = false;
 
     public CacheWebView(Context context) {
         super(context);
@@ -56,18 +84,121 @@ public class CacheWebView extends WebView {
         // api 11以上有个漏洞，要remove
         removeJavascriptInterface("searchBoxJavaBredge_");
         setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+
+        super.setWebViewClient(webViewClient);
+        super.setWebChromeClient(webChromeClient);
+
         mediationHelper = AdVideoMediation.getInstance();
 
-        AdVideoInterface adVideoInterface = new AdVideoInterface(this, mediationHelper);
+        adVideoInterface = new AdVideoInterface(this, mediationHelper);
         mediationHelper.setContext(context);
-        mediationHelper.setAdVideoInterface(adVideoInterface);
+        mediationHelper.addAdVideoInterface(adVideoInterface);
         mediationHelper.loadVideo();
         addJavascriptInterface(adVideoInterface, "android");
+    }
+
+    public void notifyDownStated(String pkg, DownloadState state, long progress) {
+        if (adVideoInterface != null) {
+            adVideoInterface.notifyDownStated(pkg, state, progress);
+        }
+    }
+
+    public void tracking(String name, String action) {
+        if (adVideoInterface != null) {
+            adVideoInterface.tracking(name, action);
+        }
+    }
+
+    @Override
+    public void setWebViewClient(WebViewClient client) {
+        if (client == null) {
+            super.setWebViewClient(webViewClient);
+        } else {
+            super.setWebViewClient(client);
+        }
+    }
+
+    WebViewClient webViewClient = new WebViewClient() {
+        @Override
+        public void onPageFinished(WebView view, String url) {
+
+            Const.HANDLER.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (is302) return;
+                    Log.e("CacheWebView", "onPageFinished times=" + (System.currentTimeMillis() - startTime));
+                    setLoadFinish(true);
+                }
+            }, 1000);
+
+            super.onPageFinished(view, url);
+        }
+
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            if (url.startsWith("http:") || url.startsWith("https:")) {
+                WebView.HitTestResult hit = getHitTestResult();
+                int hitType = hit.getType();
+                Log.e("CacheWebView", "shouldOverrideUrlLoading times=" + (System.currentTimeMillis() - startTime));
+                if (hitType == WebView.HitTestResult.SRC_ANCHOR_TYPE) {//点击超链接
+                }
+                if (hitType == 0 && !is302) {
+                    is302 = true;
+                }
+                return url.contains(".apk");
+            } else {
+                return true;
+            }
+        }
+    };
+
+
+    WebChromeClient webChromeClient = new WebChromeClient() {
+
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            //动态在标题栏显示进度条
+            if (newProgress == 100) {  //加载完成，进度条消失
+                Log.e("CacheWebView", "onProgressChanged times=" + (System.currentTimeMillis() - startTime));
+                setLoadFinish(true);
+            }
+            super.onProgressChanged(view, newProgress);
+        }
+
+        @Override
+        public void onReceivedTitle(WebView view, String title) {
+            super.onReceivedTitle(view, title);
+        }
+
+    };
+
+    @Override
+    public void loadUrl(String url) {
+        startTime = System.currentTimeMillis();
+        super.loadUrl(url);
+    }
+
+    @Override
+    public void setWebChromeClient(WebChromeClient client) {
+        if (client == null) {
+            super.setWebChromeClient(webChromeClient);
+        } else {
+            super.setWebChromeClient(client);
+        }
+    }
+
+    @Override
+    public void reload() {
+        setLoadFinish(false);
+        startTime = System.currentTimeMillis();
+        super.reload();
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        mediationHelper.setAdVideoInterface(null);
+        mediationHelper.removeAdVideoInterface(adVideoInterface);
+        mediationHelper = null;
+        adVideoInterface = null;
     }
 }

@@ -1,10 +1,16 @@
 package com.test.ad.demo;
 
+import android.app.Activity;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 import android.webkit.WebView;
 
 import com.anythink.core.api.ATSDK;
+import com.anythink.custom.adapter.OAIDHandler;
 import com.facebook.stetho.Stetho;
 
 import java.util.HashMap;
@@ -15,7 +21,7 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a6009317f33591"; //"a6018fd6ba9165";//"a5ff2b6c1c6fc5";
+    public static final String appid = "a5fb2226d93961"; //"a6018fd6ba9165";//"a5ff2b6c1c6fc5";
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b5fb222b3279b0";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
@@ -57,7 +63,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_banner_IFLY = "b6048875baf056";
 
     //Interstitial
-    public static final String mPlacementId_interstitial_all = "b5fb222c36cb86";
+    public static final String mPlacementId_interstitial_all = "b609bb0238e690";
     public static final String mPlacementId_interstitial_mintegral = "b5bbdc725768fa";
     public static final String mPlacementId_interstitial_video_mintegral = "b5bbdc855a1506";
     public static final String mPlacementId_interstitial_GDT = "b5baca561bc100";
@@ -121,7 +127,50 @@ public class DemoApplicaion extends MultiDexApplication {
 
 
 //        ATSDK.init(this, "a5ff2b6c1c6fc5", "be9b2e39d03dd60ed17870594123d7f4");
-        ATSDK.init(this, appid, "be9b2e39d03dd60ed17870594123d7f4");
+        ATSDK.init(this, appid, appKey);
+
+
+        OAIDHandler.init(this);
+
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+
+            @Override
+            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+                Log.e("DemoApplicaion","onActivityCreated ");
+            }
+
+            @Override
+            public void onActivityStarted(@NonNull Activity activity) {
+                Log.e("DemoApplicaion","onActivityStarted ");
+            }
+
+            @Override
+            public void onActivityResumed(@NonNull Activity activity) {
+                Log.e("DemoApplicaion","onActivityResumed ");
+            }
+
+            @Override
+            public void onActivityPaused(@NonNull Activity activity) {
+                Log.e("DemoApplicaion","onActivityPaused ");
+            }
+
+            @Override
+            public void onActivityStopped(@NonNull Activity activity) {
+                Log.e("DemoApplicaion","onActivityStopped ");
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+                Log.e("DemoApplicaion","onActivitySaveInstanceState ");
+            }
+
+            @Override
+            public void onActivityDestroyed(@NonNull Activity activity) {
+                Log.e("DemoApplicaion","onActivityDestroyed ");
+            }
+
+        });
+
 
     }
 

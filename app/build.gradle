@@ -24,11 +24,11 @@ networkLibsPath.add("jingdong");
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
-        applicationId "com.storm.keclean"//"com.bxnll.mobi"//com.hbasc.mobi京东测试
+        applicationId "com.bxnll.mobi"//"com.bxnll.mobi"//com.hbasc.mobi京东测试
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         multiDexEnabled = true
@@ -84,7 +84,7 @@ repositories{
 
 dependencies {
     api fileTree(include: ['*.jar','*.aar'], dir: 'libs')
-
+    implementation files('libs/multidownloadlib.jar')
 //    api fileTree(dir: "network", include: ["**/libs/*.jar", "**/libs/*.aar"])
 //            .exclude("mintegral_international/libs/*.jar")
 //            .exclude("mintegral_international/libs/*.aar")
@@ -126,6 +126,8 @@ dependencies {
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
+
+    implementation project(':business-support-sdk')
 }
 
 

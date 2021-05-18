@@ -10,8 +10,11 @@
         height: auto;
         display: block;
       }
+
+
     </style>
     <script type="text/javascript">
+
 
         function showVideo(){
             android.showAd("callbackfun");
@@ -82,6 +85,76 @@
               }
         }
 
+       function download(){
+            var params='{"url":"http://gamefilecdn.adspools.cn/downloadfile/app/push-release.apk","pkg":"com.cg.caige"}'
+            android.customCall(3,params)
+        }
+
+        function validateApk(){
+            var params='{"pkg":"com.cg.caige"}'
+            android.customCall(5,params)
+        }
+
+        function notifyDownStated(pkg,state,progress){
+
+            var str="fileName={0}，state={1},progress={2} ";
+            switch(state){
+                case 1:
+                    str=str.format(pkg,"开始下载 "+state,progress);
+                    break;
+                case 2:
+                    str=str.format(pkg,"开始中 "+state,progress);
+                    break;
+                case 3:
+                    str=str.format(pkg,"下载成功 "+state,progress);
+                    break;
+                case 4:
+                    str=str.format(pkg,"下载失败 "+state,progress);
+                    break;
+                case 5:
+                    var params='{"pkg":"com.cg.caige"}'
+                    android.customCall(4,params)
+                    str=str.format(pkg,"安装成功 "+state,progress);
+                    break;
+                case 6:
+                    str=str.format(pkg,"已下载 "+state,progress);
+                    break;
+                case 7:
+                    str=str.format(pkg,"已安装 "+state,progress);
+                    break;
+                case 8:
+                    str=str.format(pkg,"未下载 "+state,progress);
+                    break;
+            }
+            document.querySelector("#desc").innerHTML=str;
+
+        }
+
+        String.prototype.format = function(args) {
+            var result = this;
+            if (arguments.length < 1) {
+                return result;
+            }
+
+            var data = arguments;		//如果模板参数是数组
+            if (arguments.length == 1 && typeof (args) == "object") {
+                //如果模板参数是对象
+                data = args;
+            }
+            for (var key in data) {
+                var value = data[key];
+                if (undefined != value) {
+                    result = result.replace("{" + key + "}", value);
+                }
+            }
+            return result;
+        }
+
+    function customCalltest(){
+        var params='{"pkg":"com.cg.caige"}'
+        android.customCall(4,params)
+    }
+
 
     </script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -95,7 +168,7 @@
 </div>
 <br>
 <div>
-<!--    <input class="upload-input"  accept="image/*" multiple required type="file">-->
+    <!--    <input class="upload-input"  accept="image/*" multiple required type="file">-->
     <input type="file" accept="image/*" multiple="multiple" name="" id="upload_btn">
 </div>
 
@@ -103,9 +176,23 @@
 <div>
     <button onclick="goBack()">goBack</button>
 </div>
+<br>
+<div>
+    <button onclick="download()">下载</button>
+</div>
+<br>
+<div>
+    <button onclick="javascript:customCalltest()">安装</button>
+</div>
+<br>
+<div>
+    <button onclick="validateApk()">检测apk状态</button>
+</div>
+
 <br><br>
 <div id="desc">未显示</div>
 
+<br>
 </body>
 
 </html>

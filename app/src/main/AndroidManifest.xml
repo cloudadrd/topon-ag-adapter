@@ -47,6 +47,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:name="com.test.ad.demo.InnerWebViewActivity2"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
             android:name="com.test.ad.demo.NativeAdActivity"
             android:label="AT Native"
             android:launchMode="singleTask" />
@@ -95,21 +99,6 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/take_photo_file_paths" />
-        </provider>
-        <!-- 非信息广告必须添加 -->
-        <activity
-            android:name="com.baidu.mobads.AppActivity"
-            android:configChanges="screenSize|keyboard|keyboardHidden|orientation"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
-        <provider
-            android:name="com.baidu.mobads.openad.BdFileProvider"
-            android:authorities="${applicationId}.bd.provider"
-            android:exported="false"
-            android:grantUriPermissions="true" >
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/anythink_bk_baidu_file_path" />
         </provider>
         <provider
             android:name="com.qq.e.comm.GDTFileProvider"

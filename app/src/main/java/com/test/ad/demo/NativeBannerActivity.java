@@ -149,7 +149,7 @@ public class NativeBannerActivity extends Activity {
         bannerViewAuto.setBannerConfig(configAuto);
         final Map<String, Object> localMapAuto = new HashMap<>();
         //穿山甲个性化模板
-        localMapAuto.put(TTATConst.NATIVE_AD_IMAGE_WIDTH, dip2px(getApplicationContext(), 320));
+//        localMapAuto.put(TTATConst.NATIVE_AD_IMAGE_WIDTH, dip2px(getApplicationContext(), 320));
         localMapAuto.put(TTATConst.NATIVE_AD_IMAGE_HEIGHT, dip2px(getApplicationContext(), 205));
         bannerViewAuto.setLocalExtra(localMapAuto);
 

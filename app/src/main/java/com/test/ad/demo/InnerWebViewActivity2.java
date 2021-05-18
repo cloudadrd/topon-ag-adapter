@@ -6,14 +6,25 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -67,13 +78,20 @@ public class InnerWebViewActivity2 extends Activity {
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
+        AppInstallReceiver.registerReceiver(getApplicationContext());
         View view = generateLayout(this);
         setContentView(view);
+        String link = "file:///android_asset/test.html";
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                boolean flag = isNavigationBarShow2(getWindowManager());
+            }
+        });
 
-        String link = "https://m.baidu.com";
 
         progressBar = findViewById(PROGRESSBAR);
         webView = findViewById(WEB_VIEW);
@@ -182,6 +200,13 @@ public class InnerWebViewActivity2 extends Activity {
 //        mediationHelper.loadVideo();
 //        webView.addJavascriptInterface(adVideoInterface, "android");
         webView.loadUrl(link);
+
+        AppInstallReceiver.setInstallCallback(new AppInstallReceiver.InstallCallback() {
+            @Override
+            public void success(String pkg) {
+                webView.notifyDownStated(pkg, DownloadState.INSTALL_OK, 0);
+            }
+        });
     }
 
 //    private boolean isBackLoad() {
@@ -502,10 +527,115 @@ public class InnerWebViewActivity2 extends Activity {
     }
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public View compat(Activity activity, int statusColor) {
+        final int INVALID_VAL = -1;
+        int color = ContextCompat.getColor(activity, R.color.colorPrimaryDark);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (statusColor != INVALID_VAL) {
+                color = statusColor;
+            }
+            activity.getWindow().setStatusBarColor(color);
+            return null;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            ViewGroup contentView = (ViewGroup) activity.findViewById(android.R.id.content);
+            if (statusColor != INVALID_VAL) {
+                color = statusColor;
+            }
+            View statusBarView = contentView.getChildAt(0);
+            int barHeight = getNavigationBarHeight(activity);
+            if (statusBarView != null && statusBarView.getMeasuredHeight() == barHeight) {
+                statusBarView.setBackgroundColor(color);
+                return statusBarView;
+            }
+            statusBarView = new View(activity);
+            ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, barHeight);
+            statusBarView.setBackgroundColor(color);
+            contentView.addView(statusBarView, lp);
+            return statusBarView;
+        }
+        return null;
+
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    private int getNavigationBarHeight(Activity activity) {
+        if (!isNavigationBarShow(activity)) {
+            return 0;
+        }
+        Resources resources = activity.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height",
+                "dimen", "android");
+        //获取NavigationBar的高度
+        return resources.getDimensionPixelSize(resourceId);
+    }
+
+    private boolean isNavigationBarShow(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Display display = activity.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            Point realSize = new Point();
+            display.getSize(size);
+            display.getRealSize(realSize);
+            Log.e("tjt852", "y1=" + size.y + ",y2=" + realSize.y);
+            return realSize.y != size.y;
+        } else {
+            boolean menu = ViewConfiguration.get(activity).hasPermanentMenuKey();
+            boolean back = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+            return !(menu || back);
+        }
+    }
+
+    /**
+     * 横屏可通过 widthPixels - widthPixels2 > 0 来判断底部导航栏是否存在
+     *
+     * @param windowManager
+     * @return true表示有虚拟导航栏 false没有虚拟导航栏
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public boolean isNavigationBarShow2(WindowManager windowManager) {
+        Display defaultDisplay = windowManager.getDefaultDisplay();
+        //获取屏幕高度
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        defaultDisplay.getRealMetrics(outMetrics);
+        int heightPixels = outMetrics.heightPixels;
+
+        if (isStatusBarShown(this)) {
+            heightPixels = heightPixels - getStatusBarHeight(this);
+        }
+
+        View root = getWindow().getDecorView().findViewById(android.R.id.content);
+        //获取内容高度
+        int heightPixels2 = root.getHeight();
+
+        Log.e("tjt852", "heightPixels=" + heightPixels + ",heightPixels2=" + heightPixels2);
+
+        return heightPixels - heightPixels2 > 0;
+    }
+
+
+    public static boolean isStatusBarShown(Activity context) {
+        WindowManager.LayoutParams params = context.getWindow().getAttributes();
+        int paramsFlag = params.flags & (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        return paramsFlag == params.flags;
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
 //        mediationHelper.setAdVideoInterface(null);
+        AppInstallReceiver.setInstallCallback(null);
         webView.setContext(null);
         webView = null;
         if (mSelectPhotoDialog != null) {
@@ -524,5 +654,6 @@ public class InnerWebViewActivity2 extends Activity {
 //            e.printStackTrace();
 //        }
     }
+
 
 }

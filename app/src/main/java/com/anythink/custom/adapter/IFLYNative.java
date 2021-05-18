@@ -12,7 +12,7 @@ import java.util.List;
 
 public class IFLYNative extends CustomNativeAd {
 
-    private static String TAG = "OM-AG-Native:";
+    private static String TAG = "OM-IFLY-Native:";
     private NativeDataRef dataRef;
 
 

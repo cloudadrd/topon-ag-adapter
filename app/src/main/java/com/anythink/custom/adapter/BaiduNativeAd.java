@@ -2,12 +2,11 @@ package com.anythink.custom.adapter;
 
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.anythink.nativead.unitgroup.api.CustomNativeAd;
-import com.baidu.mobad.feeds.NativeResponse;
-import com.baidu.mobads.component.FeedNativeView;
+import com.baidu.mobads.sdk.api.FeedNativeView;
+import com.baidu.mobads.sdk.api.NativeResponse;
 
 import java.util.List;
 
@@ -72,6 +71,11 @@ public class BaiduNativeAd extends CustomNativeAd {
                     mNativeAd.recordImpression(view);
                 }
                 notifyAdImpression();
+            }
+
+            @Override
+            public void onADExposureFailed(int i) {
+
             }
 
             @Override

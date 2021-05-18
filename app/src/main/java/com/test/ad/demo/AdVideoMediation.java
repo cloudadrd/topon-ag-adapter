@@ -12,20 +12,22 @@ import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoListener;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 
 public class AdVideoMediation {
 
     private static final String TAG = "AdVideoMediation";
 
-    private AdVideoInterface mAdVideoInterface;
+    private List<AdVideoInterface> mAdVideoInterfaces = new LinkedList<>();
 
     private ATRewardVideoAd mRewardVideoAd;
 
     private boolean isLoad;
 
     public boolean isReadyLoad;
-
-    public boolean isReadyLoadForInterfaceIsNull = false;
 
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -43,8 +45,14 @@ public class AdVideoMediation {
     }
 
 
-    public void setAdVideoInterface(AdVideoInterface adVideoInterface) {
-        mAdVideoInterface = adVideoInterface;
+    public void addAdVideoInterface(AdVideoInterface adVideoInterface) {
+        if (!mAdVideoInterfaces.contains(adVideoInterface)) {
+            mAdVideoInterfaces.add(adVideoInterface);
+        }
+    }
+
+    public void removeAdVideoInterface(AdVideoInterface adVideoInterface) {
+        mAdVideoInterfaces.remove(adVideoInterface);
     }
 
     public static AdVideoMediation getInstance() {
@@ -66,27 +74,20 @@ public class AdVideoMediation {
             public void onRewardedVideoAdLoaded() {
                 Log.i(TAG, "onRewardedVideoAdLoaded");
                 isReadyLoad = true;
-                if (mAdVideoInterface != null) {
-                    mAdVideoInterface.trackState(AdLogType.LOAD_SUCCESS);
-                    return;
-                }
-                isReadyLoadForInterfaceIsNull = true;
+                trackState(AdLogType.LOAD_SUCCESS);
             }
 
             @Override
             public void onRewardedVideoAdFailed(AdError errorCode) {
                 Log.i(TAG, "onRewardedVideoAdFailed error:" + errorCode.printStackTrace());
                 isReadyLoad = false;
-                isReadyLoadForInterfaceIsNull = false;
                 loadDelay();
             }
 
             @Override
             public void onRewardedVideoAdPlayStart(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
-                if (mAdVideoInterface != null) {
-                    mAdVideoInterface.trackState(AdLogType.IMP_SUCCESS);
-                }
+                trackState(AdLogType.IMP_SUCCESS);
             }
 
             public void loadDelay() {
@@ -107,52 +108,48 @@ public class AdVideoMediation {
             @Override
             public void onRewardedVideoAdPlayFailed(AdError errorCode, ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayFailed error:" + errorCode.printStackTrace());
-                isReadyLoadForInterfaceIsNull = false;
                 isReadyLoad = false;
-                if (mAdVideoInterface != null) {
-                    mAdVideoInterface.trackState(AdLogType.PLAY_FAIL);
-                }
+                trackState(AdLogType.PLAY_FAIL);
                 loadDelay();
             }
 
             @Override
             public void onRewardedVideoAdClosed(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdClosed:\n" + entity.toString());
-                isReadyLoadForInterfaceIsNull = false;
                 isReadyLoad = false;
-                if (mAdVideoInterface != null) {
-                    mAdVideoInterface.trackState(AdLogType.PLAY_END_CLOSE);
-                }
+                trackState(AdLogType.PLAY_END_CLOSE);
                 mRewardVideoAd.load();
             }
 
             @Override
             public void onRewardedVideoAdPlayClicked(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayClicked:\n" + entity.toString());
-                if (mAdVideoInterface != null) {
-                    mAdVideoInterface.trackState(AdLogType.VIDEO_CLICK);
-                }
+                trackState(AdLogType.VIDEO_CLICK);
             }
 
             @Override
             public void onReward(ATAdInfo entity) {
                 Log.e(TAG, "onReward:\n" + entity.toString());
-                if (mAdVideoInterface != null) {
-                    mAdVideoInterface.trackState(AdLogType.VIDEO_REWARD);
-                }
+                trackState(AdLogType.VIDEO_REWARD);
             }
         });
 
         mRewardVideoAd.load();
     }
 
+    private void trackState(AdLogType adLogType) {
+        for (AdVideoInterface adVideoInterface : mAdVideoInterfaces) {
+            adVideoInterface.trackState(adLogType);
+        }
+    }
+
     public boolean show(Activity activity) {
         if (mRewardVideoAd.isAdReady()) {
             mRewardVideoAd.show(activity);
-            Log.d(TAG, "call show, show success. isReadyLoadForInterfaceIsNull=" + isReadyLoadForInterfaceIsNull + ",isReadyLoad=" + isReadyLoad);
+            Log.d(TAG, "call show, show success. isReadyLoad=" + isReadyLoad);
             return true;
         }
-        Log.d(TAG, "call show, reward is not ready. isReadyLoadForInterfaceIsNull=" + isReadyLoadForInterfaceIsNull + ",isReadyLoad=" + isReadyLoad);
+        Log.d(TAG, "call show, reward is not ready. isReadyLoad=" + isReadyLoad);
         return false;
     }
 

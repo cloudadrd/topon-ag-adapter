@@ -13,14 +13,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -64,6 +63,8 @@ public class InnerWebViewActivity extends Activity {
     @SuppressLint("StaticFieldLeak")
     private static CacheWebView webView = null;
 
+    private long startTime;
+
     public static void launch(Context context, CacheWebView webView) {
         Intent intent = new Intent(context, InnerWebViewActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -80,6 +81,7 @@ public class InnerWebViewActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
+        startTime = System.currentTimeMillis();
         View view = generateLayout(this);
         setContentView(view);
 
@@ -135,6 +137,13 @@ public class InnerWebViewActivity extends Activity {
                     @Override
                     public void run() {
                         if (is302) return;
+
+                        startTime += 1000;
+                        if (webView != null) {
+                            Log.e("CacheWebView", "onPageFinished times=" + (System.currentTimeMillis() - startTime));
+                        }
+                        loadFinish();
+
                         consoleClose();
                         isBack = true;
                     }
@@ -151,7 +160,7 @@ public class InnerWebViewActivity extends Activity {
 //                    return true;
 //                }
                 //end
-
+                if (webView == null) return false;
                 if (url.startsWith("http:") || url.startsWith("https:")) {
                     WebView.HitTestResult hit = webView.getHitTestResult();
                     int hitType = hit.getType();
@@ -191,7 +200,12 @@ public class InnerWebViewActivity extends Activity {
 //        mediationHelper.setAdVideoInterface(adVideoInterface);
 //        mediationHelper.loadVideo();
 //        webView.addJavascriptInterface(adVideoInterface, "android");
-        webView.reload();
+
+//        webView.reload();
+
+        if (webView.isLoadFinish()) {//页面缓存完毕，上报打点日志
+            loadFinish();
+        }
     }
 
 //    private boolean isBackLoad() {
@@ -202,7 +216,7 @@ public class InnerWebViewActivity extends Activity {
 
     private void consoleClose() {
         if (isBack) return;
-        if (webView.canGoBack()) {
+        if (webView != null && webView.canGoBack()) {
 //            if (btnClose != null && !is302) btnClose.setVisibility(View.GONE);
         } else {
 //            if (btnClose != null) btnClose.setVisibility(View.VISIBLE);
@@ -237,6 +251,10 @@ public class InnerWebViewActivity extends Activity {
             progressBar.setProgress(newProgress);
             if (newProgress == 100) {  //加载完成，进度条消失
                 progressBar.setVisibility(View.GONE);
+                if (webView != null) {
+                    Log.e("CacheWebView", "onProgressChanged times=" + (System.currentTimeMillis() - startTime));
+                }
+                loadFinish();
             } else {
                 progressBar.setVisibility(View.VISIBLE);
             }
@@ -256,6 +274,23 @@ public class InnerWebViewActivity extends Activity {
             return true;
         }
 
+    }
+
+
+    private boolean isCallLoadFinish = false;
+
+    private void loadFinish() {
+        if (webView != null && !isCallLoadFinish) {
+            isCallLoadFinish = true;
+            webView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    webView.tracking("withdraw288_page_show", "0");
+                    long times = (System.currentTimeMillis() - startTime) / 1000;
+                    webView.tracking("withdraw288_loading_times", String.valueOf(times));
+                }
+            }, 200);
+        }
     }
 
     private SelectDialog mSelectPhotoDialog;
@@ -296,7 +331,7 @@ public class InnerWebViewActivity extends Activity {
             isBack = true;
 //            if (btnClose != null) btnClose.setVisibility(View.VISIBLE);
         }
-        if (webView.canGoBack()) {
+        if (webView != null && webView.canGoBack()) {
             webView.goBack();
         } else {
             finish();
@@ -517,7 +552,10 @@ public class InnerWebViewActivity extends Activity {
         super.onDestroy();
 //        mediationHelper.setAdVideoInterface(null);
         webView.setContext(null);
-        webView = null;
+        webView.setWebViewClient(null);
+        webView.setWebChromeClient(null);
+        webView.reload();
+//        webView = null;
         if (mSelectPhotoDialog != null) {
             mSelectPhotoDialog.dismiss();
         }

@@ -30,7 +30,7 @@ public class NativeSplashActivity extends Activity {
         FrameLayout splashView = findViewById(R.id.native_splash_view);
         Map<String, Object> localMap = new HashMap<>();
         //For Pangle
-        localMap.put(TTATConst.NATIVE_AD_IMAGE_WIDTH, getResources().getDisplayMetrics().widthPixels - dip2px(20));
+//        localMap.put(TTATConst.NATIVE_AD_IMAGE_WIDTH, getResources().getDisplayMetrics().widthPixels - dip2px(20));
         localMap.put(TTATConst.NATIVE_AD_IMAGE_HEIGHT, dip2px(200));
 
         ATNativeSplash splash = new ATNativeSplash(this, splashView, null, DemoApplicaion.mPlacementId_native_all, localMap, new ATNativeSplashListener() {

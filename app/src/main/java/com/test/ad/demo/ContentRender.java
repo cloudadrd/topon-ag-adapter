@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *
  */
 
 public class ContentRender implements ATNativeAdRenderer<CustomNativeAd> {
@@ -39,24 +40,24 @@ public class ContentRender implements ATNativeAdRenderer<CustomNativeAd> {
 
     @Override
     public void renderAdView(View view, CustomNativeAd ad) {
-        mediaView = ad.getAdMediaView(null);
+        mediaView = ad.getAdMediaView(new Object[]{null});
     }
 
-    public Fragment getContentFragment(){
-       if (null != mediaView){
-           Fragment fragment = (Fragment)mediaView.getTag();
-           mediaView.setTag(null);
-           return fragment;
-       }
-       return null;
+    public Fragment getContentFragment() {
+        if (null != mediaView) {
+            Fragment fragment = (Fragment) mediaView.getTag();
+            mediaView.setTag(null);
+            return fragment;
+        }
+        return null;
     }
 
     public void destoryRender() {
-        if (null== mediaView){
+        if (null == mediaView) {
             mediaView.setTag(null);
             mediaView = null;
         }
-        if (null== mDevelopView){
+        if (null == mDevelopView) {
             mDevelopView = null;
         }
     }
