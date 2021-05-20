@@ -9,6 +9,7 @@ import com.business.support.reallycheck.RootCheck;
 import com.business.support.reallycheck.WireSharkCheck;
 import com.business.support.shuzilm.SIDListener;
 import com.business.support.shuzilm.SdkMain;
+import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
 
 import org.json.JSONObject;
@@ -28,9 +29,8 @@ public class YMBusinessService {
 
             @Override
             public void onFailure(String msg) {
-                if (listener != null) {
-                    listener.onFailure(msg);
-                }
+                SLog.w(TAG, "error msg=" + msg);
+                composeNativeValid(context.getApplicationContext(), 0, "{}", listener);
             }
         });
     }

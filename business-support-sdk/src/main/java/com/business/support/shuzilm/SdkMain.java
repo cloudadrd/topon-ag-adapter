@@ -33,7 +33,7 @@ public class SdkMain {
                             }
                         });
             }
-        }, 5000);
+        }, 100);
     }
 
     private static void requestQuery(Context context, String did, final SIDListener listener) {
