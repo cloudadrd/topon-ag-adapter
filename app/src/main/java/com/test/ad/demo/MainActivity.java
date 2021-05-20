@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.anythink.custom.adapter.OAIDHandler;
+import com.business.support.YMBusinessService;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.reallycheck.EmulatorCheck;
@@ -22,6 +23,7 @@ import com.business.support.reallycheck.HookCheck;
 import com.business.support.reallycheck.ResultData;
 import com.business.support.reallycheck.RootCheck;
 import com.business.support.reallycheck.WireSharkCheck;
+import com.business.support.shuzilm.SIDListener;
 
 public class MainActivity extends Activity {
 
@@ -148,21 +150,35 @@ public class MainActivity extends Activity {
         }, 1000);
 
 
-        ResultData emulatorResult = EmulatorCheck.validCheck(this);
+//        ResultData emulatorResult = EmulatorCheck.validCheck(this);
+//
+//        ResultData rootResult = RootCheck.validCheck(this);
+//
+//        ResultData hookResult = HookCheck.validCheck(this);
+//
+//        ResultData wireSharkResult = WireSharkCheck.validCheck(this);
+//
+//        Log.i("check", "isEmulator=" + emulatorResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
+//
+//        Log.i("check", "isRoot=" + rootResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
+//
+//        Log.i("check", "isHook=" + hookResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
+//
+//        Log.i("check", "isWireShark=" + wireSharkResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
 
-        ResultData rootResult = RootCheck.validCheck(this);
+        YMBusinessService.init(this, "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ=="
+                , new SIDListener() {
+                    @Override
+                    public void onSuccess(int score, String data) {
+                        Log.i("check-tjt", "onSuccess score=" + score + ",data=\n" + data);
+                    }
 
-        ResultData hookResult = HookCheck.validCheck(this);
+                    @Override
+                    public void onFailure(String msg) {
+                        Log.i("check-tjt", "onFailure msg=\n" + msg);
+                    }
+                });
 
-        ResultData wireSharkResult = WireSharkCheck.validCheck(this);
-
-        Log.i("check", "isEmulator=" + emulatorResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
-
-        Log.i("check", "isRoot=" + rootResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
-
-        Log.i("check", "isHook=" + hookResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
-
-        Log.i("check", "isWireShark=" + wireSharkResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
 
         InstallStateMonitor.register(this, new InstallListener() {
             @Override

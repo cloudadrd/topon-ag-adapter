@@ -106,70 +106,70 @@ public class DemoApplicaion extends MultiDexApplication {
             }
         }
 
-        Stetho.initializeWithDefaults(getApplicationContext());
-        ATSDK.setNetworkLogDebug(true);
-        ATSDK.integrationChecking(getApplicationContext());
-
-        Map<String, Object> custommap = new HashMap<String, Object>();
-        custommap.put("key1","initCustomMap1");
-        custommap.put("key2","initCustomMap2");
-        ATSDK.initCustomMap(custommap);
-
-        Map<String, Object> subcustommap = new HashMap<String, Object>();
-        subcustommap.put("key1","initPlacementCustomMap1");
-        subcustommap.put("key2","initPlacementCustomMap2");
-        ATSDK.initPlacementCustomMap("b5aa1fa4165ea3",subcustommap);//native  facebook
-
-        ATSDK.setChannel("testChannle");
-        ATSDK.setSubChannel("testSubChannle");
-
+//        Stetho.initializeWithDefaults(getApplicationContext());
+//        ATSDK.setNetworkLogDebug(true);
+//        ATSDK.integrationChecking(getApplicationContext());
+//
+//        Map<String, Object> custommap = new HashMap<String, Object>();
+//        custommap.put("key1","initCustomMap1");
+//        custommap.put("key2","initCustomMap2");
+//        ATSDK.initCustomMap(custommap);
+//
+//        Map<String, Object> subcustommap = new HashMap<String, Object>();
+//        subcustommap.put("key1","initPlacementCustomMap1");
+//        subcustommap.put("key2","initPlacementCustomMap2");
+//        ATSDK.initPlacementCustomMap("b5aa1fa4165ea3",subcustommap);//native  facebook
+//
+//        ATSDK.setChannel("testChannle");
+//        ATSDK.setSubChannel("testSubChannle");
+//
+////        ATSDK.init(this, appid, appKey);
+//
+//
+////        ATSDK.init(this, "a5ff2b6c1c6fc5", "be9b2e39d03dd60ed17870594123d7f4");
 //        ATSDK.init(this, appid, appKey);
-
-
-//        ATSDK.init(this, "a5ff2b6c1c6fc5", "be9b2e39d03dd60ed17870594123d7f4");
-        ATSDK.init(this, appid, appKey);
-
-
-        OAIDHandler.init(this);
-
-        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
-
-            @Override
-            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-                Log.e("DemoApplicaion","onActivityCreated ");
-            }
-
-            @Override
-            public void onActivityStarted(@NonNull Activity activity) {
-                Log.e("DemoApplicaion","onActivityStarted ");
-            }
-
-            @Override
-            public void onActivityResumed(@NonNull Activity activity) {
-                Log.e("DemoApplicaion","onActivityResumed ");
-            }
-
-            @Override
-            public void onActivityPaused(@NonNull Activity activity) {
-                Log.e("DemoApplicaion","onActivityPaused ");
-            }
-
-            @Override
-            public void onActivityStopped(@NonNull Activity activity) {
-                Log.e("DemoApplicaion","onActivityStopped ");
-            }
-
-            @Override
-            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
-                Log.e("DemoApplicaion","onActivitySaveInstanceState ");
-            }
-
-            @Override
-            public void onActivityDestroyed(@NonNull Activity activity) {
-                Log.e("DemoApplicaion","onActivityDestroyed ");
-            }
-
-        });
+//
+//
+//        OAIDHandler.init(this);
+//
+//        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+//
+//            @Override
+//            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+//                Log.e("DemoApplicaion","onActivityCreated ");
+//            }
+//
+//            @Override
+//            public void onActivityStarted(@NonNull Activity activity) {
+//                Log.e("DemoApplicaion","onActivityStarted ");
+//            }
+//
+//            @Override
+//            public void onActivityResumed(@NonNull Activity activity) {
+//                Log.e("DemoApplicaion","onActivityResumed ");
+//            }
+//
+//            @Override
+//            public void onActivityPaused(@NonNull Activity activity) {
+//                Log.e("DemoApplicaion","onActivityPaused ");
+//            }
+//
+//            @Override
+//            public void onActivityStopped(@NonNull Activity activity) {
+//                Log.e("DemoApplicaion","onActivityStopped ");
+//            }
+//
+//            @Override
+//            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+//                Log.e("DemoApplicaion","onActivitySaveInstanceState ");
+//            }
+//
+//            @Override
+//            public void onActivityDestroyed(@NonNull Activity activity) {
+//                Log.e("DemoApplicaion","onActivityDestroyed ");
+//            }
+//
+//        });
 
 
     }
