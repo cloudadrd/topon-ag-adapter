@@ -18,11 +18,6 @@ import com.anythink.custom.adapter.OAIDHandler;
 import com.business.support.YMBusinessService;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
-import com.business.support.reallycheck.EmulatorCheck;
-import com.business.support.reallycheck.HookCheck;
-import com.business.support.reallycheck.ResultData;
-import com.business.support.reallycheck.RootCheck;
-import com.business.support.reallycheck.WireSharkCheck;
 import com.business.support.shuzilm.SIDListener;
 
 public class MainActivity extends Activity {
@@ -40,6 +35,19 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
+//                Context context=getBaseContext();
+//                YMBusinessService.setFirstInstallTime(System.currentTimeMillis());
+//                YMBusinessService.setRewardedVideoTimes(1);
+//                YMBusinessService.requestRewaredConfig(context,"19069960",new StrategyInfoListener(){
+//                    @Override
+//                    public void isActive(boolean isActive) {
+//                        if (isActive) {
+//                            Log.i("YMBusinessService" ,"true");
+//                        }else {
+//                            Log.i("YMBusinessService" ,"false");
+//                        }
+//                    }
+//                });
             }
         });
 
@@ -186,6 +194,7 @@ public class MainActivity extends Activity {
                 Log.i("check-tjt", "pkg=" + pkg);
             }
         });
+
 
     }
 

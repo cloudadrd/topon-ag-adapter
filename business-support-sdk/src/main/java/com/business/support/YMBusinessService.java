@@ -1,8 +1,8 @@
 package com.business.support;
 
 import android.content.Context;
-import android.util.Log;
 
+import com.business.support.http.HttpRequester;
 import com.business.support.reallycheck.EmulatorCheck;
 import com.business.support.reallycheck.HookCheck;
 import com.business.support.reallycheck.ResultData;
@@ -15,13 +15,6 @@ import com.business.support.utils.Utils;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 public class YMBusinessService {
     private static final String TAG = "YMBusinessService";
     private static long mAppInstallTime = 0;
@@ -29,12 +22,10 @@ public class YMBusinessService {
     private static int mNumberOfTimes = 0;
 
     //    private static String mUrlStr = "http://172.31.4.170:8080/v1/strategy/check";
-    //    private static String mUrlStr = "http://172.31.5.40:8080/v1/strategy/check";
-    private static String mUrlStr = "http://deapi.adsgreat.cn/v1/strategy/check";
+        private static String mUrlStr = "http://172.31.5.40:8080/v1/strategy/check";
+//    private static String mUrlStr = "http://deapi.adsgreat.cn/v1/strategy/check";
     private static Context mContext = null;
     private static StrategyInfoListener mListener = null;
-    private static  String mAppid = "";
-
 
     public static void init(final Context context, String shumApiKey, final SIDListener listener) {
         SdkMain.init(context.getApplicationContext(), shumApiKey, new SIDListener() {
@@ -131,45 +122,26 @@ public class YMBusinessService {
     }
 
     public static void requestRewaredConfig(Context context, String appid, StrategyInfoListener listener) {
-        mContext = context;
         mListener = listener;
-        mAppid = appid;
-        new Thread(new Runnable() {
+        mContext = context.getApplicationContext();
+        int sim = isOperator(mContext) ? 1 : 0;
+        String urlStr = mUrlStr + "?" +
+                "androidid=" + getAndroidID(mContext) +
+                "&sim=" + sim +
+                "&system=" + getSystem() +
+                "&network=" + getNetworkType(mContext) +
+                "&appversion=" + getAppVersion(mContext) +
+                "&installtime=" + mAppInstallTime +
+                "&days=" + mDays +
+                "&playedtimes=" + mNumberOfTimes+
+                "&appid=" + appid;
+//        SLog.i(TAG,"requestRewaredConfig");
+        HttpRequester.requestByGet(context, urlStr, new HttpRequester.Listener() {
             @Override
-            public void run() {
-                int sim = isOperator(mContext) ? 1 : 0;
-                String urlStr = mUrlStr + "?" +
-                        "androidid=" + getAndroidID(mContext) +
-                        "&sim=" + sim +
-                        "&system=" + getSystem() +
-                        "&network=" + getNetworkType(mContext) +
-                        "&appversion=" + getAppVersion(mContext) +
-                        "&installtime=" + mAppInstallTime +
-                        "&days=" + mDays +
-                        "&playedtimes=" + mNumberOfTimes+
-                        "&appid=" + mAppid;
-//                Log.i(TAG,urlStr);
-
+            public void onSuccess(byte[] data, String url) {
+                SLog.i(TAG,"onSuccess");
                 try {
-                    URL url = new URL(urlStr);
-//                    Log.i(TAG,url.toString());
-                    //得到connection对象。
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    //设置请求方式
-                    connection.setRequestMethod("GET");
-                    //连接
-                    connection.connect();
-                    //得到响应码
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode != HttpURLConnection.HTTP_OK) {
-                        mListener.isActive(false);
-                        return;
-                    }
-
-                    //得到响应流
-                    InputStream inputStream = connection.getInputStream();
-                    //将响应流转换成字符串
-                    String result = is2String(inputStream);//将流转换为字符串。
+                    String result = new String(data);
                     JSONObject respObj = new JSONObject(result);
                     if (null == respObj) {
                         mListener.isActive(false);
@@ -189,34 +161,25 @@ public class YMBusinessService {
 
                     boolean ac = acObj.getBoolean("status");
                     mListener.isActive(ac);
-
                 } catch(Exception e) {
                     mListener.isActive(false);
-                    Log.i(TAG, e.getMessage());
                     e.printStackTrace();
                 }
-                mContext = null;
+
                 mListener = null;
-                mAppid = null;
+                mContext = null;
             }
-        }).start();
-    }
 
-    private static String is2String(InputStream is) throws IOException {
+            @Override
+            public void onFailure(String msg, String url) {
+                SLog.i(TAG,"onFailure");
+                mListener.isActive(false);
+                mListener = null;
+                mContext = null;
 
-        //连接后，创建一个输入流来读取response
-        BufferedReader bufferedReader = new BufferedReader(new
-                InputStreamReader(is,"utf-8"));
-        String line = "";
-        StringBuilder stringBuilder = new StringBuilder();
-        String response = "";
-        //每次读取一行，若非空则添加至 stringBuilder
-        while((line = bufferedReader.readLine()) != null){
-            stringBuilder.append(line);
-        }
-        //读取所有的数据后，赋值给 response
-        response = stringBuilder.toString().trim();
-        return response;
+            }
+        });
 
     }
+
 }
