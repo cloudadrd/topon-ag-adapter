@@ -49,10 +49,10 @@ public class EmulatorCheck {
 //            Log.e(TAG, "notHasBlueTooth");
             stringBuilder.append("1");
         }
-        if (notHasLightSensorManager(context)) {
-//            Log.e(TAG, "notHasLightSensorManager");
-            stringBuilder.append(",2");
-        }
+//        if (notHasLightSensorManager(context)) {
+////            Log.e(TAG, "notHasLightSensorManager");
+//            stringBuilder.append(",2");
+//        }
         if (isFeatures()) {
 //            Log.e(TAG, "isFeatures");
             stringBuilder.append(",3");
@@ -134,6 +134,7 @@ public class EmulatorCheck {
 
     public static boolean isFeatures() {
         return Build.FINGERPRINT.startsWith("generic")
+                || Build.FINGERPRINT.startsWith("Android")
                 || Build.FINGERPRINT.toLowerCase().contains("vbox")
                 || Build.FINGERPRINT.toLowerCase().contains("test-keys")
                 || Build.MODEL.contains("google_sdk")

@@ -207,7 +207,5 @@ public class YMBusinessService {
         response = stringBuilder.toString().trim();
         return response;
 
-
     }
-
 }

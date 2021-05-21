@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.business.support.utils.ThreadPoolProxy;
+
 import java.io.File;
 
 class InstallStateReceiver extends BroadcastReceiver {
@@ -22,8 +24,6 @@ class InstallStateReceiver extends BroadcastReceiver {
     private static String ACTION = "android.intent.action.PACKAGE_ADDED";
 
     private InstallListener installListener;
-
-    private Thread thread;
 
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -53,9 +53,8 @@ class InstallStateReceiver extends BroadcastReceiver {
             if (!action.equals(ACTION)) {
                 return;
             }
-
-            thread = new Thread(new HitRunnable(context.getApplicationContext(), pkgName, installListener));
-            thread.start();
+            ThreadPoolProxy.getInstance().execute(
+                    new HitRunnable(context.getApplicationContext(), pkgName, installListener));
         } catch (Exception e) {
             e.printStackTrace();
         }

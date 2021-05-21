@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 import com.android.annotations.NonNull
 import com.android.manifmerger.ManifestMerger2
+
 //import com.android.manifmerger.ManifestMerger2.Invoker
 //import com.android.manifmerger.ManifestMerger2.MergeType
 import com.android.manifmerger.MergingReport
@@ -26,7 +27,7 @@ networkLibsPath.add("jingdong");
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "com.bxnll.mobi"//"com.bxnll.mobi"//com.hbasc.mobi京东测试
+        applicationId "com.lbzsc.mobi"//"com.bxnll.mobi"//com.hbasc.mobi京东测试
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -74,16 +75,24 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        doNotStrip "*/arm64-v8a/libdu.so"
+        doNotStrip "*/armeabi/libdu.so"
+        doNotStrip "*/armeabi-v7a/libdu.so"
+        doNotStrip "*/x86/libdu.so"
+        doNotStrip "*/x86_64/libdu.so"
+    }
 }
 
-repositories{
+repositories {
     flatDir {
         dirs 'libs'
     }
 }
 
 dependencies {
-    api fileTree(include: ['*.jar','*.aar'], dir: 'libs')
+    api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation files('libs/multidownloadlib.jar')
 //    api fileTree(dir: "network", include: ["**/libs/*.jar", "**/libs/*.aar"])
 //            .exclude("mintegral_international/libs/*.jar")
@@ -120,7 +129,7 @@ dependencies {
     }
     batchImportPackage()
 
-    implementation ('com.facebook.stetho:stetho:1.3.1') {
+    implementation('com.facebook.stetho:stetho:1.3.1') {
         exclude module: 'support-v4'
     }
 
@@ -153,7 +162,7 @@ task mergeAllNetworkManifest {
             from projectDir.absolutePath + '/src/main/AndroidManifest_base.xml'
             into projectDir.absolutePath + '/src/main/'
             rename { String fileName ->
-                fileName.replace('_base','')
+                fileName.replace('_base', '')
             }
         }
 
@@ -162,7 +171,6 @@ task mergeAllNetworkManifest {
 
     }
 }
-
 
 
 //合并manifest
@@ -314,10 +322,10 @@ def recoverAuthorities(path) {
     def readerString = "";
     new File(path).withReader('UTF-8') { reader ->
         reader.eachLine {
-            if(it.find('authorities="com.test.ad.demo')) {
+            if (it.find('authorities="com.test.ad.demo')) {
                 it = it.replace('authorities="com.test.ad.demo', 'authorities="${applicationId}')
             }
-            if(it.find('name="com.test.ad.demo')) {
+            if (it.find('name="com.test.ad.demo')) {
                 it = it.replace('name="com.test.ad.demo.fileprovider', 'name="${applicationId}.fileprovider')
             }
             readerString <<= it
@@ -326,7 +334,6 @@ def recoverAuthorities(path) {
         return readerString
     }
 }
-
 
 
 //写文件
