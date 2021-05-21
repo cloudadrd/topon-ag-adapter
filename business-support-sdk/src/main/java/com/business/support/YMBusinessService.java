@@ -1,12 +1,17 @@
 package com.business.support;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import com.business.support.reallycheck.EmulatorCheck;
+import com.business.support.reallycheck.HookCheck;
+import com.business.support.reallycheck.ResultData;
+import com.business.support.reallycheck.RootCheck;
+import com.business.support.reallycheck.WireSharkCheck;
+import com.business.support.shuzilm.SIDListener;
+import com.business.support.shuzilm.SdkMain;
+import com.business.support.utils.SLog;
+import com.business.support.utils.Utils;
 
 import org.json.JSONObject;
 
@@ -31,34 +36,78 @@ public class YMBusinessService {
     private static  String mAppid = "";
 
 
-    public static String getAndroidID(Context context) {
-        String ANDROID_ID = Settings.System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        return ANDROID_ID != null ? ANDROID_ID : "";
+    public static void init(final Context context, String shumApiKey, final SIDListener listener) {
+        SdkMain.init(context.getApplicationContext(), shumApiKey, new SIDListener() {
+            @Override
+            public void onSuccess(int score, String data) {
+                composeNativeValid(context.getApplicationContext(), score, data, listener);
+            }
+
+            @Override
+            public void onFailure(String msg) {
+                SLog.w(TAG, "error msg=" + msg);
+                composeNativeValid(context.getApplicationContext(), 0, "{}", listener);
+            }
+        });
     }
 
-    public static boolean isOperator(Context context) {
-        TelephonyManager telMgr = (TelephonyManager)
-                context.getSystemService(Context.TELEPHONY_SERVICE);
-        int simState = telMgr.getSimState();
-        boolean result = true;
-        switch (simState) {
-            case TelephonyManager.SIM_STATE_ABSENT:
-            case TelephonyManager.SIM_STATE_UNKNOWN:
-                result = false; // 没有SIM卡
-                break;
+    private static void composeNativeValid(Context context, int score, String data, SIDListener listener) {
+
+        ResultData emulatorResult = EmulatorCheck.validCheck(context);
+
+        ResultData rootResult = RootCheck.validCheck(context);
+
+        ResultData hookResult = HookCheck.validCheck(context);
+
+        ResultData wireSharkResult = WireSharkCheck.validCheck(context);
+
+        if (emulatorResult.isError()) {
+            score += 30;
         }
-        return result;
+
+        if (rootResult.isError()) {
+            score += 25;
+        }
+
+        if (hookResult.isError()) {
+            score += 40;
+        }
+
+        if (wireSharkResult.isError()) {
+            score += 10;
+        }
+
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            jsonObject.put("Emulator", emulatorResult.isError());
+            jsonObject.put("EmulatorMsg", emulatorResult.getErrorMessage());
+            jsonObject.put("Hook", hookResult.isError());
+            jsonObject.put("WireShark", wireSharkResult.isError());
+            jsonObject.put("Root", rootResult.isError());
+
+            if (listener != null) {
+                listener.onSuccess(score, jsonObject.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (listener != null) {
+                listener.onFailure(e.getMessage());
+            }
+        }
+
+    }
+
+    public static String getAndroidID(Context context) {
+        return Utils.getAndroidId(context);
+    }
+
+
+    public static boolean isOperator(Context context) {
+        return Utils.isOperator(context);
     }
 
     public static String getAppVersion(Context context) {
-        String verName = null;
-        try {
-            verName = context.getPackageManager().
-                    getPackageInfo(context.getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return verName;
+        return Utils.getAppVersion(context);
 
     }
 
@@ -68,45 +117,7 @@ public class YMBusinessService {
     }
 
     public static String getNetworkType(Context context) {
-        // Wifi
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager != null) {
-             NetworkInfo networkInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-                return "WIFI";
-            }
-        }
-
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context
-                .TELEPHONY_SERVICE);
-
-        if (null != telephonyManager) {
-            int networkType = telephonyManager.getNetworkType();
-
-            switch (networkType) {
-                case TelephonyManager.NETWORK_TYPE_GPRS:
-                case TelephonyManager.NETWORK_TYPE_EDGE:
-                case TelephonyManager.NETWORK_TYPE_CDMA:
-                case TelephonyManager.NETWORK_TYPE_1xRTT:
-                case TelephonyManager.NETWORK_TYPE_IDEN:
-                    return "2G";
-                case TelephonyManager.NETWORK_TYPE_UMTS:
-                case TelephonyManager.NETWORK_TYPE_EVDO_0:
-                case TelephonyManager.NETWORK_TYPE_EVDO_A:
-                case TelephonyManager.NETWORK_TYPE_HSDPA:
-                case TelephonyManager.NETWORK_TYPE_HSUPA:
-                case TelephonyManager.NETWORK_TYPE_HSPA:
-                case TelephonyManager.NETWORK_TYPE_EVDO_B:
-                case TelephonyManager.NETWORK_TYPE_EHRPD:
-                case TelephonyManager.NETWORK_TYPE_HSPAP:
-                    return "3G";
-                case TelephonyManager.NETWORK_TYPE_LTE:
-                    return "4G";
-                case TelephonyManager.NETWORK_TYPE_NR:
-                    return "5G";
-            }
-        }
-        return "null";
+        return Utils.getNetworkType(context);
     }
 
     public static void setFirstInstallTime(long timestamp) {
