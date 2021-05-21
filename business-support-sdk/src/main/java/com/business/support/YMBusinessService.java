@@ -125,98 +125,98 @@ public class YMBusinessService {
         long currentTimestamp =  System.currentTimeMillis();
         mDays =  (currentTimestamp - timestamp)/(24*60*60*1000);
     }
-
-    public static void setRewardedVideoTimes(int playedTimes) {
-        mNumberOfTimes = playedTimes;
-    }
-
-    public static void requestRewaredConfig(Context context, String appid, StrategyInfoListener listener) {
-        mContext = context;
-        mListener = listener;
-        mAppid = appid;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int sim = isOperator(mContext) ? 1 : 0;
-                String urlStr = mUrlStr + "?" +
-                        "androidid=" + getAndroidID(mContext) +
-                        "&sim=" + sim +
-                        "&system=" + getSystem() +
-                        "&network=" + getNetworkType(mContext) +
-                        "&appversion=" + getAppVersion(mContext) +
-                        "&installtime=" + mAppInstallTime +
-                        "&days=" + mDays +
-                        "&playedtimes=" + mNumberOfTimes+
-                        "&appid=" + mAppid;
-//                Log.i(TAG,urlStr);
-
-                try {
-                    URL url = new URL(urlStr);
-//                    Log.i(TAG,url.toString());
-                    //得到connection对象。
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    //设置请求方式
-                    connection.setRequestMethod("GET");
-                    //连接
-                    connection.connect();
-                    //得到响应码
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode != HttpURLConnection.HTTP_OK) {
-                        mListener.isActive(false);
-                        return;
-                    }
-
-                    //得到响应流
-                    InputStream inputStream = connection.getInputStream();
-                    //将响应流转换成字符串
-                    String result = is2String(inputStream);//将流转换为字符串。
-                    JSONObject respObj = new JSONObject(result);
-                    if (null == respObj) {
-                        mListener.isActive(false);
-                        return;
-                    }
-                    int retCode = respObj.getInt("code");
-                    if (10000 != retCode) {
-                        mListener.isActive(false);
-                        return;
-                    }
-
-                    JSONObject acObj = respObj.getJSONObject("data");
-                    if (null == acObj) {
-                        mListener.isActive(false);
-                        return;
-                    }
-
-                    boolean ac = acObj.getBoolean("status");
-                    mListener.isActive(ac);
-
-                } catch(Exception e) {
-                    mListener.isActive(false);
-                    Log.i(TAG, e.getMessage());
-                    e.printStackTrace();
-                }
-                mContext = null;
-                mListener = null;
-                mAppid = null;
-            }
-        }).start();
-    }
-
-    private static String is2String(InputStream is) throws IOException {
-
-        //连接后，创建一个输入流来读取response
-        BufferedReader bufferedReader = new BufferedReader(new
-                InputStreamReader(is,"utf-8"));
-        String line = "";
-        StringBuilder stringBuilder = new StringBuilder();
-        String response = "";
-        //每次读取一行，若非空则添加至 stringBuilder
-        while((line = bufferedReader.readLine()) != null){
-            stringBuilder.append(line);
-        }
-        //读取所有的数据后，赋值给 response
-        response = stringBuilder.toString().trim();
-        return response;
-
-    }
+//
+//    public static void setRewardedVideoTimes(int playedTimes) {
+//        mNumberOfTimes = playedTimes;
+//    }
+//
+//    public static void requestRewaredConfig(Context context, String appid, StrategyInfoListener listener) {
+//        mContext = context;
+//        mListener = listener;
+//        mAppid = appid;
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                int sim = isOperator(mContext) ? 1 : 0;
+//                String urlStr = mUrlStr + "?" +
+//                        "androidid=" + getAndroidID(mContext) +
+//                        "&sim=" + sim +
+//                        "&system=" + getSystem() +
+//                        "&network=" + getNetworkType(mContext) +
+//                        "&appversion=" + getAppVersion(mContext) +
+//                        "&installtime=" + mAppInstallTime +
+//                        "&days=" + mDays +
+//                        "&playedtimes=" + mNumberOfTimes+
+//                        "&appid=" + mAppid;
+////                Log.i(TAG,urlStr);
+//
+//                try {
+//                    URL url = new URL(urlStr);
+////                    Log.i(TAG,url.toString());
+//                    //得到connection对象。
+//                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                    //设置请求方式
+//                    connection.setRequestMethod("GET");
+//                    //连接
+//                    connection.connect();
+//                    //得到响应码
+//                    int responseCode = connection.getResponseCode();
+//                    if (responseCode != HttpURLConnection.HTTP_OK) {
+//                        mListener.isActive(false);
+//                        return;
+//                    }
+//
+//                    //得到响应流
+//                    InputStream inputStream = connection.getInputStream();
+//                    //将响应流转换成字符串
+//                    String result = is2String(inputStream);//将流转换为字符串。
+//                    JSONObject respObj = new JSONObject(result);
+//                    if (null == respObj) {
+//                        mListener.isActive(false);
+//                        return;
+//                    }
+//                    int retCode = respObj.getInt("code");
+//                    if (10000 != retCode) {
+//                        mListener.isActive(false);
+//                        return;
+//                    }
+//
+//                    JSONObject acObj = respObj.getJSONObject("data");
+//                    if (null == acObj) {
+//                        mListener.isActive(false);
+//                        return;
+//                    }
+//
+//                    boolean ac = acObj.getBoolean("status");
+//                    mListener.isActive(ac);
+//
+//                } catch(Exception e) {
+//                    mListener.isActive(false);
+//                    Log.i(TAG, e.getMessage());
+//                    e.printStackTrace();
+//                }
+//                mContext = null;
+//                mListener = null;
+//                mAppid = null;
+//            }
+//        }).start();
+//    }
+//
+//    private static String is2String(InputStream is) throws IOException {
+//
+//        //连接后，创建一个输入流来读取response
+//        BufferedReader bufferedReader = new BufferedReader(new
+//                InputStreamReader(is,"utf-8"));
+//        String line = "";
+//        StringBuilder stringBuilder = new StringBuilder();
+//        String response = "";
+//        //每次读取一行，若非空则添加至 stringBuilder
+//        while((line = bufferedReader.readLine()) != null){
+//            stringBuilder.append(line);
+//        }
+//        //读取所有的数据后，赋值给 response
+//        response = stringBuilder.toString().trim();
+//        return response;
+//
+//    }
 }

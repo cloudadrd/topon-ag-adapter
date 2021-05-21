@@ -36,7 +36,7 @@ public class SdkMain {
         }, 100);
     }
 
-    private static void requestQuery(Context context, String did, final SIDListener listener) {
+    private static void requestQuery(Context context, final String did, final SIDListener listener) {
         Map<String, String> params = new HashMap<>();
         params.put("protocol", "2");
         params.put("pkg", context.getPackageName());
@@ -47,7 +47,7 @@ public class SdkMain {
         HttpRequester.requestByGet(context, stringBuilder.toString(), new HttpRequester.Listener() {
             @Override
             public void onSuccess(byte[] data, String url) {
-                resultHandler(data, listener);
+                resultHandler(did, data, listener);
             }
 
             @Override
@@ -61,7 +61,7 @@ public class SdkMain {
     }
 
 
-    private static void resultHandler(byte[] data, SIDListener listener) {
+    private static void resultHandler(String did, byte[] data, SIDListener listener) {
         try {
             String strData = new String(data);
             SLog.i(TAG, "AdResponse==" + strData);
@@ -74,6 +74,8 @@ public class SdkMain {
 //            String update_times = Utils.optStringHelper(jsonObject, "update_times");
 //            String recall_times = Utils.optStringHelper(jsonObject, "recall_times");
             jsonObject.remove("protocol");
+
+            jsonObject.put("did", did);
             int score = 0;
             if ("0".equals(errCode)) {
                 if ("1".equals(device_type)) {
