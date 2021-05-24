@@ -22,8 +22,8 @@ public class YMBusinessService {
     private static int mNumberOfTimes = 0;
 
     //    private static String mUrlStr = "http://172.31.4.170:8080/v1/strategy/check";
-        private static String mUrlStr = "http://172.31.5.40:8080/v1/strategy/check";
-//    private static String mUrlStr = "http://deapi.adsgreat.cn/v1/strategy/check";
+//        private static String mUrlStr = "http://172.31.5.40:8080/v1/strategy/check";
+    private static String mUrlStr = "http://deapi.adsgreat.cn/v1/strategy/check";
     private static Context mContext = null;
     private static StrategyInfoListener mListener = null;
 
