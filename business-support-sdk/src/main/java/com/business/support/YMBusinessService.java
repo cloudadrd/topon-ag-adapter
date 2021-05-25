@@ -3,6 +3,7 @@ package com.business.support;
 import android.content.Context;
 
 import com.business.support.http.HttpRequester;
+import com.business.support.reallycheck.DebugCheck;
 import com.business.support.reallycheck.EmulatorCheck;
 import com.business.support.reallycheck.HookCheck;
 import com.business.support.reallycheck.ResultData;
@@ -52,21 +53,29 @@ public class YMBusinessService {
 
         ResultData wireSharkResult = WireSharkCheck.validCheck(context);
 
+        ResultData debugResult = DebugCheck.validCheck(context);
+
         if (emulatorResult.isError()) {
-            score += 30;
+            score += emulatorResult.getScore();
         }
 
         if (rootResult.isError()) {
-            score += 25;
+            score += rootResult.getScore();
+            ;
         }
 
         if (hookResult.isError()) {
-            score += 40;
+            score += hookResult.getScore();
         }
 
         if (wireSharkResult.isError()) {
-            score += 10;
+            score += wireSharkResult.getScore();
         }
+
+        if (debugResult.isError()) {
+            score += debugResult.getScore();
+        }
+
 
         try {
             JSONObject jsonObject = new JSONObject(data);
@@ -113,8 +122,8 @@ public class YMBusinessService {
 
     public static void setFirstInstallTime(long timestamp) {
         mAppInstallTime = timestamp;
-        long currentTimestamp =  System.currentTimeMillis();
-        mDays =  (currentTimestamp - timestamp)/(24*60*60*1000);
+        long currentTimestamp = System.currentTimeMillis();
+        mDays = (currentTimestamp - timestamp) / (24 * 60 * 60 * 1000);
     }
 
     public static void setRewardedVideoTimes(int playedTimes) {
@@ -133,13 +142,13 @@ public class YMBusinessService {
                 "&appversion=" + getAppVersion(mContext) +
                 "&installtime=" + mAppInstallTime +
                 "&days=" + mDays +
-                "&playedtimes=" + mNumberOfTimes+
+                "&playedtimes=" + mNumberOfTimes +
                 "&appid=" + appid;
 //        SLog.i(TAG,"requestRewaredConfig");
         HttpRequester.requestByGet(context, urlStr, new HttpRequester.Listener() {
             @Override
             public void onSuccess(byte[] data, String url) {
-                SLog.i(TAG,"onSuccess");
+                SLog.i(TAG, "onSuccess");
                 try {
                     String result = new String(data);
                     JSONObject respObj = new JSONObject(result);
@@ -161,7 +170,7 @@ public class YMBusinessService {
 
                     boolean ac = acObj.getBoolean("status");
                     mListener.isActive(ac);
-                } catch(Exception e) {
+                } catch (Exception e) {
                     mListener.isActive(false);
                     e.printStackTrace();
                 }
@@ -172,7 +181,7 @@ public class YMBusinessService {
 
             @Override
             public void onFailure(String msg, String url) {
-                SLog.i(TAG,"onFailure");
+                SLog.i(TAG, "onFailure");
                 mListener.isActive(false);
                 mListener = null;
                 mContext = null;

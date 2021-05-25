@@ -8,7 +8,7 @@ import java.net.InetAddress;
 public class WireSharkCheck {
 
     public static ResultData validCheck(Context context) {
-        return new ResultData(isInterceptNet(false, true), "");
+        return new ResultData(isInterceptNet(false, true), "",10);
     }
 
 

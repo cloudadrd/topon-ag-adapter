@@ -88,7 +88,7 @@ public class RootCheck {
             stringBuilder.append(",5");
         }
 
-        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString());
+        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(),25);
     }
 
     /**

@@ -6,9 +6,12 @@ public class ResultData {
 
     private String errorMessage;
 
-    public ResultData(boolean isError, String errorMessage) {
+    private int score;
+
+    public ResultData(boolean isError, String errorMessage, int score) {
         this.isError = isError;
         this.errorMessage = errorMessage;
+        this.score = score;
     }
 
     public boolean isError() {
@@ -21,6 +24,14 @@ public class ResultData {
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public void setErrorMessage(String errorMessage) {

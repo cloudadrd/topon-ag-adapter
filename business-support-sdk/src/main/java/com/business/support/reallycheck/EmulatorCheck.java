@@ -93,7 +93,7 @@ public class EmulatorCheck {
             stringBuilder.append(",11");
         }
 
-        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString());
+        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(),30);
 
     }
 

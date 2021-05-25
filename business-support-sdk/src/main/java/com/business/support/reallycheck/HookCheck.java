@@ -39,7 +39,7 @@ public class HookCheck {
             stringBuilder.append(",4");
         }
 
-        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString());
+        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(), 40);
     }
 
     /**
