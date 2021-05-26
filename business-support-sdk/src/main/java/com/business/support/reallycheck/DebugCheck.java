@@ -16,20 +16,19 @@ public class DebugCheck {
         StringBuilder stringBuilder = new StringBuilder();
         int score = 0;
         if (isOpenDebug(context)) {
-            Log.e(TAG, "开启了调试模式");
+//            Log.e(TAG, "开启了调试模式");
             stringBuilder.append("1");
-            Toast.makeText(context, "开启了调试模式", Toast.LENGTH_LONG).show();
             score += 30;
         }
 
         if (debugVersionCheck(context)) {
-            Log.e(TAG, "判斷是debug版本");
+//            Log.e(TAG, "判斷是debug版本");
             stringBuilder.append(",2");
             score += 40;
         }
 
         if (connectedCheck()) {
-            Log.e(TAG, "正在调试");
+//            Log.e(TAG, "正在调试");
             stringBuilder.append(",3");
             score += 40;
         }

@@ -84,6 +84,8 @@ public class YMBusinessService {
             jsonObject.put("Hook", hookResult.isError());
             jsonObject.put("WireShark", wireSharkResult.isError());
             jsonObject.put("Root", rootResult.isError());
+            jsonObject.put("Debug", debugResult.isError());
+            jsonObject.put("DebugMsg", debugResult.getErrorMessage());
 
             if (listener != null) {
                 listener.onSuccess(score, jsonObject.toString());

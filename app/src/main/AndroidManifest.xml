@@ -77,7 +77,7 @@
         <activity
             android:name="com.test.ad.demo.SplashAdShowActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize|screenLayout"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
+            android:theme="@style/NoAnimActivity" />
         <activity
             android:name="com.test.ad.demo.NativeBannerActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize|screenLayout"

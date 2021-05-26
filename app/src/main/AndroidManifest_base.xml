@@ -62,7 +62,7 @@
 
         <activity
             android:name=".SplashAdShowActivity"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+            android:theme="@style/NoAnimActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize|screenLayout"/>
 
         <activity android:name=".NativeBannerActivity"
