@@ -1,6 +1,7 @@
 package com.business.support.utils;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -12,10 +13,12 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.webkit.WebSettings;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -207,6 +210,59 @@ public class Utils {
             SLog.e(String.format("[msg=get AndroidId][result=fail]"));
         }
         return androidId;
+    }
+
+    public static String getCurProcessName(Context context) {
+        int pid = android.os.Process.myPid();
+        ActivityManager mActivityManager = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo appProcess
+                : mActivityManager.getRunningAppProcesses()) {
+            if (appProcess.pid == pid) {
+                return appProcess.processName;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 将srcJObjStr和addJObjStr合并，如果有重复字段，以addJObjStr为准
+     *
+     * @param srcJObjStr 原jsonObject字符串
+     * @param addJObjStr 需要加入的jsonObject字符串
+     * @return srcJObjStr
+     */
+    public static String combineJson(String srcJObjStr, String addJObjStr) {
+        if (addJObjStr == null || addJObjStr.isEmpty()) {
+            return "";
+        }
+        if (srcJObjStr == null || srcJObjStr.isEmpty()) {
+            return "";
+        }
+
+        try {
+            JSONObject srcJObj = new JSONObject(srcJObjStr);
+            JSONObject addJObj = new JSONObject(addJObjStr);
+            return combineJson(srcJObj, addJObj).toString();
+        } catch (JSONException e) {
+            SLog.e(e);
+        }
+
+        return "";
+    }
+
+    public static JSONObject combineJson(JSONObject srcObj, JSONObject addObj) throws JSONException {
+
+        Iterator<String> itKeys1 = addObj.keys();
+        String key, value;
+        while (itKeys1.hasNext()) {
+            key = itKeys1.next();
+            value = addObj.optString(key);
+
+            srcObj.put(key, value);
+        }
+        return srcObj;
     }
 
 }

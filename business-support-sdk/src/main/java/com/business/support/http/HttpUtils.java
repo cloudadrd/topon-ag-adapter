@@ -2,9 +2,11 @@ package com.business.support.http;
 
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
@@ -27,7 +29,8 @@ public class HttpUtils {
 
     private final static int MAX_REDIRECTS = 10;
 
-    public static HttpURLConnection handleConnection(String urlStr, String userAgentStr)
+    public static HttpURLConnection handleConnection(String urlStr, String userAgentStr, RequestMethod method,
+                                                     String requestBody)
             throws IOException, HttpRedirectException, HttpErrorException {
         HttpURLConnection conn;
         boolean redirected;
@@ -50,9 +53,26 @@ public class HttpUtils {
             conn.setRequestProperty("Accept-Encoding", "gzip");
             conn.setRequestProperty("CT-Accept-Encoding", "gzip");
             conn.setRequestProperty("User-Agent", userAgentStr);
-            conn.setRequestMethod("GET");
+            conn.setRequestMethod(method.toString());
             conn.setDoInput(true);
             conn.setInstanceFollowRedirects(false);
+
+            if (method == RequestMethod.POST) {
+                conn.setDoOutput(true);
+                conn.setRequestProperty("Content-type", "application/json");
+                OutputStream os = conn.getOutputStream();
+                if (requestBody == null)
+                    requestBody = "";
+                ByteArrayInputStream stream = new ByteArrayInputStream(requestBody.getBytes());
+                int len;
+                byte[] buffer = new byte[2048];
+                while ((len = stream.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                stream.close();
+                os.flush();
+                os.close();
+            }
             int code = conn.getResponseCode();
             if (code >= HTTP_BAD_REQUEST) {
                 throw new HttpErrorException("request error code : " + code);

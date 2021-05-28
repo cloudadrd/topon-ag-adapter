@@ -20,7 +20,15 @@ public class HttpRequester {
     public static void requestByGet(Context context, String urlStr, Listener listener) {
         final String userAgentStr = Utils.getUserAgentStr(context, false);
         SLog.d("ad request url=" + urlStr);
-        Runnable runnable = new HttpRunnable(urlStr, listener, userAgentStr);
+        Runnable runnable = new HttpRunnable(urlStr, listener, userAgentStr, RequestMethod.GET, null);
+        ThreadPoolProxy.getInstance().execute(runnable);
+    }
+
+
+    public static void requestByPost(Context context, String urlStr, String requestBody, Listener listener) {
+        final String userAgentStr = Utils.getUserAgentStr(context, false);
+        SLog.d("ad request url=" + urlStr);
+        Runnable runnable = new HttpRunnable(urlStr, listener, userAgentStr, RequestMethod.POST, requestBody);
         ThreadPoolProxy.getInstance().execute(runnable);
     }
 }

@@ -13,13 +13,14 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.anythink.custom.adapter.OAIDHandler;
 import com.business.support.StrategyInfoListener;
 import com.business.support.YMBusinessService;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
-import com.business.support.shuzilm.SIDListener;
+import com.business.support.compose.SIDListener;
 
 public class MainActivity extends Activity {
 
@@ -36,16 +37,16 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
-                Context context=getBaseContext();
+                Context context = getBaseContext();
                 YMBusinessService.setFirstInstallTime(System.currentTimeMillis());
                 YMBusinessService.setRewardedVideoTimes(1);
-                YMBusinessService.requestRewaredConfig(context,"40827c9f08dd4fe5f909a0e8b6355706",new StrategyInfoListener(){
+                YMBusinessService.requestRewaredConfig(context, "40827c9f08dd4fe5f909a0e8b6355706", new StrategyInfoListener() {
                     @Override
                     public void isActive(boolean isActive) {
                         if (isActive) {
-                            Log.i("YMBusinessService" ,"true");
-                        }else {
-                            Log.i("YMBusinessService" ,"false");
+                            Log.i("YMBusinessService", "true");
+                        } else {
+                            Log.i("YMBusinessService", "false");
                         }
                     }
                 });
@@ -175,10 +176,15 @@ public class MainActivity extends Activity {
 //
 //        Log.i("check", "isWireShark=" + wireSharkResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
 
-        YMBusinessService.init(this, "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ=="
-                , new SIDListener() {
+        YMBusinessService.init(this,
+                "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ==",
+                "JVjHfrQd0LwfAFnND60C",
+                "OfJKRbsUQIunw1xzb2SU",
+                "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd",
+                new SIDListener() {
                     @Override
                     public void onSuccess(int score, String data) {
+                        Toast.makeText(getBaseContext(), "score=" + score + "\n" + "data=" + data, Toast.LENGTH_LONG).show();
                         Log.i("check-tjt", "onSuccess score=" + score + ",data=\n" + data);
                     }
 

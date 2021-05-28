@@ -1,7 +1,14 @@
 package com.business.support;
 
 import android.content.Context;
+import android.text.TextUtils;
+import android.widget.Toast;
 
+import com.business.support.compose.SIDListener;
+import com.business.support.compose.SdkTaskManager;
+import com.business.support.compose.TaskResult;
+import com.business.support.compose.ZipSidListener;
+import com.business.support.config.Const;
 import com.business.support.http.HttpRequester;
 import com.business.support.reallycheck.DebugCheck;
 import com.business.support.reallycheck.EmulatorCheck;
@@ -9,12 +16,16 @@ import com.business.support.reallycheck.HookCheck;
 import com.business.support.reallycheck.ResultData;
 import com.business.support.reallycheck.RootCheck;
 import com.business.support.reallycheck.WireSharkCheck;
-import com.business.support.shuzilm.SIDListener;
-import com.business.support.shuzilm.SdkMain;
+import com.business.support.shuzilm.ShuzilmImpl;
+import com.business.support.smsdk.SmeiImpl;
+import com.business.support.utils.ContextHolder;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
 
 import org.json.JSONObject;
+
+import java.util.Collection;
+import java.util.List;
 
 public class YMBusinessService {
     private static final String TAG = "YMBusinessService";
@@ -22,26 +33,34 @@ public class YMBusinessService {
     private static long mDays = 0;
     private static int mNumberOfTimes = 0;
 
-    //    private static String mUrlStr = "http://172.31.4.170:8080/v1/strategy/check";
-//        private static String mUrlStr = "http://172.31.5.40:8080/v1/strategy/check";
-    private static String mUrlStr = "http://deapi.adsgreat.cn/v1/strategy/check";
-    private static Context mContext = null;
-    private static StrategyInfoListener mListener = null;
-
-    public static void init(final Context context, String shumApiKey, final SIDListener listener) {
-        SdkMain.init(context.getApplicationContext(), shumApiKey, new SIDListener() {
-            @Override
-            public void onSuccess(int score, String data) {
-                composeNativeValid(context.getApplicationContext(), score, data, listener);
-            }
-
-            @Override
-            public void onFailure(String msg) {
-                SLog.w(TAG, "error msg=" + msg);
-                composeNativeValid(context.getApplicationContext(), 0, "{}", listener);
-            }
-        });
+    public static void init(final Context context, String shuMengApiKey, String shuMeiOrgKey, String shuMeiAccessKey, String shuMeiPublicKey, final SIDListener listener) {
+        ContextHolder.init(context);
+        final Context localContext = ContextHolder.getGlobalAppContext();
+        SdkTaskManager.getInstance()
+                .add(new ShuzilmImpl(), 100, 3000, shuMengApiKey)
+                .add(new SmeiImpl(), 2000, 3000, shuMeiOrgKey, shuMeiAccessKey, shuMeiPublicKey)
+                .zip(localContext, new ZipSidListener() {
+                    @Override
+                    public void result(Collection<TaskResult> taskResults) {
+                        int score = 0;
+                        String data = null;
+                        for (TaskResult taskResult : taskResults) {
+                            if (taskResult.isError) continue;
+                            score += taskResult.getScore();
+                            if (data != null) {
+                                data = Utils.combineJson(data, taskResult.getData());
+                            } else {
+                                data = taskResult.getData();
+                            }
+                        }
+                        if (TextUtils.isEmpty(data)) {
+                            data = "{}";
+                        }
+                        composeNativeValid(localContext, score, data, listener);
+                    }
+                });
     }
+
 
     private static void composeNativeValid(Context context, int score, String data, SIDListener listener) {
 
@@ -61,7 +80,6 @@ public class YMBusinessService {
 
         if (rootResult.isError()) {
             score += rootResult.getScore();
-            ;
         }
 
         if (hookResult.isError()) {
@@ -132,16 +150,14 @@ public class YMBusinessService {
         mNumberOfTimes = playedTimes;
     }
 
-    public static void requestRewaredConfig(Context context, String appid, StrategyInfoListener listener) {
-        mListener = listener;
-        mContext = context.getApplicationContext();
-        int sim = isOperator(mContext) ? 1 : 0;
-        String urlStr = mUrlStr + "?" +
-                "androidid=" + getAndroidID(mContext) +
+    public static void requestRewaredConfig(final Context context, String appid, final StrategyInfoListener listener) {
+        int sim = isOperator(context) ? 1 : 0;
+        String urlStr = Const.STRATEGY_CHECK_URL + "?" +
+                "androidid=" + getAndroidID(context) +
                 "&sim=" + sim +
                 "&system=" + getSystem() +
-                "&network=" + getNetworkType(mContext) +
-                "&appversion=" + getAppVersion(mContext) +
+                "&network=" + getNetworkType(context) +
+                "&appversion=" + getAppVersion(context) +
                 "&installtime=" + mAppInstallTime +
                 "&days=" + mDays +
                 "&playedtimes=" + mNumberOfTimes +
@@ -154,39 +170,30 @@ public class YMBusinessService {
                 try {
                     String result = new String(data);
                     JSONObject respObj = new JSONObject(result);
-                    if (null == respObj) {
-                        mListener.isActive(false);
-                        return;
-                    }
-                    int retCode = respObj.getInt("code");
+                    int retCode = respObj.optInt("code");
                     if (10000 != retCode) {
-                        mListener.isActive(false);
+                        listener.isActive(false);
                         return;
                     }
 
-                    JSONObject acObj = respObj.getJSONObject("data");
+                    JSONObject acObj = respObj.optJSONObject("data");
                     if (null == acObj) {
-                        mListener.isActive(false);
+                        listener.isActive(false);
                         return;
                     }
 
                     boolean ac = acObj.getBoolean("status");
-                    mListener.isActive(ac);
+                    listener.isActive(ac);
                 } catch (Exception e) {
-                    mListener.isActive(false);
+                    listener.isActive(false);
                     e.printStackTrace();
                 }
-
-                mListener = null;
-                mContext = null;
             }
 
             @Override
             public void onFailure(String msg, String url) {
                 SLog.i(TAG, "onFailure");
-                mListener.isActive(false);
-                mListener = null;
-                mContext = null;
+                listener.isActive(false);
 
             }
         });
