@@ -15,7 +15,7 @@ ArrayList<String> networkLibsPath = new ArrayList<>();
 
 networkLibsPath.add("baidu");
 networkLibsPath.add("gdt");
-networkLibsPath.add("mintegral");
+//networkLibsPath.add("mintegral");
 networkLibsPath.add("pangle");
 networkLibsPath.add("kuaishou");
 networkLibsPath.add("sigmob");
@@ -27,7 +27,7 @@ networkLibsPath.add("jingdong");
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "com.scqdd.mobi"//"com.bxnll.mobi"//com.hbasc.mobi京东测试
+        applicationId "com.scqdd.mobi"//"com.scqdd.mobi 数盟、数美测试包名"//com.hbasc.mobi京东测试
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -36,10 +36,10 @@ android {
     }
     signingConfigs {
         demo {
-            keyAlias 'bxnll'
-            keyPassword 'bxnll123'
-            storeFile file('bxnll.jks')
-            storePassword 'bxnll123'
+            keyAlias 'scqdd'
+            keyPassword 'scqdd123'
+            storeFile file('scqdd.jks')
+            storePassword 'scqdd123'
         }
     }
     buildTypes {
@@ -93,7 +93,9 @@ repositories {
 
 dependencies {
     api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    implementation files('libs/multidownloadlib.jar')
+    implementation files('libs/growstarry_base_4.3.5_gt.jar')
+    implementation files('libs/growstarry_imageloader_4.3.5_gt.jar')
+    implementation files('libs/growstarry_video_4.3.5_gt.jar')
 //    api fileTree(dir: "network", include: ["**/libs/*.jar", "**/libs/*.aar"])
 //            .exclude("mintegral_international/libs/*.jar")
 //            .exclude("mintegral_international/libs/*.aar")
