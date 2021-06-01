@@ -131,19 +131,16 @@ public class PangleNativeExpressAd extends CustomNativeAd {
             }
 
             @Override
-            public void onSelected(int position, String value) {
+            public void onSelected(int i, String s, boolean b) {
                 //用户选择不喜欢原因后，移除广告展示
                 notifyAdDislikeClick();
             }
+
 
             @Override
             public void onCancel() {
             }
 
-            @Override
-            public void onRefuse() {
-
-            }
         });
     }
 

@@ -14,11 +14,11 @@ import com.google.common.io.Files
 ArrayList<String> networkLibsPath = new ArrayList<>();
 
 networkLibsPath.add("baidu");
-networkLibsPath.add("gdt");
+//networkLibsPath.add("gdt");
 //networkLibsPath.add("mintegral");
 networkLibsPath.add("pangle");
-networkLibsPath.add("kuaishou");
-networkLibsPath.add("sigmob");
+//networkLibsPath.add("kuaishou");
+//networkLibsPath.add("sigmob");
 networkLibsPath.add("ifly");
 networkLibsPath.add("adsgreat");
 networkLibsPath.add("jingdong");

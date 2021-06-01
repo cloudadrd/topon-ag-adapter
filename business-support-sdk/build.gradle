@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def version = "1.3.0"
+def version = "1.4.0"
 android {
     compileSdkVersion 29
 
@@ -43,7 +43,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
-    packagingOptions{
+    packagingOptions {
         doNotStrip "*/arm64-v8a/libdu.so"
         doNotStrip "*/armeabi/libdu.so"
         doNotStrip "*/armeabi-v7a/libdu.so"
@@ -62,7 +62,10 @@ android.libraryVariants.all { variant ->
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar","*.aar"])
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    compileOnly files('libs/open_ad_sdk_3.6.1.3.aar')
+    compileOnly files('libs/smsdk-3.0.6-release.aar')
+    compileOnly files('libs/thinkingsdk-release.aar')
 //    implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

@@ -1,7 +1,11 @@
 package com.business.support;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.business.support.compose.SIDListener;
@@ -21,11 +25,15 @@ import com.business.support.smsdk.SmeiImpl;
 import com.business.support.utils.ContextHolder;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
+import com.bytedance.sdk.openadsdk.activity.base.TTRewardVideoActivity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
 import java.util.List;
+
+import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
 public class YMBusinessService {
     private static final String TAG = "YMBusinessService";
@@ -199,5 +207,157 @@ public class YMBusinessService {
         });
 
     }
+
+
+    private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = null;
+
+    public static void optimizeAdInfo(final ThinkingAnalyticsSDK instance) {
+        if (activityLifecycleCallbacks != null) {
+            return;
+        }
+
+        activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
+
+            @Override
+            public void onActivityPreCreated(Activity activity, Bundle savedInstanceState) {
+                Log.e(TAG, "onActivityPreCreated activity=" + activity.getComponentName());
+                pangelDataHandler(activity, savedInstanceState, instance);
+            }
+
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        };
+        ((Application) ContextHolder.getGlobalAppContext().getApplicationContext()).registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    }
+
+    private static void pangelDataHandler(Activity activity, Bundle savedInstanceState, ThinkingAnalyticsSDK instance) {
+        if (!(activity instanceof TTRewardVideoActivity)) {
+            return;
+        }
+        Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
+        String materialMeta = "";
+        JSONObject jsonObj = null;
+        if (c1 != null) {
+            jsonObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
+        }
+        if (savedInstanceState != null) {
+            materialMeta = savedInstanceState.getString("material_meta");
+            if (!TextUtils.isEmpty(materialMeta)) {
+                try {
+                    jsonObj = com.bytedance.sdk.openadsdk.core.b.a(new JSONObject(materialMeta)).aO();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        JSONObject properties = null;
+        if (jsonObj != null) {
+            String iconUrl = null;
+            String appName = null;
+            String packageName = null;
+            String downloadUrl = null;
+            String adId = null;
+            String videoUrl = null;
+
+            JSONObject iconObj = jsonObj.optJSONObject("icon");
+            if (iconObj != null) {
+                iconUrl = iconObj.optString("url");
+            }
+
+            JSONObject appObj = jsonObj.optJSONObject("app");
+            if (appObj != null) {
+                appName = appObj.optString("app_name");
+                packageName = appObj.optString("package_name");
+                downloadUrl = appObj.optString("download_url");
+            }
+
+            String extStr = jsonObj.optString("ext");
+            if (!TextUtils.isEmpty(extStr)) {
+                try {
+                    adId = new JSONObject(extStr).optString("ad_id");
+                } catch (JSONException ignored) {
+                }
+            }
+
+            JSONObject videoObj = jsonObj.optJSONObject("video");
+            if (videoObj != null) {
+                videoUrl = videoObj.optString("video_url");
+            }
+
+            try {
+                properties = new JSONObject();
+
+                if (adId != null) {
+                    properties.put("ad_id", adId);
+                }
+
+                if (appName != null) {
+                    properties.put("app_name", appName);
+                }
+
+                if (iconUrl != null) {
+                    properties.put("icon_url", iconUrl);
+                }
+
+                if (videoUrl != null) {
+                    properties.put("video_url", videoUrl);
+                }
+
+                if (packageName != null) {
+                    properties.put("pkg_name", packageName);
+                }
+
+                if (downloadUrl != null) {
+                    properties.put("download_url", downloadUrl);
+                }
+
+                properties.put("channel", "tt");
+                instance.track("ad_collection", properties);
+                instance.flush();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        String strData = null;
+        if (properties != null) {
+            strData = properties.toString();
+        }
+        SLog.e(TAG, "onActivityPreCreated  is TTRewardVideoActivity stringExtra" + strData);
+    }
+
 
 }

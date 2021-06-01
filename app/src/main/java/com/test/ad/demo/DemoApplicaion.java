@@ -7,15 +7,24 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 
 import com.anythink.core.api.ATSDK;
 import com.anythink.custom.adapter.OAIDHandler;
+import com.business.support.utils.SLog;
 import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.activity.base.TTRewardVideoActivity;
 import com.facebook.stetho.Stetho;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -140,129 +149,91 @@ public class DemoApplicaion extends MultiDexApplication {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
                 Log.e("DemoApplicaion", "onActivityCreated activity=" + activity.getComponentName());
-                if (activity instanceof TTRewardVideoActivity) {
-
-                    Intent intent = activity.getIntent();
-                    StringBuilder sb = new StringBuilder();
-                    if (intent != null) {
-                        String aP = intent.getStringExtra("reward_name");
-                        int aQ = intent.getIntExtra("reward_amount", 0);
-                        String aR = intent.getStringExtra("media_extra");
-                        String aS = intent.getStringExtra("user_id");
-                        boolean v = intent.getBooleanExtra("show_download_bar", true);
-                        String x = intent.getStringExtra("video_cache_url");
-                        int y = intent.getIntExtra("orientation", 2);
-                        String ab = intent.getStringExtra("rit_scene");
-
-                        String stringExtra = intent.getStringExtra(TTAdConstant.MULTI_PROCESS_MATERIALMETA);
-
-                        sb.append("reward_name=").append(aP).append(",");
-                        sb.append("reward_amount=").append(aQ).append(",");
-                        sb.append("media_extra=").append(aR).append(",");
-                        sb.append("user_id=").append(aS).append(",");
-                        sb.append("show_download_bar=").append(v).append(",");
-                        sb.append("video_cache_url=").append(x).append(",");
-                        sb.append("orientation=").append(y).append(",");
-                        sb.append("rit_scene=").append(ab).append(",");
-                        sb.append("stringExtra=").append(stringExtra);
-                    }
-                    String bundleStr = "";
-                    if (savedInstanceState != null) {
-                        bundleStr = savedInstanceState.toString();
-                    }
-
-                    Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
-                    String str1 = "";
-                    if (c1 != null) {
-                        str1 = com.bytedance.sdk.openadsdk.core.t.a().c().aG().toString();
-                    }
-                    Log.e("DemoApplicaion", "onActivityCreated  is TTRewardVideoActivity stringExtra" + bundleStr + "\n bundleStr=" + sb.toString() + "\n str1=" + str1);
-                }
             }
 
 
             public void onActivityPreCreated(@NonNull Activity activity,
-                                              @Nullable Bundle savedInstanceState) {
-                if (activity instanceof TTRewardVideoActivity) {
-
-                    Intent intent = activity.getIntent();
-                    StringBuilder sb = new StringBuilder();
-                    if (intent != null) {
-                        String aP = intent.getStringExtra("reward_name");
-                        int aQ = intent.getIntExtra("reward_amount", 0);
-                        String aR = intent.getStringExtra("media_extra");
-                        String aS = intent.getStringExtra("user_id");
-                        boolean v = intent.getBooleanExtra("show_download_bar", true);
-                        String x = intent.getStringExtra("video_cache_url");
-                        int y = intent.getIntExtra("orientation", 2);
-                        String ab = intent.getStringExtra("rit_scene");
-
-                        String stringExtra = intent.getStringExtra(TTAdConstant.MULTI_PROCESS_MATERIALMETA);
-
-                        sb.append("reward_name=").append(aP).append(",");
-                        sb.append("reward_amount=").append(aQ).append(",");
-                        sb.append("media_extra=").append(aR).append(",");
-                        sb.append("user_id=").append(aS).append(",");
-                        sb.append("show_download_bar=").append(v).append(",");
-                        sb.append("video_cache_url=").append(x).append(",");
-                        sb.append("orientation=").append(y).append(",");
-                        sb.append("rit_scene=").append(ab).append(",");
-                        sb.append("stringExtra=").append(stringExtra);
-                    }
-                    String bundleStr = "";
-                    if (savedInstanceState != null) {
-                        bundleStr = savedInstanceState.toString();
-                    }
-
-                    Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
-                    String str1 = "";
-                    if (c1 != null) {
-                        str1 = com.bytedance.sdk.openadsdk.core.t.a().c().aG().toString();
-                    }
-                    Log.e("DemoApplicaion", "onActivityPreCreated  is TTRewardVideoActivity stringExtra" + bundleStr + "\n bundleStr=" + sb.toString() + "\n str1=" + str1);
-                }
-            }
-            @Override
-            public void onActivityPostCreated(@NonNull Activity activity,
-                                              @Nullable Bundle savedInstanceState) {
-                if (activity instanceof TTRewardVideoActivity) {
-
-                    Intent intent = activity.getIntent();
-                    StringBuilder sb = new StringBuilder();
-                    if (intent != null) {
-                        String aP = intent.getStringExtra("reward_name");
-                        int aQ = intent.getIntExtra("reward_amount", 0);
-                        String aR = intent.getStringExtra("media_extra");
-                        String aS = intent.getStringExtra("user_id");
-                        boolean v = intent.getBooleanExtra("show_download_bar", true);
-                        String x = intent.getStringExtra("video_cache_url");
-                        int y = intent.getIntExtra("orientation", 2);
-                        String ab = intent.getStringExtra("rit_scene");
-
-                        String stringExtra = intent.getStringExtra(TTAdConstant.MULTI_PROCESS_MATERIALMETA);
-
-                        sb.append("reward_name=").append(aP).append(",");
-                        sb.append("reward_amount=").append(aQ).append(",");
-                        sb.append("media_extra=").append(aR).append(",");
-                        sb.append("user_id=").append(aS).append(",");
-                        sb.append("show_download_bar=").append(v).append(",");
-                        sb.append("video_cache_url=").append(x).append(",");
-                        sb.append("orientation=").append(y).append(",");
-                        sb.append("rit_scene=").append(ab).append(",");
-                        sb.append("stringExtra=").append(stringExtra);
-                    }
-                    String bundleStr = "";
-                    if (savedInstanceState != null) {
-                        bundleStr = savedInstanceState.toString();
-                    }
-
-                    Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
-                    String str1 = "";
-                    if (c1 != null) {
-                        str1 = com.bytedance.sdk.openadsdk.core.t.a().c().aG().toString();
-                    }
-                    Log.e("DemoApplicaion", "onActivityPostCreated  is TTRewardVideoActivity stringExtra" + bundleStr + "\n bundleStr=" + sb.toString() + "\n str1=" + str1);
-                }
+                                             @Nullable Bundle savedInstanceState) {
+//                if (activity instanceof TTRewardVideoActivity) {
+//
+////                    Intent intent = activity.getIntent();
+////                    StringBuilder sb = new StringBuilder();
+////                    if (intent != null) {
+////                        String aP = intent.getStringExtra("reward_name");
+////                        int aQ = intent.getIntExtra("reward_amount", 0);
+////                        String aR = intent.getStringExtra("media_extra");
+////                        String aS = intent.getStringExtra("user_id");
+////                        boolean v = intent.getBooleanExtra("show_download_bar", true);
+////                        String x = intent.getStringExtra("video_cache_url");
+////                        int y = intent.getIntExtra("orientation", 2);
+////                        String ab = intent.getStringExtra("rit_scene");
+////
+////                        String stringExtra = intent.getStringExtra(TTAdConstant.MULTI_PROCESS_MATERIALMETA);
+////
+////                        sb.append("reward_name=").append(aP).append(",");
+////                        sb.append("reward_amount=").append(aQ).append(",");
+////                        sb.append("media_extra=").append(aR).append(",");
+////                        sb.append("user_id=").append(aS).append(",");
+////                        sb.append("show_download_bar=").append(v).append(",");
+////                        sb.append("video_cache_url=").append(x).append(",");
+////                        sb.append("orientation=").append(y).append(",");
+////                        sb.append("rit_scene=").append(ab).append(",");
+////                        sb.append("stringExtra=").append(stringExtra);
+////                    }
+//                    Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
+//                    String materialMeta = "";
+//                    JSONObject jsonObj = null;
+//                    if (c1 != null) {
+//                        jsonObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
+//                    }
+//                    if (savedInstanceState != null) {
+//                        materialMeta = savedInstanceState.getString("material_meta");
+//                        if (!TextUtils.isEmpty(materialMeta)) {
+//                            try {
+//                                JSONObject tempObj = com.bytedance.sdk.openadsdk.core.b.a(new JSONObject(materialMeta)).aO();
+//                                jsonObj = tempObj;
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//
+//                    if (jsonObj != null) {
+//                        String title = jsonObj.optString("title");
+//                        String iconUrl = null;
+//                        String appName = null;
+//                        String packageName = null;
+//                        String adId = null;
+//                        String videoUrl = null;
+//
+//                        JSONObject iconObj = jsonObj.optJSONObject("icon");
+//                        if (iconObj != null) {
+//                            iconUrl = iconObj.optString("url");
+//                        }
+//
+//                        JSONObject appObj = jsonObj.optJSONObject("app");
+//                        if (appObj != null) {
+//                            appName = appObj.optString("app_name");
+//                            packageName = appObj.optString("package_name");
+//                        }
+//
+//                        JSONObject extObj = jsonObj.optJSONObject("ext");
+//
+//                        if (extObj != null) {
+//                            adId = extObj.optString("ad_id");
+//                        }
+//
+//
+//                        JSONObject videoObj = jsonObj.optJSONObject("video");
+//
+//                        if (videoObj != null) {
+//                            videoUrl = videoObj.optString("video_url");
+//                        }
+//
+//
+//                    }
+//                    Log.e("DemoApplicaion", "onActivityPreCreated  is TTRewardVideoActivity stringExtra" + bundleStr + "\n bundleStr=" + sb.toString() + "\n str1=" + str1);
+//                }
             }
 
 
