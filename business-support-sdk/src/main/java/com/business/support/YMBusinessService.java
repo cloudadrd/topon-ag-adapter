@@ -40,7 +40,8 @@ public class YMBusinessService {
     private static long mAppInstallTime = 0;
     private static long mDays = 0;
     private static int mNumberOfTimes = 0;
-
+    private static JSONObject jsonObj = null;
+    private static ThinkingAnalyticsSDK biInstance = null;
     public static void init(final Context context, String shuMengApiKey, final SIDListener listener) {
         ContextHolder.init(context);
         final Context localContext = ContextHolder.getGlobalAppContext();
@@ -266,9 +267,11 @@ public class YMBusinessService {
         if (!(activity instanceof TTRewardVideoActivity)) {
             return;
         }
+        if (biInstance == null)
+            biInstance = instance;
+
         Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
         String materialMeta = "";
-        JSONObject jsonObj = null;
         if (c1 != null) {
             jsonObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
         }
@@ -282,6 +285,11 @@ public class YMBusinessService {
                 }
             }
         }
+    }
+
+    public static void setAdInfo(double ecpm){
+        if (biInstance == null)
+            return;
 
         JSONObject properties = null;
         if (jsonObj != null) {
@@ -344,13 +352,13 @@ public class YMBusinessService {
                     properties.put("download_url", downloadUrl);
                 }
 
-                properties.put("channel", "tt");
-                instance.track("ad_collection", properties);
-                instance.flush();
+                properties.put("ad_channel", "tt");
+                properties.put("ecpm", ecpm);
+                biInstance.track("ad_collection", properties);
+                biInstance.flush();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
         String strData = null;
         if (properties != null) {
@@ -358,6 +366,4 @@ public class YMBusinessService {
         }
         SLog.e(TAG, "onActivityPreCreated  is TTRewardVideoActivity stringExtra" + strData);
     }
-
-
 }

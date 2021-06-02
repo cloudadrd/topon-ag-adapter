@@ -24,6 +24,7 @@ import com.anythink.rewardvideo.api.ATRewardVideoExListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.business.support.YMBusinessService;
 
 public class RewardVideoAdActivity extends Activity {
 
@@ -144,6 +145,7 @@ public class RewardVideoAdActivity extends Activity {
             public void onRewardedVideoAdPlayStart(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
                 Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayStart", Toast.LENGTH_SHORT).show();
+                YMBusinessService.setAdInfo(entity.getEcpm());
             }
 
             @Override
