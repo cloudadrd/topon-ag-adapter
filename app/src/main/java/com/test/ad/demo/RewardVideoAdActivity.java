@@ -24,7 +24,12 @@ import com.anythink.rewardvideo.api.ATRewardVideoExListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import com.business.support.YMBusinessService;
+
+import adinfo.BSAdType;
+import cn.thinkingdata.android.TDConfig;
+import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
 public class RewardVideoAdActivity extends Activity {
 
@@ -59,6 +64,8 @@ public class RewardVideoAdActivity extends Activity {
 
 
     ATRewardVideoAd mRewardVideoAd;
+
+    ThinkingAnalyticsSDK biInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +118,10 @@ public class RewardVideoAdActivity extends Activity {
             }
         });
 
+        TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
+        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
+        biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
+
     }
 
 
@@ -145,7 +156,13 @@ public class RewardVideoAdActivity extends Activity {
             public void onRewardedVideoAdPlayStart(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
                 Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayStart", Toast.LENGTH_SHORT).show();
-                YMBusinessService.setAdInfo(entity.getEcpm());
+                int firmId = entity.getNetworkFirmId();
+                if (firmId == 8) {
+                    YMBusinessService.setAdInfo(biInstance, entity.getEcpm(), BSAdType.GDT);
+                } else if (firmId == 15) {
+                    YMBusinessService.setAdInfo(biInstance, entity.getEcpm(), BSAdType.PANGLE);
+                }
+
             }
 
             @Override
@@ -162,7 +179,7 @@ public class RewardVideoAdActivity extends Activity {
 
             @Override
             public void onRewardedVideoAdClosed(ATAdInfo entity) {
-                Log.i(TAG, "onRewardedVideoAdClosed:\n" + entity.toString() );
+                Log.i(TAG, "onRewardedVideoAdClosed:\n" + entity.toString());
                 Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
             }
 

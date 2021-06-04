@@ -17,6 +17,7 @@
 //import com.growstarry.kern.core.GTNative;
 //import com.growstarry.kern.core.GrowsTarrySDK;
 //import com.growstarry.kern.vo.AdsNativeVO;
+//import com.growstarry.kern.vo.AdsVO;
 //
 //import java.util.Map;
 //
@@ -82,14 +83,6 @@
 //                }
 //            }
 //
-//            @Override
-//            public void onAdTimeOver() {
-//                if (isDestroyed) {
-//                    return;
-//                }
-//                Log.d(TAG, "onAdTimeOver");
-//            }
-//
 //
 //            @Override
 //            public void onLandPageShown(GTNative result) {
@@ -111,7 +104,7 @@
 //            }
 //
 //            @Override
-//            public void onAdClosed(AGNative result) {
+//            public void onAdClosed(GTNative result) {
 //                if (isDestroyed) {
 //                    return;
 //                }
@@ -184,7 +177,7 @@
 //            }
 //            postOnMainThread(new Runnable() {
 //                public void run() {
-//                    AdsgreatSDK.showSplashAd(slotId, viewGroup);
+//                    GrowsTarrySDK.showSplashAd(slotId, new SplashEventListener());
 //                    if (mImpressionListener != null) {
 //                        mImpressionListener.onSplashAdShow();
 //                    }
@@ -202,7 +195,7 @@
 //        }
 //
 //        @Override
-//        public void onReceiveAdVoSucceed(AdsNativeVO result) {
+//        public void onReceiveAdVoSucceed(AdsVO result) {
 //            showMsg("onReceiveAdVoSucceed");
 //        }
 //
@@ -213,12 +206,12 @@
 //        }
 //
 //        @Override
-//        public void onInterstitialLoadSucceed(GTNative gtNative) {
-//            Log.i("sdksample", "onInterstitialLoadSucceed");
+//        public void onShowSucceed(GTNative gtNative) {
+//            Log.i("sdksample", "onShowSucceed");
 //        }
 //
 //        @Override
-//        public void onLandpageShown(GTNative result) {
+//        public void onLandPageShown(GTNative result) {
 //            showMsg("onLandPageShown");
 //        }
 //
@@ -230,10 +223,6 @@
 //        @Override
 //        public void onAdClosed(GTNative result) {
 //            showMsg("onAdClosed");
-//        }
-//
-//        public void onAdTimeOver() {
-//            showMsg("onAdTimeOver");
 //        }
 //
 //        private void showMsg(String msg) {

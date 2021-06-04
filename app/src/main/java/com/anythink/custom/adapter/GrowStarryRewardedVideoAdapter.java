@@ -169,7 +169,7 @@ public class GrowStarryRewardedVideoAdapter extends CustomRewardVideoAdapter {
 
     @Override
     public String getNetworkName() {
-        return PangleInitManager.getInstance().getNetworkName();
+        return "";
     }
 
     @Override

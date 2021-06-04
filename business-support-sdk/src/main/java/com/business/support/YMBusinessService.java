@@ -3,10 +3,10 @@ package com.business.support;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.business.support.compose.SIDListener;
 import com.business.support.compose.SdkTaskManager;
@@ -26,13 +26,17 @@ import com.business.support.utils.ContextHolder;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
 import com.bytedance.sdk.openadsdk.activity.base.TTRewardVideoActivity;
+import com.qq.e.ads.ADActivity;
+import com.qq.e.comm.managers.GDTADManager;
+import com.qq.e.comm.pi.POFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.List;
 
+import adinfo.BSAdType;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
 public class YMBusinessService {
@@ -40,8 +44,10 @@ public class YMBusinessService {
     private static long mAppInstallTime = 0;
     private static long mDays = 0;
     private static int mNumberOfTimes = 0;
-    private static JSONObject jsonObj = null;
-    private static ThinkingAnalyticsSDK biInstance = null;
+    private static JSONObject jsonPangleObj = null;
+
+    private static JSONObject jsonGdtObj = null;
+
     public static void init(final Context context, String shuMengApiKey, final SIDListener listener) {
         ContextHolder.init(context);
         final Context localContext = ContextHolder.getGlobalAppContext();
@@ -68,6 +74,8 @@ public class YMBusinessService {
                         composeNativeValid(localContext, score, data, listener);
                     }
                 });
+
+        optimizeAdInfo();
     }
 
 
@@ -212,7 +220,7 @@ public class YMBusinessService {
 
     private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = null;
 
-    public static void optimizeAdInfo(final ThinkingAnalyticsSDK instance) {
+    public static void optimizeAdInfo() {
         if (activityLifecycleCallbacks != null) {
             return;
         }
@@ -222,7 +230,8 @@ public class YMBusinessService {
             @Override
             public void onActivityPreCreated(Activity activity, Bundle savedInstanceState) {
                 Log.e(TAG, "onActivityPreCreated activity=" + activity.getComponentName());
-                pangelDataHandler(activity, savedInstanceState, instance);
+                pangelDataHandler(activity, savedInstanceState);
+                gdtDataHandler(activity, savedInstanceState);
             }
 
             @Override
@@ -263,36 +272,29 @@ public class YMBusinessService {
         ((Application) ContextHolder.getGlobalAppContext().getApplicationContext()).registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
 
-    private static void pangelDataHandler(Activity activity, Bundle savedInstanceState, ThinkingAnalyticsSDK instance) {
+    private static void pangelDataHandler(Activity activity, Bundle savedInstanceState) {
         if (!(activity instanceof TTRewardVideoActivity)) {
             return;
         }
-        if (biInstance == null)
-            biInstance = instance;
 
         Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
         String materialMeta = "";
+        JSONObject tempObj = null;
         if (c1 != null) {
-            jsonObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
+            tempObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
         }
         if (savedInstanceState != null) {
             materialMeta = savedInstanceState.getString("material_meta");
             if (!TextUtils.isEmpty(materialMeta)) {
                 try {
-                    jsonObj = com.bytedance.sdk.openadsdk.core.b.a(new JSONObject(materialMeta)).aO();
+                    tempObj = com.bytedance.sdk.openadsdk.core.b.a(new JSONObject(materialMeta)).aO();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
 
-    public static void setAdInfo(double ecpm){
-        if (biInstance == null)
-            return;
-
-        JSONObject properties = null;
-        if (jsonObj != null) {
+        if (tempObj != null) {
             String iconUrl = null;
             String appName = null;
             String packageName = null;
@@ -300,19 +302,19 @@ public class YMBusinessService {
             String adId = null;
             String videoUrl = null;
 
-            JSONObject iconObj = jsonObj.optJSONObject("icon");
+            JSONObject iconObj = tempObj.optJSONObject("icon");
             if (iconObj != null) {
                 iconUrl = iconObj.optString("url");
             }
 
-            JSONObject appObj = jsonObj.optJSONObject("app");
+            JSONObject appObj = tempObj.optJSONObject("app") ;
             if (appObj != null) {
                 appName = appObj.optString("app_name");
                 packageName = appObj.optString("package_name");
                 downloadUrl = appObj.optString("download_url");
             }
 
-            String extStr = jsonObj.optString("ext");
+            String extStr = tempObj.optString("ext");
             if (!TextUtils.isEmpty(extStr)) {
                 try {
                     adId = new JSONObject(extStr).optString("ad_id");
@@ -320,50 +322,151 @@ public class YMBusinessService {
                 }
             }
 
-            JSONObject videoObj = jsonObj.optJSONObject("video");
+            JSONObject videoObj = tempObj.optJSONObject("video");
             if (videoObj != null) {
                 videoUrl = videoObj.optString("video_url");
             }
 
             try {
-                properties = new JSONObject();
+                jsonPangleObj = new JSONObject();
 
                 if (adId != null) {
-                    properties.put("ad_id", adId);
+                    jsonPangleObj.put("ad_id", adId);
                 }
 
                 if (appName != null) {
-                    properties.put("app_name", appName);
+                    jsonPangleObj.put("app_name", appName);
                 }
 
                 if (iconUrl != null) {
-                    properties.put("icon_url", iconUrl);
+                    jsonPangleObj.put("icon_url", iconUrl);
                 }
 
                 if (videoUrl != null) {
-                    properties.put("video_url", videoUrl);
+                    jsonPangleObj.put("video_url", videoUrl);
                 }
 
                 if (packageName != null) {
-                    properties.put("pkg_name", packageName);
+                    jsonPangleObj.put("pkg_name", packageName);
                 }
 
                 if (downloadUrl != null) {
-                    properties.put("download_url", downloadUrl);
+                    jsonPangleObj.put("download_url", downloadUrl);
                 }
-
-                properties.put("ad_channel", "tt");
-                properties.put("ecpm", ecpm);
-                biInstance.track("ad_collection", properties);
-                biInstance.flush();
+                SLog.i(TAG, "pangelDataHandler jsonStr=" + jsonPangleObj.toString());
             } catch (JSONException e) {
+                SLog.e(TAG, "pangelDataHandler 2 error=" + e.getMessage());
                 e.printStackTrace();
             }
         }
-        String strData = null;
-        if (properties != null) {
-            strData = properties.toString();
+    }
+
+    private static void gdtDataHandler(Activity activity, Bundle savedInstanceState) {
+        if (activity instanceof ADActivity) {
+            POFactory pOFactory = null;
+            try {
+                pOFactory = GDTADManager.getInstance().getPM().getPOFactory();
+            } catch (com.qq.e.comm.managers.plugin.c c) {
+                SLog.e(TAG, "gdtDataHandler getPOFactory error=" + c.getMessage());
+//                c.printStackTrace();
+                return;
+            }
+            Intent intent = activity.getIntent();
+            if (intent == null) {
+                SLog.e(TAG, "gdtDataHandler intent is null");
+                return;
+            }
+            intent.setExtrasClassLoader(pOFactory.getClass().getClassLoader());
+            Bundle extras = intent.getExtras();
+            if (extras == null) {
+                SLog.e(TAG, "gdtDataHandler extras is null");
+                return;
+            }
+            String appName = null;
+            String packageName = null;
+            String downloadUrl = null;
+
+            String adId = null;
+
+            String iconUrl = null;
+            String videoUrl = null;
+
+            try {
+                Object parcelable = extras.getParcelable("admodel");
+                ClassLoader classLoader = pOFactory.getClass().getClassLoader();
+                Class<?> classData = classLoader.loadClass("com.qq.e.comm.plugin.model.BaseAdInfo");
+                Field fieldJson = classData.getDeclaredField("ap");
+                fieldJson.setAccessible(true);
+                String jsonStr = fieldJson.get(parcelable).toString();
+                JSONObject jsonObject = new JSONObject(jsonStr);
+                adId = jsonObject.optString("ad_industry_id");
+
+                iconUrl = jsonObject.optString("corporate_logo");
+                videoUrl = jsonObject.optString("video");
+                JSONObject ext = jsonObject.optJSONObject("ext");
+
+                if (ext != null) {
+                    appName = ext.optString("appname");
+                    packageName = ext.optString("packagename");
+                    downloadUrl = ext.optString("pkgurl");
+                }
+
+                jsonGdtObj = new JSONObject();
+
+                jsonGdtObj.put("ad_id", adId);
+
+                if (appName != null) {
+                    jsonGdtObj.put("app_name", appName);
+                }
+
+                jsonGdtObj.put("icon_url", iconUrl);
+
+                jsonGdtObj.put("video_url", videoUrl);
+
+                if (packageName != null) {
+                    jsonGdtObj.put("pkg_name", packageName);
+                }
+
+                if (downloadUrl != null) {
+                    jsonGdtObj.put("download_url", downloadUrl);
+                }
+                SLog.i(TAG, "gdtDataHandler jsonStr=" + jsonGdtObj.toString());
+            } catch (Exception e) {
+                SLog.e(TAG, "gdtDataHandler 2 error=" + e.getMessage());
+                e.printStackTrace();
+            }
         }
-        SLog.e(TAG, "onActivityPreCreated  is TTRewardVideoActivity stringExtra" + strData);
+    }
+
+    public static void setAdInfo(final ThinkingAnalyticsSDK instance, double ecpm, BSAdType
+            adType) {
+        if (instance == null)
+            return;
+
+        JSONObject jsonObject = null;
+
+        if (BSAdType.PANGLE == adType) {
+            jsonObject = jsonPangleObj;
+            jsonPangleObj = null;
+        } else if (BSAdType.GDT == adType) {
+            jsonObject = jsonGdtObj;
+            jsonGdtObj = null;
+        }
+
+        if (jsonObject == null) {
+            SLog.e(TAG, "setAdInfo jsonObject is null, end report.");
+            return;
+        }
+        String strData = null;
+        try {
+            jsonObject.put("ad_channel", adType.getName());
+            jsonObject.put("ecpm", ecpm);
+            instance.track("ad_collection", jsonObject);
+            instance.flush();
+            strData = jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        SLog.e(TAG, "setAdInfo post json=" + strData);
     }
 }

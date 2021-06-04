@@ -21,7 +21,6 @@ import com.business.support.YMBusinessService;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
-import com.bytedance.sdk.component.net.tnc.AppConfig;
 
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
@@ -203,10 +202,10 @@ public class MainActivity extends Activity {
             }
         });
 
-        TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
-        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
-        ThinkingAnalyticsSDK biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
-        YMBusinessService.optimizeAdInfo(biInstance);
+//        TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
+//        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
+//        ThinkingAnalyticsSDK biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
+//        YMBusinessService.optimizeAdInfo(biInstance);
     }
 
 

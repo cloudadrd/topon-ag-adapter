@@ -4,27 +4,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
-import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 
 import com.anythink.core.api.ATSDK;
 import com.anythink.custom.adapter.OAIDHandler;
-import com.business.support.utils.SLog;
-import com.bytedance.sdk.openadsdk.TTAdConstant;
-import com.bytedance.sdk.openadsdk.activity.base.TTRewardVideoActivity;
 import com.facebook.stetho.Stetho;
+import com.qq.e.ads.ADActivity;
+import com.qq.e.comm.managers.GDTADManager;
+import com.qq.e.comm.managers.plugin.c;
+import com.qq.e.comm.pi.ACTD;
+import com.qq.e.comm.pi.POFactory;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -154,6 +150,39 @@ public class DemoApplicaion extends MultiDexApplication {
 
             public void onActivityPreCreated(@NonNull Activity activity,
                                              @Nullable Bundle savedInstanceState) {
+                Log.e("DemoApplicaion", "onActivityPreCreated activity=" + activity.getComponentName());
+
+                if (activity instanceof ADActivity) {
+                    POFactory pOFactory = null;
+                    try {
+                        pOFactory = GDTADManager.getInstance().getPM().getPOFactory();
+                    } catch (com.qq.e.comm.managers.plugin.c c) {
+                        c.printStackTrace();
+                        return;
+                    }
+                    Intent intent = activity.getIntent();
+                    if (intent == null) {
+                        return;
+                    }
+                    intent.setExtrasClassLoader(pOFactory.getClass().getClassLoader());
+                    Bundle extras = intent.getExtras();
+                    if (extras == null) {
+                        return;
+                    }
+                    Log.e("DemoApplicaion", "onActivityPreCreated extras=" + extras.getClass().getCanonicalName());
+
+                    try {
+                        Object parcelable = extras.getParcelable("admodel");
+                        ClassLoader classLoader = pOFactory.getClass().getClassLoader();
+                        Class classData = classLoader.loadClass("com.qq.e.comm.plugin.model.BaseAdInfo");
+                        Field fieldJson = classData.getDeclaredField("ap");
+                        fieldJson.setAccessible(true);
+                        String jsonStr = fieldJson.get(parcelable).toString();
+                        Log.e("DemoApplicaion", "onActivityPreCreated jsonStr=" + jsonStr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 //                if (activity instanceof TTRewardVideoActivity) {
 //
 ////                    Intent intent = activity.getIntent();

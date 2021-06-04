@@ -13,13 +13,6 @@ import com.adsgreat.base.core.AdsgreatSDK;
 import com.anythink.core.api.ATAdConst;
 import com.anythink.core.api.ATCustomLoadListener;
 import com.anythink.interstitial.unitgroup.api.CustomInterstitialAdapter;
-import com.bytedance.sdk.openadsdk.AdSlot;
-import com.bytedance.sdk.openadsdk.TTAdManager;
-import com.bytedance.sdk.openadsdk.TTAdNative;
-import com.bytedance.sdk.openadsdk.TTAdSdk;
-import com.bytedance.sdk.openadsdk.TTFullScreenVideoAd;
-import com.bytedance.sdk.openadsdk.TTInteractionAd;
-import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
 
 import java.lang.ref.WeakReference;
 import java.util.List;

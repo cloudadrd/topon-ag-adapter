@@ -14,7 +14,7 @@ import com.google.common.io.Files
 ArrayList<String> networkLibsPath = new ArrayList<>();
 
 networkLibsPath.add("baidu");
-//networkLibsPath.add("gdt");
+networkLibsPath.add("gdt");
 //networkLibsPath.add("mintegral");
 networkLibsPath.add("pangle");
 //networkLibsPath.add("kuaishou");
@@ -93,9 +93,9 @@ repositories {
 
 dependencies {
     api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    implementation files('libs/growstarry_base_4.3.5_gt.jar')
-    implementation files('libs/growstarry_imageloader_4.3.5_gt.jar')
-    implementation files('libs/growstarry_video_4.3.5_gt.jar')
+    implementation files('libs/growstarry_base_4.4.0_gt.jar')
+    implementation files('libs/growstarry_imageloader_4.4.0_gt.jar')
+    implementation files('libs/growstarry_video_4.4.0_gt.jar')
 //    api fileTree(dir: "network", include: ["**/libs/*.jar", "**/libs/*.aar"])
 //            .exclude("mintegral_international/libs/*.jar")
 //            .exclude("mintegral_international/libs/*.aar")
