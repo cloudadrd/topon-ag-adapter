@@ -39,14 +39,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.test.ad.demo.InnerWebViewActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
-            android:name="com.test.ad.demo.InnerWebViewActivity2"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
             android:name="com.test.ad.demo.NativeAdActivity"
             android:label="AT Native"
             android:launchMode="singleTask" />

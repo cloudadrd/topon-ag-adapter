@@ -90,9 +90,18 @@ public class SmeiImpl implements ISdkMain {
         if (TextUtils.isEmpty(clientIp) || TextUtils.isEmpty(deviceId) || TextUtils.isEmpty(accessKey)) {
             SLog.e(TAG + " requestQuery fail,clientIp=" + clientIp + ",deviceId=" + deviceId + ",accessKey=" + accessKey);
             if (listener != null) {
-                listener.result(new TaskResult(true, 0, "", SdkType.SHUMEI));
+                listener.result(new TaskResult(true, 0, "deviceId is null", SdkType.SHUMEI));
             }
+            return;
         }
+        if (deviceId.length() > 128) {
+            SLog.e(TAG + " requestQuery deviceId length is too length. ");
+            if (listener != null) {
+                listener.result(new TaskResult(true, 0, "deviceId too length.", SdkType.SHUMEI));
+            }
+            return;
+        }
+
         JSONObject jsonObj = new JSONObject();
         try {
             jsonObj.put("accessKey", accessKey);
@@ -111,6 +120,7 @@ public class SmeiImpl implements ISdkMain {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            return;
         }
 
         String requestBody = jsonObj.toString();

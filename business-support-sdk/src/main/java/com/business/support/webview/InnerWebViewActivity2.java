@@ -1,4 +1,4 @@
-package com.test.ad.demo;
+package com.business.support.webview;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
@@ -37,17 +36,18 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.adsgreat.base.Assets;
-import com.adsgreat.base.config.Const;
-import com.adsgreat.base.utils.ContextHolder;
-import com.adsgreat.base.utils.Utils;
+import com.business.support.R;
+import com.business.support.config.Assets;
+import com.business.support.config.Const;
+import com.business.support.utils.BeanUtils;
+import com.business.support.utils.ContextHolder;
+import com.business.support.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.adsgreat.base.utils.Utils.dp2px;
 
 public class InnerWebViewActivity2 extends Activity {
 
@@ -74,6 +74,14 @@ public class InnerWebViewActivity2 extends Activity {
     @SuppressLint("StaticFieldLeak")
     private CacheWebView webView = null;
 
+    public static void launch(Context context, String loadUrl) {
+        Intent intent = new Intent(context, InnerWebViewActivity2.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_URL, loadUrl);
+        intent.putExtras(bundle);
+        ContextHolder.getGlobalAppContext().startActivity(intent);
+    }
 
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
     @Override
@@ -84,7 +92,7 @@ public class InnerWebViewActivity2 extends Activity {
         AppInstallReceiver.registerReceiver(getApplicationContext());
         View view = generateLayout(this);
         setContentView(view);
-        String link = "file:///android_asset/test.html";
+        String link = getIntent().getStringExtra(KEY_URL);  //跳转链接
         view.post(new Runnable() {
             @Override
             public void run() {
@@ -282,20 +290,16 @@ public class InnerWebViewActivity2 extends Activity {
         mSelectPhotoDialog = new SelectDialog(this, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.tv_camera:
-                        dispatchTakePictureIntent();
-
-                        break;
-                    case R.id.tv_photo:
-                        takePhoto();
-                        break;
+                int id = v.getId();
+                if (id == R.id.tv_camera) {
+                    dispatchTakePictureIntent();
+                } else if (id == R.id.tv_photo) {
+                    takePhoto();
                     //不管选择还是不选择，必须有返回结果，否则就会调用一次
-                    case R.id.tv_cancel:
-                        if (uploadMessageAboveL == null) return;
-                        uploadMessageAboveL.onReceiveValue(null);
-                        uploadMessageAboveL = null;
-                        break;
+                } else if (id == R.id.tv_cancel) {
+                    if (uploadMessageAboveL == null) return;
+                    uploadMessageAboveL.onReceiveValue(null);
+                    uploadMessageAboveL = null;
                 }
             }
 
@@ -336,7 +340,7 @@ public class InnerWebViewActivity2 extends Activity {
         progressBar.setProgressDrawable(Utils.getDrawable(android.R.drawable.progress_horizontal));
         progressBar.setIndeterminateDrawable(Utils.getDrawable(android.R.drawable.progress_indeterminate_horizontal));
         layoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT, dp2px(3));
+                RelativeLayout.LayoutParams.MATCH_PARENT, Utils.dp2px(3));
         relativeLayout.addView(progressBar, layoutParams);
 
         //webview
@@ -360,10 +364,10 @@ public class InnerWebViewActivity2 extends Activity {
         });
         btnClose.setVisibility(View.GONE);
         RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(
-                dp2px(28), dp2px(28));
+                Utils.dp2px(28), Utils.dp2px(28));
         layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        layoutParams2.topMargin = dp2px(5);
-        layoutParams2.rightMargin = dp2px(5);
+        layoutParams2.topMargin = Utils.dp2px(5);
+        layoutParams2.rightMargin = Utils.dp2px(5);
         relativeLayout.addView(btnClose, layoutParams2);
         return relativeLayout;
     }

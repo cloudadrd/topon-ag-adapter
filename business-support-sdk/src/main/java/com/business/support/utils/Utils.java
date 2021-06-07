@@ -4,13 +4,17 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.annotation.Keep;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.TypedValue;
 import android.webkit.WebSettings;
 
 import org.json.JSONException;
@@ -21,8 +25,12 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
+
+
+    private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
     private static String userAgentStr;
 
@@ -264,5 +272,33 @@ public class Utils {
         }
         return srcObj;
     }
+
+    public static int dp2px(int dpVal) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dpVal, Resources.getSystem().getDisplayMetrics());
+    }
+
+    public static Drawable getDrawable(int resId) {
+        return ContextHolder.getGlobalAppContext().getResources().getDrawable(resId);
+    }
+    /**
+     * This value will not collide with ID values generated at build time by aapt for R.id.
+     * 用于代码实现布局时为view设置ID
+     *
+     * @return a generated ID value
+     */
+    @Keep
+    public static int generateViewId() {
+        for (; ; ) {
+            final int result = sNextGeneratedId.get();
+            // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+            int newValue = result + 1;
+            if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
+            if (sNextGeneratedId.compareAndSet(result, newValue)) {
+                return result;
+            }
+        }
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package com.test.ad.demo;
+package com.business.support.webview;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.MainThread;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
@@ -21,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,6 +37,8 @@ public class AdVideoInterface {
 
     private final AdVideoMediation mAdVideoMediationHelper;
 
+    public static WebViewToNativeListener nativeListener = null;
+
     private String callback;
 
     public AdVideoInterface(CacheWebView webView, AdVideoMediation adVideoMediationHelper) {
@@ -48,7 +50,7 @@ public class AdVideoInterface {
     }
 
     @JavascriptInterface
-    public void showAd(String callback) {
+    public void showAd(final String callback) {
         webView.post(new Runnable() {
             @Override
             public void run() {
@@ -72,7 +74,7 @@ public class AdVideoInterface {
     }
 
     @JavascriptInterface
-    public void customCall(int event, String params) {
+    public void customCall(final int event, final String params) {
         webView.post(new Runnable() {
             @Override
             public void run() {
@@ -81,6 +83,8 @@ public class AdVideoInterface {
         });
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @MainThread
     private void customCallForMain(int event, String params) {
         switch (event) {
@@ -89,6 +93,9 @@ public class AdVideoInterface {
                     Log.d(TAG, "call customCallForMain, type is 1, webView.getCustomContext() is InnerWebViewActivity.");
                     InnerWebViewActivity activity = (InnerWebViewActivity) webView.getCustomContext();
                     if (!activity.isDestroyed()) {
+                        if (nativeListener != null) {
+                            nativeListener.event1(activity);
+                        }
 //                        activity.startActivity(new Intent(activity,AppActivity.class));
 //                        activity.finish();
                         //调微信
@@ -102,6 +109,9 @@ public class AdVideoInterface {
                     Log.d(TAG, "call customCallForMain, type is 2, webView.getCustomContext() is InnerWebViewActivity.");
                     InnerWebViewActivity2 activity = (InnerWebViewActivity2) webView.getCustomContext();
                     if (!activity.isDestroyed()) {
+                        if (nativeListener != null) {
+                            nativeListener.event2(activity);
+                        }
                         activity.compat(activity, Color.parseColor(params));
                         //调微信
                     } else {
@@ -219,28 +229,28 @@ public class AdVideoInterface {
         DownloadManager.download(webView.getCustomContext().getApplicationContext(), url, pkg, new LoadListener() {
             @Override
             public void onStart(FileInfo fileInfo) {
-                notifyDownStated(fileInfo.getFileName(), DownloadState.START, 0);
+                notifyDownStated(fileInfo.getFileName().replace(".apk.temp", ""), DownloadState.START, 0);
             }
 
             @Override
             public void onUpdate(FileInfo fileInfo) {
-                notifyDownStated(fileInfo.getFileName(), DownloadState.UPDATE, fileInfo.getFinished());
+                notifyDownStated(fileInfo.getFileName().replace(".apk.temp", ""), DownloadState.UPDATE, fileInfo.getFinished());
             }
 
             @Override
             public void onSuccess(FileInfo fileInfo) {
-                notifyDownStated(fileInfo.getFileName(), DownloadState.SUCCESS, 0);
+                notifyDownStated(fileInfo.getFileName().replace(".apk.temp", ""), DownloadState.SUCCESS, 0);
             }
 
             @Override
             public void onFailed(FileInfo fileInfo) {
-                notifyDownStated(fileInfo.getFileName(), DownloadState.FAILED, 0);
+                notifyDownStated(fileInfo.getFileName().replace(".apk.temp", ""), DownloadState.FAILED, 0);
             }
         });
     }
 
     @MainThread
-    public void notifyDownStated(String pkg, DownloadState state, long progress) {
+    public void notifyDownStated(final String pkg, final DownloadState state, final long progress) {
         webView.post(new Runnable() {
             @Override
             public void run() {
@@ -294,6 +304,9 @@ public class AdVideoInterface {
         try {
             JSONObject properties = new JSONObject();
             properties.put("action", action);
+            if (nativeListener != null) {
+                nativeListener.tracking(name, properties);
+            }
 //            AppActivity.app.biInstance.track(name, properties);
             Log.d(TAG, "tracking name=" + name + ",action=" + action);
         } catch (JSONException e) {

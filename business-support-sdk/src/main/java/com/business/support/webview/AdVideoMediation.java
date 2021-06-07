@@ -1,4 +1,4 @@
-package com.test.ad.demo;
+package com.business.support.webview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -12,7 +12,6 @@ import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoListener;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

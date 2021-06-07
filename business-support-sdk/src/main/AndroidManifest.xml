@@ -12,6 +12,16 @@
     <!-- 强烈建议权限 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <application android:usesCleartextTraffic="true" />
+    <application android:usesCleartextTraffic="true">
+        <activity
+            android:name=".webview.InnerWebViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name=".webview.InnerWebViewActivity2"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+    </application> ddd
 
 </manifest>

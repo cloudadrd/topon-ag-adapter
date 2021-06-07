@@ -1,26 +1,19 @@
-package com.test.ad.demo;
+package com.business.support.webview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.webkit.DownloadListener;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.adsgreat.base.config.Const;
 
 import static android.content.Context.MODE_PRIVATE;
+
+import com.business.support.config.Const;
 
 public class CacheWebView extends WebView {
 

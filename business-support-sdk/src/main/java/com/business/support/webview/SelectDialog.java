@@ -1,4 +1,4 @@
-package com.test.ad.demo;
+package com.business.support.webview;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.business.support.R;
 
 public class SelectDialog extends Dialog {
 

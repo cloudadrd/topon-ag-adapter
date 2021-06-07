@@ -12,6 +12,7 @@
       }
 
 
+
     </style>
     <script type="text/javascript">
 
@@ -97,7 +98,7 @@
 
         function notifyDownStated(pkg,state,progress){
 
-            var str="fileName={0}，state={1},progress={2} ";
+            var str="pkg={0}，state={1},progress={2} ";
             switch(state){
                 case 1:
                     str=str.format(pkg,"开始下载 "+state,progress);
@@ -154,6 +155,7 @@
         var params='{"pkg":"com.cg.caige"}'
         android.customCall(4,params)
     }
+
 
 
     </script>

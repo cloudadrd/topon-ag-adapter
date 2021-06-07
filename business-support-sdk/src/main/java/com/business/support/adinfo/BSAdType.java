@@ -1,4 +1,4 @@
-package adinfo;
+package com.business.support.adinfo;
 
 public enum BSAdType {
 

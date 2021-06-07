@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import com.business.support.compose.SIDListener;
 import com.business.support.compose.SdkTaskManager;
@@ -25,6 +26,11 @@ import com.business.support.smsdk.SmeiImpl;
 import com.business.support.utils.ContextHolder;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
+import com.business.support.webview.AdVideoInterface;
+import com.business.support.webview.CacheWebView;
+import com.business.support.webview.InnerWebViewActivity;
+import com.business.support.webview.InnerWebViewActivity2;
+import com.business.support.webview.WebViewToNativeListener;
 import com.bytedance.sdk.openadsdk.activity.base.TTRewardVideoActivity;
 import com.qq.e.ads.ADActivity;
 import com.qq.e.comm.managers.GDTADManager;
@@ -36,7 +42,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-import adinfo.BSAdType;
+import com.business.support.adinfo.BSAdType;
+
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
 public class YMBusinessService {
@@ -76,6 +83,28 @@ public class YMBusinessService {
                 });
 
         optimizeAdInfo();
+    }
+
+
+    /**
+     * 带缓存的webview，可以提前创建cacheWebView并且加载
+     */
+    public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, WebViewToNativeListener listener) {
+        if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
+            viewGroup.removeView(cacheWebView);
+        }
+        AdVideoInterface.nativeListener = listener;
+        //带缓存的webview，可以提前创建cacheWebView并且加载
+        InnerWebViewActivity.launch(context, cacheWebView);
+    }
+
+    /**
+     * //不带缓存的webview
+     */
+    public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener) {
+        AdVideoInterface.nativeListener = listener;
+        InnerWebViewActivity2.launch(context, linkUrl);
     }
 
 
@@ -307,7 +336,7 @@ public class YMBusinessService {
                 iconUrl = iconObj.optString("url");
             }
 
-            JSONObject appObj = tempObj.optJSONObject("app") ;
+            JSONObject appObj = tempObj.optJSONObject("app");
             if (appObj != null) {
                 appName = appObj.optString("app_name");
                 packageName = appObj.optString("package_name");

@@ -16,14 +16,18 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.anythink.custom.adapter.OAIDHandler;
+import com.baidu.mobads.sdk.api.AppActivity;
 import com.business.support.StrategyInfoListener;
 import com.business.support.YMBusinessService;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
+import com.business.support.webview.CacheWebView;
+import com.business.support.webview.InnerWebViewActivity;
+import com.business.support.webview.InnerWebViewActivity2;
+import com.business.support.webview.WebViewToNativeListener;
 
-import cn.thinkingdata.android.TDConfig;
-import cn.thinkingdata.android.ThinkingAnalyticsSDK;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
 
@@ -108,11 +112,23 @@ public class MainActivity extends Activity {
         findViewById(R.id.webviewBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
-                    ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
-                    viewGroup.removeView(cacheWebView);
-                }
-                InnerWebViewActivity.launch(MainActivity.this, cacheWebView);
+
+                YMBusinessService.startCacheWebViewPage(MainActivity.this, cacheWebView, new WebViewToNativeListener() {
+                    @Override
+                    public void event1(InnerWebViewActivity activity) {
+
+                    }
+
+                    @Override
+                    public void event2(InnerWebViewActivity2 activity) {
+
+                    }
+
+                    @Override
+                    public void tracking(String name, JSONObject properties) {
+//                        AppActivity.app.biInstance.track(name, properties);
+                    }
+                });
             }
         });
 
@@ -120,9 +136,26 @@ public class MainActivity extends Activity {
         findViewById(R.id.webviewBtn2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, InnerWebViewActivity2.class));
+                //不带缓存的webview
+                YMBusinessService.startWebViewPage(MainActivity.this, "file:///android_asset/test.html", new WebViewToNativeListener() {
+                    @Override
+                    public void event1(InnerWebViewActivity activity) {
+
+                    }
+
+                    @Override
+                    public void event2(InnerWebViewActivity2 activity) {
+
+                    }
+
+                    @Override
+                    public void tracking(String name, JSONObject properties) {
+//                        AppActivity.app.biInstance.track(name, properties);
+                    }
+                });
             }
         });
+
 
         findViewById(R.id.contentBtn).setOnClickListener(new View.OnClickListener() {
             @Override

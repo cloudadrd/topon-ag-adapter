@@ -27,7 +27,7 @@ import java.util.Map;
 
 import com.business.support.YMBusinessService;
 
-import adinfo.BSAdType;
+import com.business.support.adinfo.BSAdType;
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 

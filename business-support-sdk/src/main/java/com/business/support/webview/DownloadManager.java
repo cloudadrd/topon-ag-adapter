@@ -1,20 +1,15 @@
-package com.test.ad.demo;
+package com.business.support.webview;
 
 import android.content.Context;
 import android.support.annotation.Keep;
-import android.text.format.DateUtils;
 import android.util.Log;
-import android.util.TimeUtils;
 
-import com.adsgreat.base.config.Const;
-import com.adsgreat.base.utils.ContextHolder;
+import com.business.support.utils.ContextHolder;
 import com.zcoup.multidownload.MultiDownloadManager;
 import com.zcoup.multidownload.entitis.FileInfo;
 import com.zcoup.multidownload.service.LoadListener;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -74,7 +69,7 @@ public class DownloadManager {
 
     private final static String TAG = "DownloadManager";
 
-    public static void download(Context context, String url, String packageName, LoadListener loadListener) {
+    public static void download(Context context, String url, final String packageName, final LoadListener loadListener) {
 
         DownloadInfo info = APK_LIST.get(packageName);
         if (info != null) {
@@ -91,7 +86,7 @@ public class DownloadManager {
             }
         }
 
-        FileInfo fileInfo = new FileInfo(url, getFileName(packageName), PATH, 3, 80,
+        FileInfo fileInfo = new FileInfo(url, getFileName(packageName) + ".temp", PATH, 3, 80,
                 true, new LoadListener() {
             @Override
             public void onStart(FileInfo fileInfo) {
@@ -99,7 +94,7 @@ public class DownloadManager {
                 DownloadInfo info = new DownloadInfo();
                 info.path = PATH + fileInfo.getFileName();
                 info.downState = DownloadState.START;
-                APK_LIST.put(fileInfo.getFileName(), info);
+                APK_LIST.put(packageName, info);
                 if (loadListener != null) {
                     loadListener.onStart(fileInfo);
                 }
@@ -117,9 +112,19 @@ public class DownloadManager {
             public void onSuccess(FileInfo fileInfo) {
                 Log.i(TAG, "下载成功: >> " + fileInfo.getFileName());
 
-                DownloadInfo info = APK_LIST.get(fileInfo.getFileName());
+                DownloadInfo info = APK_LIST.get(packageName);
                 if (info != null) {
                     info.downState = DownloadState.SUCCESS;
+                }
+                try {
+                    String filePath = getPath(packageName) + ".temp";
+                    File file = new File(filePath);
+                    if (file.exists() && file.isFile()) {
+                        file.renameTo(new File(filePath.replace(".temp", "")));
+                    }
+                    new File(filePath).delete();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 if (loadListener != null) {
                     loadListener.onSuccess(fileInfo);
@@ -129,7 +134,7 @@ public class DownloadManager {
             @Override
             public void onFailed(FileInfo fileInfo) {
                 Log.i(TAG, "下载失败: >> " + fileInfo.getFileName());
-                DownloadManager.APK_LIST.remove(fileInfo.getFileName());
+                DownloadManager.APK_LIST.remove(packageName);
                 if (loadListener != null) {
                     loadListener.onFailed(fileInfo);
                 }
