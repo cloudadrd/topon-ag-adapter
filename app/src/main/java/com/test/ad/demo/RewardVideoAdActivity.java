@@ -28,6 +28,7 @@ import java.util.Map;
 import com.business.support.YMBusinessService;
 
 import com.business.support.adinfo.BSAdType;
+
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
@@ -118,10 +119,6 @@ public class RewardVideoAdActivity extends Activity {
             }
         });
 
-        TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
-        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
-        biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
-
     }
 
 
@@ -158,9 +155,9 @@ public class RewardVideoAdActivity extends Activity {
                 Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayStart", Toast.LENGTH_SHORT).show();
                 int firmId = entity.getNetworkFirmId();
                 if (firmId == 8) {
-                    YMBusinessService.setAdInfo(biInstance, entity.getEcpm(), BSAdType.GDT);
+                    YMBusinessService.setAdInfo(entity.getEcpm(), BSAdType.GDT);
                 } else if (firmId == 15) {
-                    YMBusinessService.setAdInfo(biInstance, entity.getEcpm(), BSAdType.PANGLE);
+                    YMBusinessService.setAdInfo(entity.getEcpm(), BSAdType.PANGLE);
                 }
 
             }

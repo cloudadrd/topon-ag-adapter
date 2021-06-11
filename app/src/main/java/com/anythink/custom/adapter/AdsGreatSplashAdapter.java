@@ -1,5 +1,6 @@
 //package com.anythink.custom.adapter;
 //
+//import android.app.Activity;
 //import android.content.Context;
 //import android.os.CountDownTimer;
 //import android.text.TextUtils;
@@ -176,6 +177,11 @@
 //    }
 //
 //    @Override
+//    public boolean isAdReady() {
+//        return false;
+//    }
+//
+//    @Override
 //    public void destory() {
 //        if (timer != null) {
 //            timer.cancel();
@@ -193,6 +199,10 @@
 //        return Const.getVersionNumber();
 //    }
 //
+//    @Override
+//    public void show(Activity activity, ViewGroup viewGroup) {
+//
+//    }
 //
 //
 //    static class SplashEventListener extends AdEventListener {

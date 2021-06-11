@@ -1,5 +1,9 @@
 package com.business.support.reallycheck;
 
+import static android.Manifest.permission.BLUETOOTH;
+import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.content.Context.SENSOR_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -10,16 +14,17 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.business.support.utils.CommandUtils;
+import com.business.support.utils.ReflectUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.Arrays;
-
-import static android.Manifest.permission.BLUETOOTH;
-import static android.Manifest.permission.READ_PHONE_STATE;
 
 public class EmulatorCheck {
 
@@ -27,21 +32,6 @@ public class EmulatorCheck {
     private static final String TAG = "EmulatorCheck";
 
     public static ResultData validCheck(Context context) {
-//        if (notHasBlueTooth()
-//                || notHasLightSensorManager(context)
-//                || isFeatures()
-//                || checkIsNotRealPhone()
-//                || checkPipes()
-//                || checkEmulatorBuild7()
-//                || isEmulatorFromAbi()
-//                || checkDeviceIDS5(context)
-//                || checkQEmuDriverFile2()
-//                || checkEmulatorFiles3()
-//                || checkOperatorNameAndroid8(context)
-//        ) {
-//            Log.e(TAG, "检查到您的设备违规,将限制您的所有功能使用!");
-//            return false;
-//        }
 
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -49,12 +39,9 @@ public class EmulatorCheck {
 //            Log.e(TAG, "notHasBlueTooth");
             stringBuilder.append("1");
         }
-//        if (notHasLightSensorManager(context)) {
-////            Log.e(TAG, "notHasLightSensorManager");
-//            stringBuilder.append(",2");
-//        }
-        if (isFeatures()) {
-//            Log.e(TAG, "isFeatures");
+
+        if (buildCheck()) {
+//            Log.e(TAG, "buildCheck");
             stringBuilder.append(",3");
         }
 
@@ -93,7 +80,73 @@ public class EmulatorCheck {
             stringBuilder.append(",11");
         }
 
-        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(),30);
+        //////////START///
+        if (qemuCheck(context)) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",12");
+        }
+
+        if (getUserAppNumber()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",13");
+        }
+
+        if (!supportCamera(context)) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",14");
+        }
+
+        if (checkFeaturesByCgroup()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",15");
+        }
+
+        if (checkFeaturesByHardware()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",16");
+        }
+
+        if (checkFeaturesByFlavor()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",17");
+        }
+
+        if (checkFeaturesByModel()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",18");
+        }
+
+        if (checkFeaturesByManufacturer()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",19");
+        }
+
+        if (checkFeaturesByBoard()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",20");
+        }
+
+        if (checkFeaturesByPlatform()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",21");
+        }
+
+        if (checkFeaturesByBaseBand()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",22");
+        }
+
+        if (getSensorNumber(context)) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",23");
+        }
+
+        if (checkSystemProperty()) {
+//            Log.e(TAG, "checkOperatorNameAndroid8");
+            stringBuilder.append(",24");
+        }
+
+        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(), 30);
 
     }
 
@@ -121,28 +174,70 @@ public class EmulatorCheck {
         }
     }
 
-    //依据是否存在光传感器来判断是否为模拟器
-    public static Boolean notHasLightSensorManager(Context context) {
-        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        Sensor sensor8 = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT); //光
-        if (null == sensor8) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    public static boolean isFeatures() {
-        return Build.FINGERPRINT.startsWith("generic")
-                || Build.FINGERPRINT.startsWith("Android")
-                || Build.FINGERPRINT.toLowerCase().contains("vbox")
-                || Build.FINGERPRINT.toLowerCase().contains("test-keys")
-                || Build.MODEL.contains("google_sdk")
-                || Build.MODEL.contains("Emulator")
-                || Build.MODEL.contains("Android SDK built for x86")
-                || Build.MANUFACTURER.contains("Genymotion")
-                || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-                || "google_sdk".equals(Build.PRODUCT);
+    /**
+     * Build 文件检测
+     */
+    public static boolean buildCheck() {
+
+        if (Build.PRODUCT.contains("sdk") ||
+                Build.PRODUCT.contains("sdk_x86") ||
+                Build.PRODUCT.contains("sdk_google") ||
+                "google_sdk".equals(Build.PRODUCT) ||
+                Build.PRODUCT.contains("Andy") ||
+                Build.PRODUCT.contains("Droid4X") ||
+                Build.PRODUCT.contains("nox") ||
+                Build.PRODUCT.contains("vbox86p") ||
+                Build.PRODUCT.contains("aries")) {
+            return true;
+        }
+        if (Build.MANUFACTURER.equals("Genymotion") ||
+                Build.MANUFACTURER.contains("Andy") ||
+                Build.MANUFACTURER.contains("nox") ||
+                Build.MANUFACTURER.contains("TiantianVM")) {
+            return true;
+        }
+        if (Build.BRAND.contains("Andy") ||
+                (Build.BRAND.startsWith("generic")
+                        && Build.DEVICE.startsWith("generic"))) {
+            return true;
+        }
+        if (Build.DEVICE.contains("Andy") ||
+                Build.DEVICE.contains("Droid4X") ||
+                Build.DEVICE.contains("nox") ||
+                Build.DEVICE.contains("vbox86p") ||
+                Build.DEVICE.contains("aries")) {
+            return true;
+        }
+        if (Build.MODEL.contains("Emulator") ||
+                Build.MODEL.equals("google_sdk") ||
+                Build.MODEL.contains("Droid4X") ||
+                Build.MODEL.contains("TiantianVM") ||
+                Build.MODEL.contains("Andy") ||
+                Build.MODEL.equals("Android SDK built for x86_64") ||
+                Build.MODEL.equals("Android SDK built for x86")) {
+            return true;
+        }
+        if (Build.HARDWARE.equals("vbox86") ||
+                Build.HARDWARE.contains("nox") ||
+                Build.HARDWARE.contains("ttVM_x86")) {
+            return true;
+        }
+        if (Build.FINGERPRINT.contains("generic/sdk/generic") ||
+                Build.FINGERPRINT.startsWith("generic") ||
+                Build.FINGERPRINT.startsWith("Android") ||
+                Build.FINGERPRINT.toLowerCase().contains("vbox") ||
+                Build.FINGERPRINT.toLowerCase().contains("test-keys") ||
+                Build.FINGERPRINT.contains("generic_x86/sdk_x86/generic_x86") ||
+                Build.FINGERPRINT.contains("Andy") ||
+                Build.FINGERPRINT.contains("ttVM_Hdragon") ||
+                Build.FINGERPRINT.contains("generic/google_sdk/generic") ||
+                Build.FINGERPRINT.contains("vbox86p") ||
+                Build.FINGERPRINT.contains("generic/vbox86p/vbox86p")) {
+            return true;
+        }
+
+        return false;
     }
 
     //用途:根据CPU是否为电脑来判断是否为模拟器
@@ -166,9 +261,7 @@ public class EmulatorCheck {
         return !TextUtils.isEmpty(abi) && abi.contains("x86");
     }
 
-    private static String[] known_device_ids = {"000000000000000" // 默认ID
-    };
-    private static String[] known_imsi_ids = {"310260000000000" // 默认的 imsi id
+    private static final String[] known_device_ids = {"000000000000000" // 默认ID
     };
 
     /**
@@ -276,29 +369,6 @@ public class EmulatorCheck {
     }
 
 
-//    /**
-//     * 方法6
-//     */
-//    public static Boolean checkImsiIDS6(Context context) {
-//        if (!isPermissionGranted(context, READ_PHONE_STATE) ) {
-//            return false;
-//        }
-//        TelephonyManager telephonyManager = (TelephonyManager)
-//                context.getSystemService(Context.TELEPHONY_SERVICE);
-//
-//        @SuppressLint("HardwareIds") String imsi_ids = telephonyManager.getSubscriberId();
-//        if (!TextUtils.isEmpty(imsi_ids)) {
-//            for (String know_imsi : known_imsi_ids) {
-//                if (know_imsi.equalsIgnoreCase(imsi_ids)) {
-////                    Log.v(TAG, "Result: Find imsi ids: 310260000000000!");
-//                    return true;
-//                }
-//            }
-//        }
-////        Log.v(TAG, "Result: Not Find imsi ids: 310260000000000!");
-//        return false;
-//    }
-
     public static boolean isPermissionGranted(final Context context, final String permission) {
         if (null == context || TextUtils.isEmpty(permission)) {
 //            Log.e(TAG, String.format("[msg=check android permission][parameter is null or empty][permission=%s]", permission));
@@ -358,5 +428,230 @@ public class EmulatorCheck {
 //        Log.i("Result:", "Not Find pipes!");
         return false;
     }
+
+    public static boolean qemuCheck(Context context) {
+        String qemu = getProp(context, "ro.kernel.qemu");
+        return "1".equals(qemu);
+    }
+
+    /**
+     * 获取已安装第三方应用数量
+     */
+    private static boolean getUserAppNumber() {
+        String userApps = CommandUtils.execute("pm list package -3");
+        return getUserAppNum(userApps) <= 5;
+    }
+
+    /**
+     * 是否支持相机
+     */
+    private static boolean supportCamera(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+    }
+
+    /**
+     * 特征参数-进程组信息,一般都是有内容的，文件格式如下：
+     * 6:memory:/
+     * 5:freezer:/
+     * 4:cpuset:/
+     * 3:cpuacct:/uid_0/pid_22029
+     * 2:cpu:/
+     * 1:blkio:/
+     * 0::/
+     */
+    private static boolean checkFeaturesByCgroup() {
+        String filter = CommandUtils.execute("cat /proc/self/cgroup");
+        return TextUtils.isEmpty(filter);
+    }
+
+    /**
+     * 特征参数-硬件名称
+     */
+    private static boolean checkFeaturesByHardware() {
+        String hardware = getProperty("ro.hardware");
+        if (null == hardware) {
+            return false;
+        }
+        int result;
+        String tempValue = hardware.toLowerCase();
+        switch (tempValue) {
+            case "ttvm"://天天模拟器
+            case "nox"://夜神模拟器
+            case "cancro"://网易MUMU模拟器
+            case "intel"://逍遥模拟器
+            case "vbox":
+            case "vbox86"://腾讯手游助手
+            case "android_x86"://雷电模拟器
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 特征参数-渠道
+     */
+    private static boolean checkFeaturesByFlavor() {
+        String flavor = getProperty("ro.build.flavor");
+        if (null == flavor) {
+            return false;
+        }
+        String tempValue = flavor.toLowerCase();
+        if (tempValue.contains("vbox")) {
+            return true;
+        } else return tempValue.contains("sdk_gphone");
+    }
+
+    /**
+     * 特征参数-设备型号
+     */
+    private static boolean checkFeaturesByModel() {
+        String model = getProperty("ro.product.model");
+        if (null == model) {
+            return false;
+        }
+        String tempValue = model.toLowerCase();
+        if (tempValue.contains("google_sdk")) {
+            return true;
+        } else if (tempValue.contains("emulator")) {
+            return true;
+        } else return tempValue.contains("android sdk built for x86");
+    }
+
+    /**
+     * 特征参数-硬件制造商
+     */
+    private static boolean checkFeaturesByManufacturer() {
+        String manufacturer = getProperty("ro.product.manufacturer");
+        if (null == manufacturer) {
+            return false;
+        }
+        String tempValue = manufacturer.toLowerCase();
+        //网易MUMU模拟器
+        if (tempValue.contains("genymotion")) {
+            return true;
+        } else return tempValue.contains("netease");
+    }
+
+    /**
+     * 特征参数-主板名称
+     */
+    private static boolean checkFeaturesByBoard() {
+        String board = getProperty("ro.product.board");
+        if (null == board) {
+            return false;
+        }
+        String tempValue = board.toLowerCase();
+        if (tempValue.contains("android")) {
+            return true;
+        } else return tempValue.contains("goldfish");
+    }
+
+    /**
+     * 特征参数-主板平台
+     */
+    private static boolean checkFeaturesByPlatform() {
+        String platform = getProperty("ro.board.platform");
+        if (null == platform) {
+            return false;
+        }
+        String tempValue = platform.toLowerCase();
+        return tempValue.contains("android");
+    }
+
+    /**
+     * 特征参数-基带信息
+     */
+    private static boolean checkFeaturesByBaseBand() {
+        String baseBandVersion = getProperty("gsm.version.baseband");
+        if (null == baseBandVersion) {
+            return false;
+        }
+        return baseBandVersion.contains("1.0.0.0");
+    }
+
+    /**
+     * 获取传感器数量
+     */
+    private static boolean getSensorNumber(Context context) {
+        SensorManager sm = (SensorManager) context.getSystemService(SENSOR_SERVICE);
+        return sm.getSensorList(Sensor.TYPE_ALL).size() <= 7;
+    }
+
+    /**
+     * 检测系统属性，非常可靠
+     * <p>
+     * 1. data.unique.br_list.arch 为 i686
+     * 2. data.unique.br_list.har 为 intel 或 vbox86 或包含 x86
+     * 3. data.unique.br_list.a 为 x86
+     * 4. data.unique.br_list.a_list 包含 x86
+     * 5. sound 信息为 I82801AAICH
+     * 6. su_v 为 16 com.android.settings
+     *
+     * @return
+     */
+    public static boolean checkSystemProperty() {
+
+        String hardware = ReflectUtils.getProperty("ro.hardware");
+        if (hardware.contains("intel")
+                || hardware.contains("vbox86")
+                || hardware.contains("vbox")
+                || hardware.contains("ttvm")
+                || hardware.contains("cancro")
+                || hardware.contains("nox")
+                || hardware.contains("x86")) {
+            return true;
+        }
+        String abi = ReflectUtils.getProperty("ro.product.cpu.abi");
+        if (abi.contains("x86")) {
+            return true;
+        }
+        String abilist = ReflectUtils.getProperty("ro.product.cpu.abilist");
+        if (abilist.contains("x86")) {
+            return true;
+        }
+        String arch = CommandUtils.execute("uname -m");
+        if (arch.contains("i686")) {
+            return true;
+        }
+        String su = CommandUtils.execute("su -v");
+        if (TextUtils.equals("16 com.android.settings", su)) {
+            return true;
+        }
+        String sound = CommandUtils.execute("cat /proc/asound/card0/id");
+        if (TextUtils.equals("I82801AAICH", sound)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private static int getUserAppNum(String userApps) {
+        if (TextUtils.isEmpty(userApps)) {
+            return 0;
+        }
+        String[] result = userApps.split("package:");
+        return result.length;
+    }
+
+    private static String getProp(Context context, String property) {
+        try {
+            ClassLoader cl = context.getClassLoader();
+            Class<?> SystemProperties = cl.loadClass("android.os.SystemProperties");
+            Method method = SystemProperties.getMethod("get", String.class);
+            Object[] params = new Object[1];
+            params[0] = property;
+            return (String) method.invoke(SystemProperties, params);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static String getProperty(String propName) {
+        String property = ReflectUtils.getProperty(propName);
+        return TextUtils.isEmpty(property) ? null : property;
+    }
+
 
 }

@@ -2,12 +2,15 @@ package com.business.support.utils;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.Keep;
@@ -281,6 +284,7 @@ public class Utils {
     public static Drawable getDrawable(int resId) {
         return ContextHolder.getGlobalAppContext().getResources().getDrawable(resId);
     }
+
     /**
      * This value will not collide with ID values generated at build time by aapt for R.id.
      * 用于代码实现布局时为view设置ID
@@ -299,6 +303,7 @@ public class Utils {
             }
         }
     }
+
 
 
 }

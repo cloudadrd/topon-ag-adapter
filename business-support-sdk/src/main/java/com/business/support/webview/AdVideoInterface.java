@@ -341,7 +341,7 @@ public class AdVideoInterface {
 
     public void trackState(AdLogType adLogType) {
         if (adLogType == null) return;
-        String loadStr = String.format("javascript:%s('%s','%s')", "callbackfun", AdVideoMediation.POSID, adLogType.getTypeId());
+        String loadStr = String.format("javascript:%s('%s','%s')", callback, AdVideoMediation.POSID, adLogType.getTypeId());
         Log.d(TAG, "trackState loaStr=" + loadStr);
         webView.loadUrl(loadStr);
     }

@@ -29,6 +29,9 @@ import com.business.support.webview.WebViewToNativeListener;
 
 import org.json.JSONObject;
 
+import cn.thinkingdata.android.TDConfig;
+import cn.thinkingdata.android.ThinkingAnalyticsSDK;
+
 public class MainActivity extends Activity {
 
     CacheWebView cacheWebView = null;
@@ -212,7 +215,11 @@ public class MainActivity extends Activity {
 //
 //        Log.i("check", "isWireShark=" + wireSharkResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
 
-        YMBusinessService.init(this,
+        TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
+        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
+        ThinkingAnalyticsSDK biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
+
+        YMBusinessService.init(this, biInstance,
                 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ==",
                 new SIDListener() {
                     @Override
@@ -228,17 +235,6 @@ public class MainActivity extends Activity {
                 });
 
 
-        InstallStateMonitor.register(this, new InstallListener() {
-            @Override
-            public void installedHit(String pkg) {
-                Log.i("check-tjt", "pkg=" + pkg);
-            }
-        });
-
-//        TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
-//        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
-//        ThinkingAnalyticsSDK biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
-//        YMBusinessService.optimizeAdInfo(biInstance);
     }
 
 

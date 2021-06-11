@@ -2,13 +2,17 @@ package com.business.support;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ViewGroup;
 
+import com.business.support.ascribe.InstallListener;
+import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
 import com.business.support.compose.SdkTaskManager;
 import com.business.support.compose.TaskResult;
@@ -18,6 +22,7 @@ import com.business.support.http.HttpRequester;
 import com.business.support.reallycheck.DebugCheck;
 import com.business.support.reallycheck.EmulatorCheck;
 import com.business.support.reallycheck.HookCheck;
+import com.business.support.reallycheck.VirtualAppCheck;
 import com.business.support.reallycheck.ResultData;
 import com.business.support.reallycheck.RootCheck;
 import com.business.support.reallycheck.WireSharkCheck;
@@ -55,8 +60,11 @@ public class YMBusinessService {
 
     private static JSONObject jsonGdtObj = null;
 
-    public static void init(final Context context, String shuMengApiKey, final SIDListener listener) {
+    private static ThinkingAnalyticsSDK mInstance = null;
+
+    public static void init(final Context context, ThinkingAnalyticsSDK instance, String shuMengApiKey, final SIDListener listener) {
         ContextHolder.init(context);
+        mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
                 .add(new ShuzilmImpl(), 100, 3000, shuMengApiKey)
@@ -83,8 +91,29 @@ public class YMBusinessService {
                 });
 
         optimizeAdInfo();
+        InstallStateMonitor.register(localContext, new MyInstallListener());
     }
 
+    public static final class MyInstallListener implements InstallListener {
+
+        @Override
+        public void installedHit(String pkg) {
+            SLog.i(TAG, "installedHit pkg=" + pkg);
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("ad_channel", "tt");
+                jsonObject.put("pkg_name", pkg);
+                if (mInstance != null) {
+                    mInstance.track("ad_install", jsonObject);
+                    mInstance.flush();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    }
 
     /**
      * 带缓存的webview，可以提前创建cacheWebView并且加载
@@ -120,6 +149,8 @@ public class YMBusinessService {
 
         ResultData debugResult = DebugCheck.validCheck(context);
 
+        ResultData moreOpenResult = VirtualAppCheck.validCheck(context);
+
         if (emulatorResult.isError()) {
             score += emulatorResult.getScore();
         }
@@ -140,6 +171,10 @@ public class YMBusinessService {
             score += debugResult.getScore();
         }
 
+        if (moreOpenResult.isError()) {
+            score += moreOpenResult.getScore();
+        }
+
 
         try {
             JSONObject jsonObject = new JSONObject(data);
@@ -150,6 +185,8 @@ public class YMBusinessService {
             jsonObject.put("Root", rootResult.isError());
             jsonObject.put("Debug", debugResult.isError());
             jsonObject.put("DebugMsg", debugResult.getErrorMessage());
+            jsonObject.put("VirtualApp", moreOpenResult.isError());
+            jsonObject.put("VirtualAppMsg", moreOpenResult.getErrorMessage());
 
             if (listener != null) {
                 listener.onSuccess(score, jsonObject.toString());
@@ -246,6 +283,33 @@ public class YMBusinessService {
 
     }
 
+    /**
+     * DeepLink方式打开，根据parseClickUrl
+     */
+    public static boolean openDeepLink(String deeplink, @Nullable String packageName) {
+        try {
+            Context context = ContextHolder.getGlobalAppContext();
+
+            Uri uri = Uri.parse(deeplink);
+            Intent it = new Intent(Intent.ACTION_VIEW, uri);
+            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (packageName != null) {
+                it.setPackage(packageName);
+            }
+
+            ComponentName componentName = it.resolveActivity(context.getPackageManager());
+
+            if (componentName != null) {    //已经安装该应用
+                context.startActivity(it);
+                return true;
+            }
+        } catch (Exception e) {
+            SLog.d(TAG, "openDeepLink failed::" + e.getMessage());
+        }
+
+        return false;
+    }
+
 
     private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = null;
 
@@ -258,14 +322,16 @@ public class YMBusinessService {
 
             @Override
             public void onActivityPreCreated(Activity activity, Bundle savedInstanceState) {
-                Log.e(TAG, "onActivityPreCreated activity=" + activity.getComponentName());
-                pangelDataHandler(activity, savedInstanceState);
-                gdtDataHandler(activity, savedInstanceState);
+                SLog.e(TAG, "onActivityPreCreated activity=" + activity.getComponentName());
+//                pangelDataHandler(activity, savedInstanceState);
+////                gdtDataHandler(activity, savedInstanceState);
             }
 
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
+                SLog.e(TAG, "onActivityCreated activity=" + activity.getComponentName());
+                pangelDataHandler(activity, savedInstanceState);
+                gdtDataHandler(activity, savedInstanceState);
             }
 
             @Override
@@ -324,6 +390,7 @@ public class YMBusinessService {
         }
 
         if (tempObj != null) {
+//            SLog.i(TAG, "pangelDataHandler resultStr=" + tempObj.toString());
             String iconUrl = null;
             String appName = null;
             String packageName = null;
@@ -396,8 +463,8 @@ public class YMBusinessService {
             try {
                 pOFactory = GDTADManager.getInstance().getPM().getPOFactory();
             } catch (com.qq.e.comm.managers.plugin.c c) {
-                SLog.e(TAG, "gdtDataHandler getPOFactory error=" + c.getMessage());
-//                c.printStackTrace();
+//                SLog.e(TAG, "gdtDataHandler getPOFactory error=" + c.getMessage());
+                c.printStackTrace();
                 return;
             }
             Intent intent = activity.getIntent();
@@ -434,6 +501,7 @@ public class YMBusinessService {
                 videoUrl = jsonObject.optString("video");
                 JSONObject ext = jsonObject.optJSONObject("ext");
 
+                SLog.i(TAG, "gdtDataHandler resultStr=" + jsonStr);
                 if (ext != null) {
                     appName = ext.optString("appname");
                     packageName = ext.optString("packagename");
@@ -467,9 +535,9 @@ public class YMBusinessService {
         }
     }
 
-    public static void setAdInfo(final ThinkingAnalyticsSDK instance, double ecpm, BSAdType
+    public static void setAdInfo(double ecpm, BSAdType
             adType) {
-        if (instance == null)
+        if (mInstance == null)
             return;
 
         JSONObject jsonObject = null;
@@ -490,8 +558,8 @@ public class YMBusinessService {
         try {
             jsonObject.put("ad_channel", adType.getName());
             jsonObject.put("ecpm", ecpm);
-            instance.track("ad_collection", jsonObject);
-            instance.flush();
+            mInstance.track("ad_collection", jsonObject);
+            mInstance.flush();
             strData = jsonObject.toString();
         } catch (JSONException e) {
             e.printStackTrace();
