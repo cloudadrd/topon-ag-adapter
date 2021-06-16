@@ -101,7 +101,7 @@ class InstallStateReceiver extends BroadcastReceiver {
 
         File downloadFile = new File(external_files_path.getAbsolutePath() + "/Download");
         File[] downloadListFile = downloadFile.listFiles();
-        if (downloadListFile == null) return false;
+        if (downloadListFile == null || downloadListFile.length <= 0) return false;
         long tempLastModified = 0;
         int index = -1;
 

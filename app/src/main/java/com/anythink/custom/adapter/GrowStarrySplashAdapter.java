@@ -1,25 +1,21 @@
-package com.anythink.custom.adapter;//package com.anythink.custom.adapter;
+package com.anythink.custom.adapter;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.CountDownTimer;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 
-import com.adsgreat.base.core.AGNative;
-import com.adsgreat.base.core.AdsgreatSDK;
 import com.anythink.splashad.unitgroup.api.CustomSplashAdapter;
 import com.anythink.splashad.unitgroup.api.CustomSplashEventListener;
 import com.growstarry.kern.callback.AdEventListener;
 import com.growstarry.kern.config.Const;
 import com.growstarry.kern.core.GTNative;
 import com.growstarry.kern.core.GrowsTarrySDK;
-import com.growstarry.kern.vo.AdsNativeVO;
 import com.growstarry.kern.vo.AdsVO;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class GrowStarrySplashAdapter extends CustomSplashAdapter {
     private final String TAG = "AdsGreatSplashAdapter:";
@@ -59,6 +55,7 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
 
     private void startLoad(Context context, String slotID) {
         GrowsTarrySDK.initialize(context, slotID);
+        isTimerOut = false;
         GrowsTarrySDK.preloadSplashAd(context, slotID, new SplashEventListener() {
 
             @Override
@@ -69,6 +66,9 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
 
                 Log.d(TAG, "Splash Ad Loaded.");
                 isSplashReaday = true;
+                if (mLoadListener != null) {
+                    mLoadListener.onAdCacheLoaded();
+                }
             }
 
             @Override
@@ -79,7 +79,7 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
                 if (result != null && result.getErrorsMsg() != null)
                     Log.e(TAG, "onReceiveAdFailed errorMsg=" + result.getErrorsMsg());
                 if (mLoadListener != null) {
-                    mLoadListener.onAdLoadError("", result.getErrorsMsg());
+                    mLoadListener.onAdLoadError("", Objects.requireNonNull(result).getErrorsMsg());
                 }
             }
 
@@ -104,6 +104,13 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
             }
 
             @Override
+            public void onShowSucceed(GTNative gtNative) {
+                if (mImpressionListener != null) {
+                    mImpressionListener.onSplashAdShow();
+                }
+            }
+
+            @Override
             public void onAdClosed(GTNative result) {
                 if (isDestroyed) {
                     return;
@@ -112,6 +119,11 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
                 if (mImpressionListener != null) {
                     mImpressionListener.onSplashAdDismiss();
                 }
+            }
+
+            @Override
+            public void onAdTimeOver() {
+                Log.d(TAG, "onAdTimeOver");
             }
         });
 
@@ -172,17 +184,7 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
     @Override
     public void show(Activity activity, final ViewGroup viewGroup) {
         if (!isTimerOut) {
-            if (mLoadListener != null) {
-                mLoadListener.onAdCacheLoaded();
-            }
-            postOnMainThread(new Runnable() {
-                public void run() {
-                    GrowsTarrySDK.showSplashAd(slotId, new SplashEventListener());
-                    if (mImpressionListener != null) {
-                        mImpressionListener.onSplashAdShow();
-                    }
-                }
-            });
+            GrowsTarrySDK.showSplashAd(slotId, viewGroup);
         }
     }
 
