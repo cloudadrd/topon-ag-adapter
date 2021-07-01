@@ -80,13 +80,13 @@
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.takePhotoFileProvider"
+            android:name="com.qq.e.comm.GDTFileProvider"
+            android:authorities="${applicationId}.gdt.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/take_photo_file_paths" />
+                android:resource="@xml/anythink_bk_gdt_file_path" />
         </provider>
         <provider
             android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"

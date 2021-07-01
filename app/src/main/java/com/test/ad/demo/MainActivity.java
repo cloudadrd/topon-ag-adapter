@@ -22,6 +22,8 @@ import com.business.support.YMBusinessService;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
+import com.business.support.h5_update.ResH5Listener;
+import com.business.support.h5_update.ResUpdateManager;
 import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
@@ -234,6 +236,35 @@ public class MainActivity extends Activity {
                     }
                 });
 
+        ResUpdateManager.getH5ResPathAndUpdate("95", "95", new ResH5Listener() {
+
+            /**
+             * 资源获取回调函数
+             * @param isSuccess 是否成功返回
+             * @param path 返回的H5主页面地址
+             */
+            @Override
+            public void result(boolean isSuccess, String path) {
+                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
+                if (!isSuccess) return;
+                YMBusinessService.startWebViewPage(MainActivity.this, path, new WebViewToNativeListener() {
+                    @Override
+                    public void event1(InnerWebViewActivity activity) {
+
+                    }
+
+                    @Override
+                    public void event2(InnerWebViewActivity2 activity) {
+
+                    }
+
+                    @Override
+                    public void tracking(String name, JSONObject properties) {
+//                        AppActivity.app.biInstance.track(name, properties);
+                    }
+                });
+            }
+        });
 
     }
 

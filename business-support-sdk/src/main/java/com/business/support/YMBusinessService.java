@@ -7,9 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;

@@ -8,12 +8,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.MainThread;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
+
+import androidx.annotation.MainThread;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.FileProvider;
 
 import com.zcoup.multidownload.entitis.FileInfo;
 import com.zcoup.multidownload.service.LoadListener;

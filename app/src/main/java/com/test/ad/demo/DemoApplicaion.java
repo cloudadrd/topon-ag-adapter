@@ -1,16 +1,20 @@
 package com.test.ad.demo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.multidex.MultiDexApplication;
+
 import com.anythink.core.api.ATSDK;
 import com.anythink.custom.adapter.OAIDHandler;
+import com.business.support.h5_update.ResH5Listener;
+import com.business.support.h5_update.ResUpdateManager;
 import com.facebook.stetho.Stetho;
 
 import java.util.HashMap;
@@ -21,7 +25,7 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a6018fd6ba9165"; //"a6018fd6ba9165";//"a5ff2b6c1c6fc5";
+    public static final String appid = "a5ff2b9464c121"; //"a6018fd6ba9165";//"a5ff2b6c1c6fc5";
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b5fb222b3279b0";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
@@ -79,7 +83,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_interstitial_JD = "b601f94e7b83b4";
 
     //Splash
-    public static final String mPlacementId_splash_all = "b5fb2229fdd388";
+    public static final String mPlacementId_splash_all = "b5ff41b262e3d4";
     public static final String mPlacementId_splash_gdt = "b5fb2229fdd388";
     public static final String mPlacementId_splash_toutiao = "b5fb2229fdd388";
     public static final String mPlacementId_splash_baidu = "b5fb2229fdd388";
@@ -256,7 +260,13 @@ public class DemoApplicaion extends MultiDexApplication {
             }
 
         });
+        Log.e("tjt852", "external-files-path=" + this.getExternalFilesDir(null).getAbsolutePath());
 
+        Log.e("tjt852", "external-cache-path=" + this.getExternalCacheDir().getAbsolutePath());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Log.e("tjt852", "external-media-path=" + this.getExternalMediaDirs()[0].getAbsolutePath());
+        }
 
     }
 

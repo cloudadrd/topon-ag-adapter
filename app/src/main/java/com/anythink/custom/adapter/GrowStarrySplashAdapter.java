@@ -124,6 +124,9 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
             @Override
             public void onAdTimeOver() {
                 Log.d(TAG, "onAdTimeOver");
+                if (mImpressionListener != null) {
+                    mImpressionListener.onSplashAdDismiss();
+                }
             }
         });
 
@@ -165,10 +168,10 @@ public class GrowStarrySplashAdapter extends CustomSplashAdapter {
 
     @Override
     public void destory() {
-        if (timer != null) {
-            timer.cancel();
-        }
-        isDestroyed = true;
+//        if (timer != null) {
+//            timer.cancel();
+//        }
+//        isDestroyed = true;
     }
 
     @Override

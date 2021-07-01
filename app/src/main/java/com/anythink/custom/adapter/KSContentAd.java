@@ -2,11 +2,12 @@ package com.anythink.custom.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 
 import android.widget.FrameLayout;
+
+import androidx.fragment.app.Fragment;
 
 import com.anythink.nativead.unitgroup.api.CustomNativeAd;
 

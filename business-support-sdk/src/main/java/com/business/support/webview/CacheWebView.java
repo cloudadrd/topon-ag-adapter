@@ -15,6 +15,9 @@ import static android.content.Context.MODE_PRIVATE;
 
 import com.business.support.config.Const;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class CacheWebView extends WebView {
 
     private AdVideoMediation mediationHelper = null;
@@ -77,6 +80,18 @@ public class CacheWebView extends WebView {
         // api 11以上有个漏洞，要remove
         removeJavascriptInterface("searchBoxJavaBredge_");
         setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+
+        try {
+            if (Build.VERSION.SDK_INT >= 16) {
+                Class clazz = getSettings().getClass();
+                Method method = clazz.getMethod("setAllowUniversalAccessFromFileURLs", boolean.class);
+                if (method != null) {
+                    method.invoke(getSettings(), true);
+                }
+            }
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
 
         super.setWebViewClient(webViewClient);
         super.setWebChromeClient(webChromeClient);

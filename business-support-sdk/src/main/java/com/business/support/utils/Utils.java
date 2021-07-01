@@ -13,12 +13,13 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.Keep;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
 import android.webkit.WebSettings;
+
+import androidx.annotation.Keep;
 
 import org.json.JSONException;
 import org.json.JSONObject;

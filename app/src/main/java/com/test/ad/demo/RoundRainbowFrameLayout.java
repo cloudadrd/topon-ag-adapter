@@ -7,9 +7,10 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+
+import androidx.annotation.Nullable;
 
 public class RoundRainbowFrameLayout extends FrameLayout {
     private static final int[] GRADIENT_COLORS = {Color.parseColor("#3EFFD9"), Color.parseColor("#FF3B50")};

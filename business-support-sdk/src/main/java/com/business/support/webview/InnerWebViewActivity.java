@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,6 +24,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
+import androidx.core.content.FileProvider;
 
 import com.business.support.R;
 import com.business.support.config.Assets;

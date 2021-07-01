@@ -23,5 +23,8 @@ public class Const {
 
     public final static String STRATEGY_CHECK_URL = getHost() + "strategy/check";
 
+
+    public final static String RES_H5_VERSION_URL = "https://games.adspools.cn/auth/version/info";
+
     public final static String IP_URL = getHost() + "ip";
 }
