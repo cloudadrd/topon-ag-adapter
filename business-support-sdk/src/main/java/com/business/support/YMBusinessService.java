@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
+import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
@@ -22,9 +23,9 @@ import com.business.support.http.HttpRequester;
 import com.business.support.reallycheck.DebugCheck;
 import com.business.support.reallycheck.EmulatorCheck;
 import com.business.support.reallycheck.HookCheck;
-import com.business.support.reallycheck.VirtualAppCheck;
 import com.business.support.reallycheck.ResultData;
 import com.business.support.reallycheck.RootCheck;
+import com.business.support.reallycheck.VirtualAppCheck;
 import com.business.support.reallycheck.WireSharkCheck;
 import com.business.support.shuzilm.ShuzilmImpl;
 import com.business.support.smsdk.SmeiImpl;
@@ -46,8 +47,6 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-
-import com.business.support.adinfo.BSAdType;
 
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
@@ -368,62 +367,58 @@ public class YMBusinessService {
     }
 
     private static void pangelDataHandler(Activity activity, Bundle savedInstanceState) {
-        if (!(activity instanceof TTRewardVideoActivity)) {
-            return;
-        }
+        try{
+            if (!(activity instanceof TTRewardVideoActivity)) {
+                return;
+            }
 
-        Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
-        String materialMeta = "";
-        JSONObject tempObj = null;
-        if (c1 != null) {
-            tempObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
-        }
-        if (savedInstanceState != null) {
-            materialMeta = savedInstanceState.getString("material_meta");
-            if (!TextUtils.isEmpty(materialMeta)) {
-                try {
+            Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
+            String materialMeta = "";
+            JSONObject tempObj = null;
+            if (c1 != null) {
+                tempObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
+            }
+            if (savedInstanceState != null) {
+                materialMeta = savedInstanceState.getString("material_meta");
+                if (!TextUtils.isEmpty(materialMeta)) {
                     tempObj = com.bytedance.sdk.openadsdk.core.b.a(new JSONObject(materialMeta)).aO();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
-        }
 
-        if (tempObj != null) {
+            if (tempObj != null) {
 //            SLog.i(TAG, "pangelDataHandler resultStr=" + tempObj.toString());
-            String iconUrl = null;
-            String appName = null;
-            String packageName = null;
-            String downloadUrl = null;
-            String adId = null;
-            String videoUrl = null;
+                String iconUrl = null;
+                String appName = null;
+                String packageName = null;
+                String downloadUrl = null;
+                String adId = null;
+                String videoUrl = null;
 
-            JSONObject iconObj = tempObj.optJSONObject("icon");
-            if (iconObj != null) {
-                iconUrl = iconObj.optString("url");
-            }
-
-            JSONObject appObj = tempObj.optJSONObject("app");
-            if (appObj != null) {
-                appName = appObj.optString("app_name");
-                packageName = appObj.optString("package_name");
-                downloadUrl = appObj.optString("download_url");
-            }
-
-            String extStr = tempObj.optString("ext");
-            if (!TextUtils.isEmpty(extStr)) {
-                try {
-                    adId = new JSONObject(extStr).optString("ad_id");
-                } catch (JSONException ignored) {
+                JSONObject iconObj = tempObj.optJSONObject("icon");
+                if (iconObj != null) {
+                    iconUrl = iconObj.optString("url");
                 }
-            }
 
-            JSONObject videoObj = tempObj.optJSONObject("video");
-            if (videoObj != null) {
-                videoUrl = videoObj.optString("video_url");
-            }
+                JSONObject appObj = tempObj.optJSONObject("app");
+                if (appObj != null) {
+                    appName = appObj.optString("app_name");
+                    packageName = appObj.optString("package_name");
+                    downloadUrl = appObj.optString("download_url");
+                }
 
-            try {
+                String extStr = tempObj.optString("ext");
+                if (!TextUtils.isEmpty(extStr)) {
+                    try {
+                        adId = new JSONObject(extStr).optString("ad_id");
+                    } catch (JSONException ignored) {
+                    }
+                }
+
+                JSONObject videoObj = tempObj.optJSONObject("video");
+                if (videoObj != null) {
+                    videoUrl = videoObj.optString("video_url");
+                }
+
                 jsonPangleObj = new JSONObject();
 
                 if (adId != null) {
@@ -450,44 +445,40 @@ public class YMBusinessService {
                     jsonPangleObj.put("download_url", downloadUrl);
                 }
                 SLog.i(TAG, "pangelDataHandler jsonStr=" + jsonPangleObj.toString());
-            } catch (JSONException e) {
-                SLog.e(TAG, "pangelDataHandler 2 error=" + e.getMessage());
-                e.printStackTrace();
+
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     private static void gdtDataHandler(Activity activity, Bundle savedInstanceState) {
-        if (activity instanceof ADActivity) {
-            POFactory pOFactory = null;
-            try {
+        try{
+            if (activity instanceof ADActivity) {
+                POFactory pOFactory = null;
                 pOFactory = GDTADManager.getInstance().getPM().getPOFactory();
-            } catch (com.qq.e.comm.managers.plugin.c c) {
-//                SLog.e(TAG, "gdtDataHandler getPOFactory error=" + c.getMessage());
-                c.printStackTrace();
-                return;
-            }
-            Intent intent = activity.getIntent();
-            if (intent == null) {
-                SLog.e(TAG, "gdtDataHandler intent is null");
-                return;
-            }
-            intent.setExtrasClassLoader(pOFactory.getClass().getClassLoader());
-            Bundle extras = intent.getExtras();
-            if (extras == null) {
-                SLog.e(TAG, "gdtDataHandler extras is null");
-                return;
-            }
-            String appName = null;
-            String packageName = null;
-            String downloadUrl = null;
 
-            String adId = null;
+                Intent intent = activity.getIntent();
+                if (intent == null) {
+                    SLog.e(TAG, "gdtDataHandler intent is null");
+                    return;
+                }
+                intent.setExtrasClassLoader(pOFactory.getClass().getClassLoader());
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    SLog.e(TAG, "gdtDataHandler extras is null");
+                    return;
+                }
+                String appName = null;
+                String packageName = null;
+                String downloadUrl = null;
 
-            String iconUrl = null;
-            String videoUrl = null;
+                String adId = null;
 
-            try {
+                String iconUrl = null;
+                String videoUrl = null;
+
                 Object parcelable = extras.getParcelable("admodel");
                 ClassLoader classLoader = pOFactory.getClass().getClassLoader();
                 Class<?> classData = classLoader.loadClass("com.qq.e.comm.plugin.model.BaseAdInfo");
@@ -528,11 +519,11 @@ public class YMBusinessService {
                     jsonGdtObj.put("download_url", downloadUrl);
                 }
                 SLog.i(TAG, "gdtDataHandler jsonStr=" + jsonGdtObj.toString());
-            } catch (Exception e) {
-                SLog.e(TAG, "gdtDataHandler 2 error=" + e.getMessage());
-                e.printStackTrace();
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     public static void setAdInfo(double ecpm, BSAdType
