@@ -26,7 +26,6 @@ import com.anythink.network.baidu.BaiduATConst;
 import com.baidu.mobads.sdk.api.BaiduNativeManager;
 import com.baidu.mobads.sdk.api.NativeResponse;
 import com.baidu.mobads.sdk.api.RequestParameters;
-import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
 
 import java.util.List;
 import java.util.Map;
@@ -36,10 +35,6 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
     public static final int ID_LARGE_IMAGE = generateViewId();
     public static final int ID_ADLOGO_IMAGE = generateViewId();
-
-    private TTNativeExpressAd mTTNativeExpressAd;
-    Context mActivity;
-    View mBannerView;
 
     private final String TAG = getClass().getSimpleName();
     private String slotId;
@@ -147,21 +142,17 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         paint.setStrokeWidth(1);
         mNBView.setBackground(rectShapeDrawable);
 
-
         ImageView imageView = new ImageView(context);
         imageView.setId(ID_LARGE_IMAGE);
         RelativeLayout.LayoutParams imageViewLayout = new RelativeLayout.LayoutParams(dip2px(context,300.0f), dip2px(context,200.0f));
         imageViewLayout.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         imageView.setScaleType(ImageView.ScaleType. CENTER_CROP);//CENTER_CROP
         imageViewLayout.setMargins(dip2px(context,1.0f),dip2px(context,1.0f),dip2px(context,1.0f),dip2px(context,1.0f));
-
         mNBView.addView(imageView, imageViewLayout);
         AQuery aq = new AQuery(imageView);
         aq.id(ID_LARGE_IMAGE).image(nativeAd.getImageUrl(), false, true);
 
-
         TextView textView = new TextView(context);
-        textView.setId(ID_ADLOGO_IMAGE);
         textView.setTextSize(16);
         textView.setLines(1);
         textView.setTextColor(Color.GRAY);
@@ -183,12 +174,10 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         logoViewLayout.addRule(RelativeLayout.ALIGN_RIGHT,ID_LARGE_IMAGE);
         logoViewLayout.addRule(RelativeLayout.BELOW,ID_LARGE_IMAGE);
         logoViewLayout.setMargins(dip2px(context,283.5f),dip2px(context,34.0f),dip2px(context,0.5f),dip2px(context,0.0f));
-
         mNBView.addView(adLogo, logoViewLayout);
         AQuery aqLogo = new AQuery(adLogo);
         aqLogo.id(ID_ADLOGO_IMAGE).image(nativeAd.getBaiduLogoUrl(), false, true);
-
-
+        
         mNBView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -285,15 +274,18 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
 
     @Override
     public void destory() {
-        mBannerView = null;
+       if (null != mBaiduNativeManager) {
+           mBaiduNativeManager = null;
+       }
 
-        if (mTTNativeExpressAd != null) {
-            mTTNativeExpressAd.setExpressInteractionListener(null);
-            mTTNativeExpressAd.destroy();
-            mTTNativeExpressAd = null;
-        }
+       if (null != nativeAd){
+           nativeAd = null;
+       }
 
-        mActivity = null;
+       if (null != mNBView){
+           mNBView = null;
+       }
+
     }
 
     @Override
