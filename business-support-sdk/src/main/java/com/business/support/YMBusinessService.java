@@ -230,25 +230,25 @@ public class YMBusinessService {
                 properties.put("debug", jsonObject.get("Debug"));
 
                 //数盟
-                if(jsonObject.has("device_type"))
+                if (jsonObject.has("device_type"))
                     properties.put("shumeng", jsonObject.get("device_type"));
-                if(jsonObject.has("did"))
+                if (jsonObject.has("did"))
                     properties.put("shumengid", jsonObject.get("did"));
 
                 //数美
-                if(jsonObject.has("riskLevel"))
+                if (jsonObject.has("riskLevel"))
                     properties.put("riskLevel", jsonObject.get("riskLevel"));
 
-                if(jsonObject.has("description"))
+                if (jsonObject.has("description"))
                     properties.put("description", jsonObject.get("description"));
 
-                if(jsonObject.has("model"))
+                if (jsonObject.has("model"))
                     properties.put("model", jsonObject.get("model"));
 
-                if(jsonObject.has("riskType"))
+                if (jsonObject.has("riskType"))
                     properties.put("riskType", jsonObject.get("riskType"));
 
-                if(jsonObject.has("shuMeiDid"))
+                if (jsonObject.has("shuMeiDid"))
                     properties.put("shuMeiDid", jsonObject.get("shuMeiDid"));
 
 
@@ -314,32 +314,7 @@ public class YMBusinessService {
             @Override
             public void onSuccess(byte[] data, String url) {
                 try {
-                    String result = "{\n" +
-                            "    \"code\": 10000,\n" +
-                            "    \"data\": {\n" +
-                            "        \"status\": true,\n" +
-                            "        \"rv\": {\n" +
-                            "            \"0-50\": 50,\n" +
-                            "            \"151-200\": 50,\n" +
-                            "            \"201-250\": 50,\n" +
-                            "            \"251-300\": 50,\n" +
-                            "            \"301-350\": 50,\n" +
-                            "            \"351-400\": 50,\n" +
-                            "            \"401-500\": 50,\n" +
-                            "            \"501-3000\": 50,\n" +
-                            "            \"51-100\": 50\n" +
-                            "        },\n" +
-                            "        \"native\": {\n" +
-                            "            \"p\": 50\n" +
-                            "        },\n" +
-                            "        \"banner\": {\n" +
-                            "            \"1\": 50,\n" +
-                            "            \"2\": 50\n" +
-                            "        }\n" +
-                            "    },\n" +
-                            "    \"detail\": \"OK\",\n" +
-                            "    \"msg\": \"OK\"\n" +
-                            "}";
+                    String result = new String(data);
                     SLog.i(TAG, "onSuccess url" + url + ",result=" + result);
                     JSONObject respObj = new JSONObject(result);
                     int retCode = respObj.optInt("code");
