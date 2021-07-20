@@ -28,8 +28,6 @@ public class BaiduNativeAdapter extends CustomNativeAdapter {
 
     private BaiduNativeAd baiduNativeAd;
 
-    private int width = 0;
-    private int height = 0;
 
     @Override
     public void loadCustomNetworkAd(Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
@@ -41,21 +39,6 @@ public class BaiduNativeAdapter extends CustomNativeAdapter {
                 mLoadListener.onAdLoadError(TAG, "app_id or slot_id is empty!");
             }
             return;
-        }
-        try {
-            if (localExtra.containsKey("bdad_width")) {
-                width = Integer.parseInt(localExtra.get("bdad_width").toString());
-            } else if (localExtra.containsKey("key_width")) {
-                width = Integer.parseInt(localExtra.get("key_width").toString());
-            }
-
-            if (localExtra.containsKey("bdad_height")) {
-                height = Integer.parseInt(localExtra.get("bdad_height").toString());
-            } else if (localExtra.containsKey("key_height")) {
-                height = Integer.parseInt(localExtra.get("key_height").toString());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         
         if (mBaiduNativeManager == null) {
