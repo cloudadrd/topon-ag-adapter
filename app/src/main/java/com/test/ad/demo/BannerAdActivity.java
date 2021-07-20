@@ -64,10 +64,8 @@ public class BannerAdActivity extends Activity {
         mBannerView.setPlacementId(placementIds[mCurrentSelectIndex]);
 
         FrameLayout bannerStyleLayout = YMBusinessService.getBannerViewByStyle();
-//        FrameLayout tempFrameLayout = new FrameLayout(this);
+
         if (bannerStyleLayout != null) {
-//            tempFrameLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-//            tempFrameLayout.addView(bannerStyleLayout, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, Utils.dp2px(100)));
             bannerStyleLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
             frameLayout.addView(bannerStyleLayout, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
         } else {
@@ -103,6 +101,17 @@ public class BannerAdActivity extends Activity {
                 Toast.makeText(BannerAdActivity.this,
                         "onBannerClicked",
                         Toast.LENGTH_SHORT).show();
+
+                //点击日志code start
+
+                //上报日志时需要带上的数据
+                String customBannerStyle = YMBusinessService.getCustomBannerStyle();
+                //上报日志时的逻辑
+                if (customBannerStyle != null) {
+                    //jsonObject.put("state", customBannerStyle);
+                }
+
+                //点击日志code end
             }
 
             @Override
@@ -111,6 +120,16 @@ public class BannerAdActivity extends Activity {
                 Toast.makeText(BannerAdActivity.this,
                         "onBannerShow",
                         Toast.LENGTH_SHORT).show();
+                //展示日志code start
+
+                //上报日志时需要带上的数据
+                String customBannerStyle = YMBusinessService.getCustomBannerStyle();
+                //上报日志时的逻辑
+                if (customBannerStyle != null) {
+                    //jsonObject.put("state", customBannerStyle);
+                }
+
+                //展示日志code end
             }
 
             @Override

@@ -4,7 +4,9 @@ public enum BSAdType {
 
     PANGLE("tt"),
 
-    GDT("gdt");
+    GDT("gdt"),
+
+    KS("ks");
 
     public String getName() {
         return name;

@@ -78,11 +78,11 @@ public class YMBusinessService {
 
     public static double mEcpm = -1;
 
-    private static boolean isCustomRvStyle = false;
+    private static int customBannerStyle = 0;
 
-    private static boolean isCustomBannerStyle = false;
+    private static int customNativeStyle = 0;
 
-    private static boolean isCustomNativeStyle = false;
+    private static int random = -1;
 
     private static JSONObject jsonPangleObj = null;
 
@@ -397,6 +397,8 @@ public class YMBusinessService {
 
             @Override
             public void onActivityResumed(final Activity activity) {
+
+
                 Const.HANDLER.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -437,26 +439,8 @@ public class YMBusinessService {
 
     public static void handlerActivityResume(final Activity activity) {
         SLog.i(TAG, "handlerActivityResume mEcpm =" + mEcpm);
-        if (mEcpm == -1) {
-            return;
-        }
+        boolean isStop = isCustomRvStyle();
 
-        if (DataParse.policyData == null) {
-            SLog.i(TAG, "handlerActivityResume policyData is null");
-            return;
-        }
-
-        int random = (int) (Math.random() * 100 + 1);
-        boolean isStop = true;
-        for (PolicyData.RV rv : DataParse.policyData.rvs) {
-            if (mEcpm >= rv.startRange && mEcpm <= rv.endRange) {
-                SLog.i(TAG, "handlerActivityResume into section chance=" + rv.chance + ",random=" + random);
-                if (rv.chance >= random) {
-                    isStop = false;
-                }
-                break;
-            }
-        }
         if (isStop) {
             SLog.i(TAG, "handlerActivityResume stop it. mEcpm=" + mEcpm + ",random=" + random);
             return;
@@ -479,8 +463,6 @@ public class YMBusinessService {
         }
 
         if (type == 0) return;
-
-        isCustomRvStyle = true;
 
         View view = activity.getWindow().getDecorView().findViewById(CLOSE_VIEW_ID);
         if (view != null) return;
@@ -710,10 +692,20 @@ public class YMBusinessService {
         }
     }
 
-    public static void setAdInfo(double ecpm, BSAdType
-            adType) {
+    public static void setAdInfo(double ecpm, int firmId) {
 
+        BSAdType adType = null;
+        if (firmId == 8) {
+            adType = BSAdType.GDT;
+        } else if (firmId == 15) {
+            adType = BSAdType.PANGLE;
+        } else if (firmId == 28) {
+            adType = BSAdType.KS;
+        } else {
+            return;
+        }
         mEcpm = ecpm;
+        random = (int) (Math.random() * 100 + 1);
         if (mInstance == null)
             return;
 
@@ -763,14 +755,15 @@ public class YMBusinessService {
         if (selectBanner != null) {
             SLog.d(TAG, "getBannerViewByStyle select is ok. styleType=" + selectBanner.styleType.name() + ",chance=" + selectBanner.chance);
             if (selectBanner.styleType == PolicyData.BannerStyleType.HAIR) {
-                isCustomBannerStyle = true;
+                customBannerStyle = 1;
                 return new HairFrameParentLayout(context);
             }
             if (selectBanner.styleType == PolicyData.BannerStyleType.FINGER) {
-                isCustomBannerStyle = true;
+                customBannerStyle = 2;
                 return new FingerFrameLayout(context);
             }
         }
+        customBannerStyle = 0;
         return null;
     }
 
@@ -780,30 +773,66 @@ public class YMBusinessService {
         if (DataParse.policyData != null) {
             SLog.d(TAG, "getNativeViewByStyle select is ok. nativeChance=" + DataParse.policyData.nativeChance + ",random=" + random);
             if (random <= DataParse.policyData.nativeChance) {
-                isCustomNativeStyle = true;
+                customNativeStyle = 1;
                 return new ContinueFrameLayout(context);
             }
+        }
+        customNativeStyle = 0;
+        return null;
+    }
+
+    public static boolean isCustomRvStyle() {
+        if (mEcpm == -1) {
+            return true;
+        }
+
+        if (DataParse.policyData == null) {
+            SLog.i(TAG, "handlerActivityResume policyData is null");
+            return true;
+        }
+
+        boolean isStop = true;
+        for (PolicyData.RV rv : DataParse.policyData.rvs) {
+            if (mEcpm >= rv.startRange && mEcpm <= rv.endRange) {
+                SLog.i(TAG, "handlerActivityResume into section chance=" + rv.chance + ",random=" + random);
+                if (rv.chance >= random) {
+                    isStop = false;
+                }
+                break;
+            }
+        }
+        return isStop;
+    }
+
+    public static String getCustomRvStyle() {
+        if (isCustomRvStyle()) {
+            return "normal";
+        } else {
+            return "style1";
+        }
+    }
+
+
+    public static String getCustomBannerStyle() {
+        if (customBannerStyle == 0) {
+            return "normal";
+        } else if (customBannerStyle == 1) {
+            return "style1";
+        } else if (customBannerStyle == 2) {
+            return "style2";
         }
         return null;
     }
 
-    public boolean isCustomRvStyle() {
-        boolean temp = isCustomRvStyle;
-        isCustomRvStyle = false;
-        return temp;
-    }
 
-    public boolean isCustomBannerStyle() {
-        boolean temp = isCustomBannerStyle;
-        isCustomBannerStyle = false;
-        return temp;
-    }
+    public static String getCustomNativeStyle() {
+        if (customNativeStyle == 0) {
+            return "normal";
+        } else if (customNativeStyle == 1) {
+            return "style1";
+        }
 
-
-    public boolean isCustomNativeStyle() {
-        boolean temp = isCustomNativeStyle;
-        isCustomNativeStyle = false;
-        return temp;
+        return null;
     }
 
 

@@ -153,6 +153,7 @@ public class NativeAdActivity extends Activity {
                 atNatives[mCurrentSelectIndex].makeAdRequest();
             }
         });
+
         ContinueFrameLayout nativeLayout = YMBusinessService.getNativeViewByStyle();
         findViewById(R.id.loadcache_ad_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,14 +174,38 @@ public class NativeAdActivity extends Activity {
                         public void onAdImpressed(ATNativeAdView view, ATAdInfo entity) {
                             Log.i(TAG, "native ad onAdImpressed:\n" + entity.toString());
                             if (nativeLayout != null) {
+                                /*
+                                   调用此方法，会立即显示诱导按钮。
+                                   此处的4000是4秒的意思，根据弹窗倒计时来的，弹窗的倒计时是多少秒此处就设置多少
+                                 */
                                 nativeLayout.display(4000);
                             }
 
+                            //曝光日志code start
+
+                            //上报日志时需要带上的数据
+                            String customNativeStyle = YMBusinessService.getCustomNativeStyle();
+                            //上报日志时的逻辑
+                            if (customNativeStyle != null) {
+                                //jsonObject.put("state", customNativeStyle);
+                            }
+
+                            //曝光日志code end
                         }
 
                         @Override
                         public void onAdClicked(ATNativeAdView view, ATAdInfo entity) {
                             Log.i(TAG, "native ad onAdClicked:\n" + entity.toString());
+                            //曝光日志code start
+
+                            //上报日志时需要带上的数据
+                            String customNativeStyle = YMBusinessService.getCustomNativeStyle();
+                            //上报日志时的逻辑
+                            if (customNativeStyle != null) {
+                                //jsonObject.put("state", customNativeStyle);
+                            }
+
+                            //曝光日志code end
                         }
 
                         @Override
