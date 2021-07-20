@@ -2,6 +2,8 @@ package com.business.support;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -557,4 +559,35 @@ public class YMBusinessService {
         }
         SLog.e(TAG, "setAdInfo post json=" + strData);
     }
+
+    public static String getClipboardContent(Context context) {
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm != null) {
+            ClipData data = cm.getPrimaryClip();
+            if (data != null && data.getItemCount() > 0) {
+                ClipData.Item item = data.getItemAt(0);
+                if (item != null) {
+                    CharSequence sequence = item.coerceToText(context);
+                    if (sequence != null) {
+                        return sequence.toString();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public static void clearClipboardContent(Context context){
+        ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (manager != null) {
+            try {
+                manager.setPrimaryClip(manager.getPrimaryClip());
+                manager.setPrimaryClip(ClipData.newPlainText("",""));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
