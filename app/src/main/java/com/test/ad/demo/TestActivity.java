@@ -1,30 +1,50 @@
-package com.business.support;
+package com.test.ad.demo;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import com.anythink.custom.adapter.OAIDHandler;
+import com.business.support.StrategyInfoListener;
+import com.business.support.YMBusinessService;
+import com.business.support.attract.PolicyData;
+import com.business.support.compose.SIDListener;
+import com.business.support.webview.CacheWebView;
+import com.business.support.webview.InnerWebViewActivity;
+import com.business.support.webview.InnerWebViewActivity2;
+import com.business.support.webview.WebViewToNativeListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import com.business.support.attract.PolicyData;
 
 import java.util.Iterator;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
-public class ExampleUnitTest {
-    @Test
+import cn.thinkingdata.android.TDConfig;
+import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
-    public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
-    }
+public class TestActivity extends Activity {
 
-    @Test
-    public void useAppContext() {
-        // Context of the app under test.
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_test);
+        findViewById(R.id.fingerFl).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("tjt852_view", "click 我被点击了");
+            }
+        });
         jsonParse("{\n" +
                 "    \"code\": 10000,\n" +
                 "    \"data\": {\n" +
@@ -98,5 +118,10 @@ public class ExampleUnitTest {
         System.out.println(policyData);
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

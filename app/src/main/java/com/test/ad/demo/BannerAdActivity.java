@@ -21,6 +21,8 @@ import com.anythink.banner.api.ATBannerExListener;
 import com.anythink.banner.api.ATBannerView;
 import com.anythink.core.api.ATAdInfo;
 import com.anythink.core.api.AdError;
+import com.business.support.YMBusinessService;
+import com.business.support.utils.Utils;
 
 public class BannerAdActivity extends Activity {
 
@@ -60,7 +62,18 @@ public class BannerAdActivity extends Activity {
         final FrameLayout frameLayout = findViewById(R.id.adview_container);
         mBannerView = new ATBannerView(this);
         mBannerView.setPlacementId(placementIds[mCurrentSelectIndex]);
-        frameLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, dip2px(300)));
+
+        FrameLayout bannerStyleLayout = YMBusinessService.getBannerViewByStyle();
+//        FrameLayout tempFrameLayout = new FrameLayout(this);
+        if (bannerStyleLayout != null) {
+//            tempFrameLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+//            tempFrameLayout.addView(bannerStyleLayout, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, Utils.dp2px(100)));
+            bannerStyleLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+            frameLayout.addView(bannerStyleLayout, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        } else {
+            frameLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        }
+
         mBannerView.setBannerAdListener(new ATBannerExListener() {
 
             @Override

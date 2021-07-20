@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def version = "1.6.0"
+def version = "1.6.2"
 android {
     compileSdkVersion 29
 
@@ -50,6 +50,9 @@ android {
         doNotStrip "*/x86/libdu.so"
         doNotStrip "*/x86_64/libdu.so"
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 
 }
 
@@ -61,17 +64,33 @@ android.libraryVariants.all { variant ->
     }
 }
 
+repositories {
+    flatDir {
+        dirs '../app/libs'
+    }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+
     compileOnly fileTree(dir: "libs", include: ["*.aar"])
+//    implementation fileTree(dir: "libs", include: ["open_ad_sdk_3.6.1.4.aar"])
     implementation 'com.android.support:appcompat-v7:28.0.0'
-//    compileOnly files('libs/open_ad_sdk_3.6.1.4.aar')
+
 //    compileOnly files('libs/GDTSDK.unionNormal.4.362.1232.aar')
 //    compileOnly files('libs/smsdk-3.0.6-release.aar')
 //    compileOnly files('libs/thinkingsdk-release.aar')
+//    compileOnly files('libs/anythink_banner.aar')
+//    compileOnly files('libs/anythink_china_core.aar')
+//    compileOnly files('libs/anythink_core.aar')
+//    compileOnly files('libs/anythink_interstitial.aar')
+//    compileOnly files('libs/anythink_native.aar')
+//    compileOnly files('libs/anythink_rewardvideo.aar')
+//    compileOnly files('libs/anythink_splash.aar')
 //    implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
 }
+

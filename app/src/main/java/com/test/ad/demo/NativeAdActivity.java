@@ -27,6 +27,8 @@ import com.anythink.nativead.api.ATNativeDislikeListener;
 import com.anythink.nativead.api.ATNativeEventExListener;
 import com.anythink.nativead.api.ATNativeNetworkListener;
 import com.anythink.nativead.api.NativeAd;
+import com.business.support.YMBusinessService;
+import com.business.support.widget.ContinueFrameLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -151,7 +153,7 @@ public class NativeAdActivity extends Activity {
                 atNatives[mCurrentSelectIndex].makeAdRequest();
             }
         });
-
+        ContinueFrameLayout nativeLayout = YMBusinessService.getNativeViewByStyle();
         findViewById(R.id.loadcache_ad_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,6 +172,10 @@ public class NativeAdActivity extends Activity {
                         @Override
                         public void onAdImpressed(ATNativeAdView view, ATAdInfo entity) {
                             Log.i(TAG, "native ad onAdImpressed:\n" + entity.toString());
+                            if (nativeLayout != null) {
+                                nativeLayout.display(4000);
+                            }
+
                         }
 
                         @Override
@@ -219,7 +225,15 @@ public class NativeAdActivity extends Activity {
         anyThinkNativeAdView.setPadding(padding, padding, padding, padding);
 
         anyThinkNativeAdView.setVisibility(View.GONE);
-        ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+
+
+        if (nativeLayout != null) {
+            nativeLayout.addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+            ((FrameLayout) findViewById(R.id.ad_container)).addView(nativeLayout, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+        } else {
+            ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+        }
+
     }
 
     @Override

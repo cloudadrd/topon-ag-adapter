@@ -49,19 +49,19 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
-                Context context = getBaseContext();
-                YMBusinessService.setFirstInstallTime(System.currentTimeMillis());
-                YMBusinessService.setRewardedVideoTimes(1);
-                YMBusinessService.requestRewaredConfig(context, "40827c9f08dd4fe5f909a0e8b6355706", new StrategyInfoListener() {
-                    @Override
-                    public void isActive(boolean isActive) {
-                        if (isActive) {
-                            Log.i("YMBusinessService", "true");
-                        } else {
-                            Log.i("YMBusinessService", "false");
-                        }
-                    }
-                });
+
+            }
+        });
+        YMBusinessService.setFirstInstallTime(System.currentTimeMillis());
+        YMBusinessService.setRewardedVideoTimes(1);
+        YMBusinessService.requestRewaredConfig(this, "1004", new StrategyInfoListener() {
+            @Override
+            public void isActive(boolean isActive) {
+                if (isActive) {
+                    Log.i("YMBusinessService", "true");
+                } else {
+                    Log.i("YMBusinessService", "false");
+                }
             }
         });
 
@@ -236,35 +236,36 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        ResUpdateManager.getH5ResPathAndUpdate("95", "95", new ResH5Listener() {
+//        ResUpdateManager.getH5ResPathAndUpdate("95", "95", 101, new ResH5Listener() {
+//
+//            /**
+//             * 资源获取回调函数
+//             * @param isSuccess 是否成功返回
+//             * @param path 返回的H5主页面地址
+//             */
+//            @Override
+//            public void result(boolean isSuccess, String path) {
+//                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
+//                if (!isSuccess) return;
+//                YMBusinessService.startWebViewPage(MainActivity.this, path, new WebViewToNativeListener() {
+//                    @Override
+//                    public void event1(InnerWebViewActivity activity) {
+//
+//                    }
+//
+//                    @Override
+//                    public void event2(InnerWebViewActivity2 activity) {
+//
+//                    }
+//
+//                    @Override
+//                    public void tracking(String name, JSONObject properties) {
+////                        AppActivity.app.biInstance.track(name, properties);
+//                    }
+//                });
+//            }
+//        });
 
-            /**
-             * 资源获取回调函数
-             * @param isSuccess 是否成功返回
-             * @param path 返回的H5主页面地址
-             */
-            @Override
-            public void result(boolean isSuccess, String path) {
-                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
-                if (!isSuccess) return;
-                YMBusinessService.startWebViewPage(MainActivity.this, path, new WebViewToNativeListener() {
-                    @Override
-                    public void event1(InnerWebViewActivity activity) {
-
-                    }
-
-                    @Override
-                    public void event2(InnerWebViewActivity2 activity) {
-
-                    }
-
-                    @Override
-                    public void tracking(String name, JSONObject properties) {
-//                        AppActivity.app.biInstance.track(name, properties);
-                    }
-                });
-            }
-        });
 
     }
 
