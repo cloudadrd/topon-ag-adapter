@@ -91,7 +91,7 @@ public class InnerWebViewActivity extends Activity {
 
         progressBar = findViewById(PROGRESSBAR);
         webView = findViewById(WEB_VIEW);
-
+        WebView.setWebContentsDebuggingEnabled(true);
 //        // 得到浏览器的设置对象
 //        WebSettings ws = webView.getSettings();
 //        // 设置浏览器是否缓存数据.true表示缓存,false表示不缓存
