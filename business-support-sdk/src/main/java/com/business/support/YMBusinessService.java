@@ -117,7 +117,10 @@ public class YMBusinessService {
                         composeNativeValid(localContext, score, data, listener);
                     }
                 });
+    }
 
+    public static void enableAdTrace(){
+        final Context localContext = ContextHolder.getGlobalAppContext();
         optimizeAdInfo();
         InstallStateMonitor.register(localContext, new MyInstallListener());
     }

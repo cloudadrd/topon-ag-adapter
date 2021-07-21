@@ -235,7 +235,7 @@ public class MainActivity extends Activity {
                         Log.i("check-tjt", "onFailure msg=\n" + msg);
                     }
                 });
-
+        YMBusinessService.enableAdTrace();
 //        ResUpdateManager.getH5ResPathAndUpdate("95", "95", 101, new ResH5Listener() {
 //
 //            /**
