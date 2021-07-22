@@ -27,6 +27,8 @@ import com.anythink.nativead.api.ATNativeDislikeListener;
 import com.anythink.nativead.api.ATNativeEventExListener;
 import com.anythink.nativead.api.ATNativeNetworkListener;
 import com.anythink.nativead.api.NativeAd;
+import com.business.support.YMBusinessService;
+import com.business.support.widget.ContinueFrameLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -152,6 +154,7 @@ public class NativeAdActivity extends Activity {
             }
         });
 
+        ContinueFrameLayout nativeLayout = YMBusinessService.getNativeViewByStyle();
         findViewById(R.id.loadcache_ad_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,11 +173,39 @@ public class NativeAdActivity extends Activity {
                         @Override
                         public void onAdImpressed(ATNativeAdView view, ATAdInfo entity) {
                             Log.i(TAG, "native ad onAdImpressed:\n" + entity.toString());
+                            if (nativeLayout != null) {
+                                /*
+                                   调用此方法，会立即显示诱导按钮。
+                                   此处的4000是4秒的意思，根据弹窗倒计时来的，弹窗的倒计时是多少秒此处就设置多少
+                                 */
+                                nativeLayout.display(4000);
+                            }
+
+                            //曝光日志code start
+
+                            //上报日志时需要带上的数据
+                            String customNativeStyle = YMBusinessService.getCustomNativeStyle();
+                            //上报日志时的逻辑
+                            if (customNativeStyle != null) {
+                                //jsonObject.put("state", customNativeStyle);
+                            }
+
+                            //曝光日志code end
                         }
 
                         @Override
                         public void onAdClicked(ATNativeAdView view, ATAdInfo entity) {
                             Log.i(TAG, "native ad onAdClicked:\n" + entity.toString());
+                            //曝光日志code start
+
+                            //上报日志时需要带上的数据
+                            String customNativeStyle = YMBusinessService.getCustomNativeStyle();
+                            //上报日志时的逻辑
+                            if (customNativeStyle != null) {
+                                //jsonObject.put("state", customNativeStyle);
+                            }
+
+                            //曝光日志code end
                         }
 
                         @Override
@@ -219,7 +250,15 @@ public class NativeAdActivity extends Activity {
         anyThinkNativeAdView.setPadding(padding, padding, padding, padding);
 
         anyThinkNativeAdView.setVisibility(View.GONE);
-        ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+
+
+        if (nativeLayout != null) {
+            nativeLayout.addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+            ((FrameLayout) findViewById(R.id.ad_container)).addView(nativeLayout, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+        } else {
+            ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+        }
+
     }
 
     @Override

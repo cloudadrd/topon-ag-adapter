@@ -154,11 +154,22 @@ public class RewardVideoAdActivity extends Activity {
                 Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
                 Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayStart", Toast.LENGTH_SHORT).show();
                 int firmId = entity.getNetworkFirmId();
-                if (firmId == 8) {
-                    YMBusinessService.setAdInfo(entity.getEcpm(), BSAdType.GDT);
-                } else if (firmId == 15) {
-                    YMBusinessService.setAdInfo(entity.getEcpm(), BSAdType.PANGLE);
+
+                //第一步 设置ECPM，并上报数据
+                YMBusinessService.setAdInfo(entity.getEcpm(), firmId);
+
+                //第二步
+                //曝光日志code start
+
+                //上报日志时需要带上的数据
+                String customRvStyle = YMBusinessService.getCustomRvStyle();
+                //上报日志时的逻辑
+                if (customRvStyle != null) {
+                    //jsonObject.put("state", customRvStyle);
                 }
+
+                //曝光日志code end
+
 
             }
 
@@ -184,6 +195,18 @@ public class RewardVideoAdActivity extends Activity {
             public void onRewardedVideoAdPlayClicked(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayClicked:\n" + entity.toString());
                 Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayClicked", Toast.LENGTH_SHORT).show();
+
+                //第二步
+                //点击日志code start
+
+                //上报日志时需要带上的数据
+                String customRvStyle = YMBusinessService.getCustomRvStyle();
+                //上报日志时的逻辑
+                if (customRvStyle != null) {
+                    //jsonObject.put("state", customRvStyle);
+                }
+
+                //点击日志code end
             }
 
             @Override

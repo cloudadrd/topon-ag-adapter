@@ -21,6 +21,8 @@ import com.anythink.banner.api.ATBannerExListener;
 import com.anythink.banner.api.ATBannerView;
 import com.anythink.core.api.ATAdInfo;
 import com.anythink.core.api.AdError;
+import com.business.support.YMBusinessService;
+import com.business.support.utils.Utils;
 
 public class BannerAdActivity extends Activity {
 
@@ -60,7 +62,16 @@ public class BannerAdActivity extends Activity {
         final FrameLayout frameLayout = findViewById(R.id.adview_container);
         mBannerView = new ATBannerView(this);
         mBannerView.setPlacementId(placementIds[mCurrentSelectIndex]);
-        frameLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, dip2px(300)));
+
+        FrameLayout bannerStyleLayout = YMBusinessService.getBannerViewByStyle();
+
+        if (bannerStyleLayout != null) {
+            bannerStyleLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+            frameLayout.addView(bannerStyleLayout, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        } else {
+            frameLayout.addView(mBannerView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        }
+
         mBannerView.setBannerAdListener(new ATBannerExListener() {
 
             @Override
@@ -90,6 +101,17 @@ public class BannerAdActivity extends Activity {
                 Toast.makeText(BannerAdActivity.this,
                         "onBannerClicked",
                         Toast.LENGTH_SHORT).show();
+
+                //点击日志code start
+
+                //上报日志时需要带上的数据
+                String customBannerStyle = YMBusinessService.getCustomBannerStyle();
+                //上报日志时的逻辑
+                if (customBannerStyle != null) {
+                    //jsonObject.put("state", customBannerStyle);
+                }
+
+                //点击日志code end
             }
 
             @Override
@@ -98,6 +120,16 @@ public class BannerAdActivity extends Activity {
                 Toast.makeText(BannerAdActivity.this,
                         "onBannerShow",
                         Toast.LENGTH_SHORT).show();
+                //展示日志code start
+
+                //上报日志时需要带上的数据
+                String customBannerStyle = YMBusinessService.getCustomBannerStyle();
+                //上报日志时的逻辑
+                if (customBannerStyle != null) {
+                    //jsonObject.put("state", customBannerStyle);
+                }
+
+                //展示日志code end
             }
 
             @Override

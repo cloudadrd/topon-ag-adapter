@@ -1,11 +1,17 @@
 package com.test.ad.demo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,10 +19,10 @@ import androidx.multidex.MultiDexApplication;
 
 import com.anythink.core.api.ATSDK;
 import com.anythink.custom.adapter.OAIDHandler;
-import com.business.support.h5_update.ResH5Listener;
-import com.business.support.h5_update.ResUpdateManager;
+import com.business.support.utils.Utils;
 import com.facebook.stetho.Stetho;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +31,9 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a5ff2b9464c121"; //"a6018fd6ba9165";//"a5ff2b6c1c6fc5";
+    public static final String appid = "a6018fd6ba9165";//"";a5ff2b9464c121
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
-    public static final String mPlacementId_native_all = "b5fb222b3279b0";
+    public static final String mPlacementId_native_all = "b6018fdc99f11e";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
     public static final String mPLacementId_native_automatic_rending_mintegral = "b5ee8aeb8f3458";
     public static final String mPlacementId_native_GDT = "b5ab8590d44f82";
@@ -44,7 +50,7 @@ public class DemoApplicaion extends MultiDexApplication {
 
 
     //RewardedVideo
-    public static final String mPlacementId_rewardvideo_all = "b6018fd98a9b7e";
+    public static final String mPlacementId_rewardvideo_all = "b6018fd98a9b7e";//b5ff41a9f64dec
     public static final String mPlacementId_rewardvideo_mintegral = "b5b449f2f58cd7";
     public static final String mPlacementId_rewardvideo_GDT = "b5c2c880cb9d52";
     public static final String mPlacementId_rewardvideo_toutiao = "b5b728e7a08cd4";
@@ -57,7 +63,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_rewardvideo_myoffer = "b5db6c3764aea3";
 
     //Banner
-    public static final String mPlacementId_banner_all = "b5baca4f74c3d8";
+    public static final String mPlacementId_banner_all = "b6018fdda46e4c";
     public static final String mPlacementId_banner_mintegral = "b5dd388839bf5e";
     public static final String mPlacementId_banner_GDT = "b5baca43951901";
     public static final String mPlacementId_banner_toutiao = "b5baca45138428";
@@ -67,7 +73,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_banner_IFLY = "b6048875baf056";
 
     //Interstitial
-    public static final String mPlacementId_interstitial_all = "b609bb0238e690";
+    public static final String mPlacementId_interstitial_all = "b603f37c4ebe4e";
     public static final String mPlacementId_interstitial_mintegral = "b5bbdc725768fa";
     public static final String mPlacementId_interstitial_video_mintegral = "b5bbdc855a1506";
     public static final String mPlacementId_interstitial_GDT = "b5baca561bc100";
@@ -83,7 +89,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_interstitial_JD = "b601f94e7b83b4";
 
     //Splash
-    public static final String mPlacementId_splash_all = "b5ff41b262e3d4";
+    public static final String mPlacementId_splash_all = "b6018fda915c06";
     public static final String mPlacementId_splash_gdt = "b5fb2229fdd388";
     public static final String mPlacementId_splash_toutiao = "b5fb2229fdd388";
     public static final String mPlacementId_splash_baidu = "b5fb2229fdd388";
@@ -98,6 +104,7 @@ public class DemoApplicaion extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+//        new CrashHandler().init(this);
 //        JacocoHelper.Builder builder = new JacocoHelper.Builder();
 //        builder.setApplication(this).setDebuggable(true);
 //        JacocoHelper.initialize(builder.build());
@@ -122,6 +129,7 @@ public class DemoApplicaion extends MultiDexApplication {
         Map<String, Object> subcustommap = new HashMap<String, Object>();
         subcustommap.put("key1", "initPlacementCustomMap1");
         subcustommap.put("key2", "initPlacementCustomMap2");
+
         ATSDK.initPlacementCustomMap("b5aa1fa4165ea3", subcustommap);//native  facebook
 
         ATSDK.setChannel("testChannle");
@@ -237,6 +245,85 @@ public class DemoApplicaion extends MultiDexApplication {
             @Override
             public void onActivityResumed(@NonNull Activity activity) {
                 Log.e("DemoApplicaion", "onActivityResumed ");
+
+//                int type = 0;
+//                if (activity instanceof TTRewardVideoActivity) {
+//                    type = 1;
+//                }
+//
+//                if (activity instanceof PortraitADActivity
+//                        || activity instanceof RewardvideoPortraitADActivity
+//                        || activity instanceof RewardvideoLandscapeADActivity) {
+//                    type = 2;
+//                }
+//
+//                if (activity instanceof KsRewardVideoActivity
+//                        || activity instanceof KSRewardLandScapeVideoActivity) {
+//                    type = 3;
+//                }
+//
+//
+//                if (type == 0) return;
+//
+//                View view = activity.getWindow().getDecorView().findViewById(55542);
+//                if (view != null) return;
+//                final RelativeLayout relativeLayout = new RelativeLayout(activity);
+//                relativeLayout.setId(55542);
+//                ViewGroup adContainer = activity.getWindow().getDecorView().findViewById(android.R.id.content);
+//                relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                        ViewGroup.LayoutParams.MATCH_PARENT));
+//                final View closeView = getCloseImg(activity);
+//                relativeLayout.addView(closeView);
+//                adContainer.addView(relativeLayout);
+//
+//
+//                int finalType = type;
+//                closeView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        View view = null;
+//                        if (finalType == 1) {
+//                            view = activity.findViewById(R.id.tt_reward_ad_download_backup);
+//                            if (view != null) {
+//                                view.callOnClick();
+//
+//                            }
+//                        } else if (finalType == 2) {
+//
+//                            view = findViewByText(adContainer, "下载", "打开", "安装", "点击下载");
+//
+//                            if (view != null) {
+//                                view.callOnClick();
+//                                View clickVIew = (View) view.getParent();
+//                                while (clickVIew != null) {
+//                                    if (!(clickVIew.getParent() instanceof View)) {
+//                                        break;
+//                                    }
+//                                    clickVIew.callOnClick();
+//                                    clickVIew = (View) clickVIew.getParent();
+//                                }
+//                            }
+//                        } else if (finalType == 3) {
+//                            float x = 200;//transparentLayer.getWidth() / 2;
+//                            float y = adContainer.getBottom()-80;//transparentLayer.getHeight() / 2;
+//
+//                            long downTime = SystemClock.uptimeMillis();
+//                            long eventTime = SystemClock.uptimeMillis() + 100;
+//                            int metaState = 0;
+//
+//                            MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime,
+//                                    MotionEvent.ACTION_DOWN, x, y, (int) metaState);
+//                            adContainer.dispatchTouchEvent(motionEvent);
+//                            MotionEvent upEvent = MotionEvent.obtain(downTime + 300, eventTime + 300,
+//                                    MotionEvent.ACTION_UP, x, y, metaState);
+//                            adContainer.dispatchTouchEvent(upEvent);
+//                        }
+//
+//
+//                        relativeLayout.removeView(closeView);
+//
+//                    }
+//                });
             }
 
             @Override
@@ -268,6 +355,40 @@ public class DemoApplicaion extends MultiDexApplication {
             Log.e("tjt852", "external-media-path=" + this.getExternalMediaDirs()[0].getAbsolutePath());
         }
 
+    }
+
+
+    private static View findViewByText(ViewGroup adContainer, String... text) {
+        for (int i = 0; i < adContainer.getChildCount(); i++) {
+            View childView = adContainer.getChildAt(i);
+            Log.i("tjt852_view", "childView=" + childView.getClass().getSuperclass());
+            if (childView instanceof ViewGroup) {
+                if (((ViewGroup) childView).getChildCount() > 0) {
+                    View childView2 = findViewByText((ViewGroup) childView, text);
+                    if (childView2 != null) return childView2;
+                }
+            }
+            if (childView instanceof TextView) {
+                TextView textView = (TextView) childView;
+                Log.i("tjt852_text", "text=" + textView.getText().toString());
+                if (Arrays.binarySearch(text, textView.getText().toString()) > -1) {
+                    return childView;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @SuppressLint("ResourceType")
+    private static ImageView getCloseImg(Context context) {
+        ImageView close = new ImageView(context);
+        close.setBackgroundResource(R.drawable.bssdk_circle_close);
+        RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(Utils.dp2px(28), Utils.dp2px(28));
+        closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        closeLayoutParams.setMargins(0, Utils.dp2px(40), Utils.dp2px(22), 0);
+        close.setLayoutParams(closeLayoutParams);
+        return close;
     }
 
 }

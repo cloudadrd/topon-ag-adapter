@@ -52,6 +52,7 @@ public class ShuzilmImpl implements ISdkMain {
     }
 
     private void request(final String did) {
+        SLog.i(TAG + "did:" + did);
         Map<String, String> params = new HashMap<>();
         params.put("protocol", "2");
         params.put("pkg", mContext.getPackageName());
@@ -59,6 +60,7 @@ public class ShuzilmImpl implements ISdkMain {
         params.put("ver", Utils.getAppVersion(mContext));
         StringBuilder stringBuilder = new StringBuilder(Const.SHUMENG_URL);
         Utils.appendUrlParameter(stringBuilder, params);
+        SLog.i(TAG + "request url:" + stringBuilder);
         HttpRequester.requestByGet(mContext, stringBuilder.toString(), new HttpRequester.Listener() {
             @Override
             public void onSuccess(byte[] data, String url) {

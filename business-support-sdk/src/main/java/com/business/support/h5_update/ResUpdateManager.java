@@ -149,18 +149,19 @@ public class ResUpdateManager {
      *
      * @param appId
      * @param channel
+     * @param currentVersion
      * @param listener
      */
-    public static void getH5ResPathAndUpdate(final String appId, final String channel, final ResH5Listener listener) {
+    public static void getH5ResPathAndUpdate(final String appId, final String channel, final int currentVersion, final ResH5Listener listener) {
         ThreadPoolProxy.getInstance().execute(new Runnable() {
             @Override
             public void run() {
-                execute(appId, channel, listener);
+                execute(appId, channel, currentVersion, listener);
             }
         });
     }
 
-    public static void execute(String appId, String channel, ResH5Listener listener) {
+    public static void execute(String appId, String channel, final int currentVersion, ResH5Listener listener) {
         Context context = ContextHolder.getGlobalAppContext();
         File destDir = getResDirFile();
         File resDirTemp = getResDirTemp();
@@ -187,7 +188,7 @@ public class ResUpdateManager {
                 if (fileList == null || fileList.size() == 0) {
                     isSuccess = false;
                 } else {
-                    if (!createVersionFile(false, CURRENT_VERSION)) {
+                    if (!createVersionFile(false, currentVersion)) {
                         isSuccess = false;
                     }
                 }
@@ -227,7 +228,7 @@ public class ResUpdateManager {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     if (dataObj == null) return;
                     int newVersion = dataObj.optInt("version");
-                    int tempVersion = version == -1 ? CURRENT_VERSION : version;
+                    int tempVersion = version == -1 ? currentVersion : version;
                     if (newVersion > tempVersion) {
                         String downloadUrl = dataObj.optString("downloadFile");
                         if (newVersion > 0 && !TextUtils.isEmpty(downloadUrl)) {
