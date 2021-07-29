@@ -847,7 +847,7 @@ public class YMBusinessService {
     }
 
     public static void setAdInfo(double ecpm, int firmId) {
-
+        mEcpm = ecpm;
         BSAdType adType = null;
         if (firmId == 8) {
             adType = BSAdType.GDT;
@@ -859,7 +859,7 @@ public class YMBusinessService {
             mEcpm = -1;//其它广告，用ecpm排除
             return;
         }
-        mEcpm = ecpm;
+
         random = (int) (Math.random() * 100 + 1);
         if (mInstance == null)
             return;
