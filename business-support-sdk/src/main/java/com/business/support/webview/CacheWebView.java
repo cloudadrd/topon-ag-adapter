@@ -69,6 +69,8 @@ public class CacheWebView extends WebView {
         ws.setAppCachePath(appCacheDir);
         ws.setAllowFileAccess(true);
         ws.setAppCacheEnabled(true);
+        ws.setAllowFileAccessFromFileURLs(true);
+        ws.setAllowUniversalAccessFromFileURLs(true);
         ws.setCacheMode(WebSettings.LOAD_DEFAULT);
         //允许加载http与https混合内容
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -144,12 +146,15 @@ public class CacheWebView extends WebView {
 
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
+            WebView.HitTestResult hit = view.getHitTestResult();
+            int hitType = hit.getType();
+            if (hitType == WebView.HitTestResult.SRC_ANCHOR_TYPE &&
+                    (url.contains(".html") || url.contains(".htm") || url.contains(".shtm"))) {//点击超链接
+                return false;
+            }
+
             if (url.startsWith("http:") || url.startsWith("https:")) {
-                WebView.HitTestResult hit = getHitTestResult();
-                int hitType = hit.getType();
                 Log.e("CacheWebView", "shouldOverrideUrlLoading times=" + (System.currentTimeMillis() - startTime));
-                if (hitType == WebView.HitTestResult.SRC_ANCHOR_TYPE) {//点击超链接
-                }
                 if (hitType == 0 && !is302) {
                     is302 = true;
                 }

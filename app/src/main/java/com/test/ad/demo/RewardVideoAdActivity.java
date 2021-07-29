@@ -195,7 +195,7 @@ public class RewardVideoAdActivity extends Activity {
             public void onRewardedVideoAdPlayClicked(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayClicked:\n" + entity.toString());
                 Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayClicked", Toast.LENGTH_SHORT).show();
-
+                YMBusinessService.notifyStopRvClick();
                 //第二步
                 //点击日志code start
 

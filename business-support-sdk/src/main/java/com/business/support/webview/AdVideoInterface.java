@@ -341,8 +341,12 @@ public class AdVideoInterface {
     }
 
     public void trackState(AdLogType adLogType) {
+        trackState(adLogType, 0);
+    }
+
+    public void trackState(AdLogType adLogType, double ecpm) {
         if (adLogType == null) return;
-        String loadStr = String.format("javascript:%s('%s','%s')", "callbackfun", AdVideoMediation.POSID, adLogType.getTypeId());
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s','%s',%.2f)", "callbackfun", AdVideoMediation.POS_ID, adLogType.getTypeId(), ecpm);
         Log.d(TAG, "trackState loaStr=" + loadStr);
         webView.loadUrl(loadStr);
     }

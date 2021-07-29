@@ -2,5 +2,5 @@ package com.business.support;
 
 public interface StrategyInfoListener {
 
-    public void isActive(boolean isActive);
+    public void isActive(boolean isActive, boolean install);
 }

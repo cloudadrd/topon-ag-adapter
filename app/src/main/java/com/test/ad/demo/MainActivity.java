@@ -18,12 +18,15 @@ import android.widget.Toast;
 import com.anythink.custom.adapter.OAIDHandler;
 import com.baidu.mobads.sdk.api.AppActivity;
 import com.business.support.StrategyInfoListener;
+import com.business.support.TaskMonitorListener;
 import com.business.support.YMBusinessService;
+import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
 import com.business.support.h5_update.ResH5Listener;
 import com.business.support.h5_update.ResUpdateManager;
+import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
@@ -36,6 +39,7 @@ import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
 public class MainActivity extends Activity {
 
+    private static final String TAG = "MainActivity";
     CacheWebView cacheWebView = null;
 
     @Override
@@ -52,16 +56,14 @@ public class MainActivity extends Activity {
 
             }
         });
+
+
         YMBusinessService.setFirstInstallTime(System.currentTimeMillis());
         YMBusinessService.setRewardedVideoTimes(1);
         YMBusinessService.requestRewaredConfig(this, "1004", new StrategyInfoListener() {
             @Override
-            public void isActive(boolean isActive) {
-                if (isActive) {
-                    Log.i("YMBusinessService", "true");
-                } else {
-                    Log.i("YMBusinessService", "false");
-                }
+            public void isActive(boolean isActive, boolean install) {
+                Log.i("YMBusinessService", "isActive=" + isActive + ",install=" + install);
             }
         });
 
@@ -118,7 +120,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                YMBusinessService.startCacheWebViewPage(MainActivity.this, cacheWebView, new WebViewToNativeListener() {
+                YMBusinessService.startCacheWebViewPage(MainActivity.this, cacheWebView, "b5fb2228113cf7", new WebViewToNativeListener() {
                     @Override
                     public void event1(InnerWebViewActivity activity) {
 
@@ -141,23 +143,25 @@ public class MainActivity extends Activity {
         findViewById(R.id.webviewBtn2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //不带缓存的webview
-                YMBusinessService.startWebViewPage(MainActivity.this, "file:///android_asset/test.html", new WebViewToNativeListener() {
-                    @Override
-                    public void event1(InnerWebViewActivity activity) {
+                //不带缓存的webview content://com.scqdd.mobi.bssdk/bs_external_res_h5/forumweb/forumweb/index.html?user=1
+                //file:///android_asset/forumweb/index.html?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5
+                YMBusinessService.startWebViewPage(MainActivity.this, "file:///android_asset/forumweb/index.html?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5",
+                        "b5fb2228113cf7", new WebViewToNativeListener() {
+                            @Override
+                            public void event1(InnerWebViewActivity activity) {
 
-                    }
+                            }
 
-                    @Override
-                    public void event2(InnerWebViewActivity2 activity) {
+                            @Override
+                            public void event2(InnerWebViewActivity2 activity) {
 
-                    }
+                            }
 
-                    @Override
-                    public void tracking(String name, JSONObject properties) {
-//                        AppActivity.app.biInstance.track(name, properties);
-                    }
-                });
+                            @Override
+                            public void tracking(String name, JSONObject properties) {
+//                              AppActivity.app.biInstance.track(name, properties);
+                            }
+                        });
             }
         });
 
@@ -167,6 +171,20 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ContentAdActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.startAdApp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean result = YMBusinessService.startCurrentAdApp(new TaskMonitorListener() {
+                    @Override
+                    public void over() {
+                        Log.i(TAG, "任务完成  ok");
+                    }
+                });
+                Log.i(TAG, "是否启动成功 result=" + result);
+
             }
         });
 
@@ -235,7 +253,12 @@ public class MainActivity extends Activity {
                         Log.i("check-tjt", "onFailure msg=\n" + msg);
                     }
                 });
-        YMBusinessService.enableAdTrace();
+        YMBusinessService.enableAdTrace(new InstallListener() {
+            @Override
+            public void installedHit(String pkg, BSAdType bsAdType) {
+                SLog.i(TAG, "installedHit pkg=" + pkg);
+            }
+        });
 //        ResUpdateManager.getH5ResPathAndUpdate("95", "95", 101, new ResH5Listener() {
 //
 //            /**
@@ -247,22 +270,23 @@ public class MainActivity extends Activity {
 //            public void result(boolean isSuccess, String path) {
 //                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
 //                if (!isSuccess) return;
-//                YMBusinessService.startWebViewPage(MainActivity.this, path, new WebViewToNativeListener() {
-//                    @Override
-//                    public void event1(InnerWebViewActivity activity) {
+//                YMBusinessService.startWebViewPage(MainActivity.this, path + "?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5",
+//                        "b5fb2228113cf7", new WebViewToNativeListener() {
+//                            @Override
+//                            public void event1(InnerWebViewActivity activity) {
 //
-//                    }
+//                            }
 //
-//                    @Override
-//                    public void event2(InnerWebViewActivity2 activity) {
+//                            @Override
+//                            public void event2(InnerWebViewActivity2 activity) {
 //
-//                    }
+//                            }
 //
-//                    @Override
-//                    public void tracking(String name, JSONObject properties) {
+//                            @Override
+//                            public void tracking(String name, JSONObject properties) {
 ////                        AppActivity.app.biInstance.track(name, properties);
-//                    }
-//                });
+//                            }
+//                        });
 //            }
 //        });
 

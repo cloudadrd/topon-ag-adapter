@@ -13,6 +13,7 @@
 
 
 
+
     </style>
     <script type="text/javascript">
 
@@ -156,7 +157,10 @@
         android.customCall(4,params)
     }
 
-
+    function toHref(){
+        window.location.href='forumweb/task/index.html';
+        window.location.reload="forumweb/task/index.html";
+    }
 
     </script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -164,6 +168,14 @@
 </head>
 
 <body>
+
+<div>
+    <a href="forumweb/task/index.html">dianwo</a>
+    <br>
+    <button onclick="toHref()">check</button>
+</div>
+<br>
+<br>
 
 <div>
     <button onclick="showVideo()">showVideo</button>

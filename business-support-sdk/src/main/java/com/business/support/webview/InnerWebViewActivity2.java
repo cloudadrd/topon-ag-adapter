@@ -101,32 +101,8 @@ public class InnerWebViewActivity2 extends Activity {
             }
         });
 
-
         progressBar = findViewById(PROGRESSBAR);
         webView = findViewById(WEB_VIEW);
-
-        // 得到浏览器的设置对象
-        WebSettings ws = webView.getSettings();
-        // 设置浏览器是否缓存数据.true表示缓存,false表示不缓存
-        ws.setJavaScriptEnabled(true);
-        ws.setDomStorageEnabled(true);
-        ws.setDatabaseEnabled(true);
-        ws.setAppCacheMaxSize(1024 * 1024 * 8);//设置缓冲大小，设的是8M
-        String appCacheDir = getApplicationContext().getDir("cache", MODE_PRIVATE).getPath();
-        ws.setAppCachePath(appCacheDir);
-        ws.setAllowFileAccess(true);
-        ws.setAppCacheEnabled(true);
-        ws.setCacheMode(WebSettings.LOAD_DEFAULT);
-        //允许加载http与https混合内容
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ws.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            ws.setMediaPlaybackRequiresUserGesture(false);
-        }
-        // api 11以上有个漏洞，要remove
-        webView.removeJavascriptInterface("searchBoxJavaBredge_");
-        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
 
         //webview显示加载进度，WebChromeClient是WebView的辅助类，用来处理js，favicon和标题等一些操作
         webView.setWebChromeClient(new ChromeClient());
@@ -169,11 +145,14 @@ public class InnerWebViewActivity2 extends Activity {
 //                }
                 //end
 
+                WebView.HitTestResult hit = webView.getHitTestResult();
+                int hitType = hit.getType();
+                if ((hitType == WebView.HitTestResult.SRC_ANCHOR_TYPE || hitType == WebView.HitTestResult.UNKNOWN_TYPE) &&
+                        (url.contains(".html") || url.contains(".htm") || url.contains(".shtm"))) {//点击超链接或者js localhost.href
+                    return false;
+                }
                 if (url.startsWith("http:") || url.startsWith("https:")) {
-                    WebView.HitTestResult hit = webView.getHitTestResult();
-                    int hitType = hit.getType();
-                    if (hitType == WebView.HitTestResult.SRC_ANCHOR_TYPE) {//点击超链接
-                    }
+
                     if (hitType == 0 && !isBack && !is302) {
                         is302 = true;
                         if (btnClose != null) btnClose.setVisibility(View.GONE);
@@ -209,7 +188,6 @@ public class InnerWebViewActivity2 extends Activity {
 //        mediationHelper.loadVideo();
 //        webView.addJavascriptInterface(adVideoInterface, "android");
         webView.loadUrl(link);
-
         AppInstallReceiver.setInstallCallback(new AppInstallReceiver.InstallCallback() {
             @Override
             public void success(String pkg) {

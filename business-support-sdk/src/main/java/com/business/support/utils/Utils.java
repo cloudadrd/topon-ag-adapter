@@ -306,5 +306,19 @@ public class Utils {
     }
 
 
+    public static boolean startActivityForPackage(Context context, String packName) {
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(packName);
+        if (intent == null) return false;
+        ComponentName componentName = intent.resolveActivity(context.getPackageManager());
+
+        if (componentName != null) {    //已经安装该应用
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            return true;
+        }
+        return false;
+
+    }
+
 
 }

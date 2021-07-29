@@ -4,15 +4,12 @@ import android.content.Context;
 
 import com.business.support.config.Const;
 import com.business.support.shuzilm.ShuzilmImpl;
-import com.business.support.smsdk.SmeiImpl;
 import com.business.support.utils.SLog;
 import com.business.support.utils.ThreadPoolProxy;
 import com.business.support.utils.Utils;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
@@ -178,9 +175,9 @@ public class SdkTaskManager {
             return SdkType.SHUMENG;
         }
 
-        if (sdkMain instanceof SmeiImpl) {
-            return SdkType.SHUMEI;
-        }
+//        if (sdkMain instanceof SmeiImpl) {
+//            return SdkType.SHUMEI;
+//        }
 
         return SdkType.OTHER;
     }

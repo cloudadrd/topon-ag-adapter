@@ -46,7 +46,7 @@ public class ResUpdateManager {
 
 
     public static File getRootDirFile() {
-        return new File(ContextHolder.getGlobalAppContext().getExternalFilesDir(null), "res_h5");
+        return new File(ContextHolder.getGlobalAppContext().getFilesDir(), "res_h5");
     }
 
     public static File getResDirFile() {
@@ -202,8 +202,8 @@ public class ResUpdateManager {
 
         if (listener != null) {
             File file = new File(destDir, RES_DIR_FILE_NAME + File.separator + "index.html");
-            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".bssdk", file);
-            listener.result(isSuccess, uri.toString());
+//            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".bssdk", file);
+            listener.result(isSuccess, "file://" + file.getAbsolutePath());
         }
 
         JSONObject requestBody = new JSONObject();

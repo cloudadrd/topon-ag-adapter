@@ -32,11 +32,15 @@ public class AdVideoMediation {
 
     private Context mContext;
 
-    public static final String POSID = "b5fb2228113cf7";
+    public static void setPosId(String posId) {
+        AdVideoMediation.POS_ID = posId;
+    }
+
+    public static String POS_ID = "b5fb2228113cf7";
 
     private static class Holder {
         @SuppressLint("StaticFieldLeak")
-        private static AdVideoMediation manager = new AdVideoMediation();
+        private static final AdVideoMediation MANAGER = new AdVideoMediation();
     }
 
     public void setContext(Context context) {
@@ -55,7 +59,7 @@ public class AdVideoMediation {
     }
 
     public static AdVideoMediation getInstance() {
-        return AdVideoMediation.Holder.manager;
+        return AdVideoMediation.Holder.MANAGER;
     }
 
     private AdVideoMediation() {
@@ -66,7 +70,7 @@ public class AdVideoMediation {
             return;
         }
         isLoad = true;
-        mRewardVideoAd = new ATRewardVideoAd(mContext, POSID);
+        mRewardVideoAd = new ATRewardVideoAd(mContext, POS_ID);
         mRewardVideoAd.setAdListener(new ATRewardVideoListener() {
 
             @Override
@@ -86,7 +90,8 @@ public class AdVideoMediation {
             @Override
             public void onRewardedVideoAdPlayStart(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
-                trackState(AdLogType.IMP_SUCCESS);
+
+                trackState(AdLogType.IMP_SUCCESS, entity.getEcpm());
             }
 
             public void loadDelay() {
@@ -137,8 +142,12 @@ public class AdVideoMediation {
     }
 
     private void trackState(AdLogType adLogType) {
+        trackState(adLogType, 0);
+    }
+
+    private void trackState(AdLogType adLogType, double ecpm) {
         for (AdVideoInterface adVideoInterface : mAdVideoInterfaces) {
-            adVideoInterface.trackState(adLogType);
+            adVideoInterface.trackState(adLogType, ecpm);
         }
     }
 

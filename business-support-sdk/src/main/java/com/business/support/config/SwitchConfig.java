@@ -16,7 +16,7 @@ public class SwitchConfig {
     /**
      * 日志开关
      */
-    public static Boolean LOG = BuildConfig.DEBUG;   //TODO:  日志开关,一直关着就行
+    public static Boolean LOG = true;//BuildConfig.DEBUG;   //TODO:  日志开关,一直关着就行
 
 
 }

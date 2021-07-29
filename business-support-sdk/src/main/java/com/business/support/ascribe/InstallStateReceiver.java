@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.business.support.config.Const;
+import com.business.support.utils.SLog;
 import com.business.support.utils.ThreadPoolProxy;
 
 import java.io.File;
@@ -21,11 +23,9 @@ class InstallStateReceiver extends BroadcastReceiver {
     private static final String TAG = "InstallStateReceiver";
 
 
-    private static String ACTION = "android.intent.action.PACKAGE_ADDED";
+    private static final String ACTION = "android.intent.action.PACKAGE_ADDED";
 
-    private InstallListener installListener;
-
-    private static Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final InstallListener installListener;
 
 
     public InstallStateReceiver(InstallListener installListener) {
@@ -34,7 +34,7 @@ class InstallStateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e(TAG, "onReceive install complete");
+        SLog.e(TAG, "onReceive install complete");
 
         String action = intent.getAction();
         if (action == null) {
@@ -53,8 +53,22 @@ class InstallStateReceiver extends BroadcastReceiver {
             if (!action.equals(ACTION)) {
                 return;
             }
-            ThreadPoolProxy.getInstance().execute(
-                    new HitRunnable(context.getApplicationContext(), pkgName, installListener));
+
+            //通过播放过的广告app来命中当前已安装的app
+            if (RewardTaskInfo.revealAdPackages.get(pkgName) != null) {
+                RewardTaskInfo.currentInstallPkg = pkgName;
+                if (installListener != null) {
+                    installListener.installedHit(pkgName, RewardTaskInfo.revealAdPackages.get(pkgName));
+                }
+                RewardTaskInfo.revealAdPackages.remove(pkgName);
+            } else {
+                SLog.e(TAG, "匹配失败");
+            }
+
+
+            //以前通过下载目录判断安装app来源
+//            ThreadPoolProxy.getInstance().execute(
+//                    new HitRunnable(context.getApplicationContext(), pkgName, installListener));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,17 +94,17 @@ class InstallStateReceiver extends BroadcastReceiver {
             if (!pangleIsHit(mContext, mPkgName)) {
                 return;
             }
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (mListener != null) {
-                        mListener.installedHit(mPkgName);
-                        mPkgName = null;
-                        mContext = null;
-                        mListener = null;
-                    }
-                }
-            });
+//            Const.HANDLER.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (mListener != null) {
+//                        mListener.installedHit(mPkgName,);
+//                        mPkgName = null;
+//                        mContext = null;
+//                        mListener = null;
+//                    }
+//                }
+//            });
         }
     }
 

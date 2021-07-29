@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
+import com.business.support.ascribe.RewardTaskInfo;
 import com.business.support.attract.DataParse;
 import com.business.support.attract.PolicyData;
 import com.business.support.compose.SIDListener;
@@ -39,11 +40,11 @@ import com.business.support.reallycheck.RootCheck;
 import com.business.support.reallycheck.VirtualAppCheck;
 import com.business.support.reallycheck.WireSharkCheck;
 import com.business.support.shuzilm.ShuzilmImpl;
-import com.business.support.smsdk.SmeiImpl;
 import com.business.support.utils.ContextHolder;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
 import com.business.support.webview.AdVideoInterface;
+import com.business.support.webview.AdVideoMediation;
 import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
@@ -66,6 +67,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Objects;
 
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
@@ -88,7 +90,11 @@ public class YMBusinessService {
 
     private static JSONObject jsonGdtObj = null;
 
+    private static JSONObject jsonKsObj = null;
+
     private static ThinkingAnalyticsSDK mInstance = null;
+
+    private static boolean rvClickStop = false;
 
     public static void init(final Context context, ThinkingAnalyticsSDK instance, String shuMengApiKey, final SIDListener listener) {
         ContextHolder.init(context);
@@ -96,7 +102,7 @@ public class YMBusinessService {
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
                 .add(new ShuzilmImpl(), 100, 3000, shuMengApiKey)
-                .add(new SmeiImpl(), 2000, 3000, "JVjHfrQd0LwfAFnND60C", "OfJKRbsUQIunw1xzb2SU", "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd")
+//                .add(new SmeiImpl(), 2000, 3000, "JVjHfrQd0LwfAFnND60C", "OfJKRbsUQIunw1xzb2SU", "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd")
                 .zip(localContext, new ZipSidListener() {
                     @Override
                     public void result(Collection<TaskResult> taskResults) {
@@ -119,26 +125,37 @@ public class YMBusinessService {
                 });
     }
 
-    public static void enableAdTrace(){
+    public static void enableAdTrace(InstallListener listener) {
         final Context localContext = ContextHolder.getGlobalAppContext();
         optimizeAdInfo();
-        InstallStateMonitor.register(localContext, new MyInstallListener());
+        InstallStateMonitor.register(localContext, new MyInstallListener(listener));
     }
 
     public static final class MyInstallListener implements InstallListener {
 
+        InstallListener mListener;
+
+        MyInstallListener(InstallListener listener) {
+            mListener = listener;
+        }
+
         @Override
-        public void installedHit(String pkg) {
+        public void installedHit(String pkg, BSAdType bsAdType) {
             SLog.i(TAG, "installedHit pkg=" + pkg);
             try {
+
+                if (mListener != null) {
+                    mListener.installedHit(pkg, bsAdType);
+                }
+
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("ad_channel", "tt");
+                jsonObject.put("ad_channel", bsAdType.getName());
                 jsonObject.put("pkg_name", pkg);
                 if (mInstance != null) {
                     mInstance.track("ad_install", jsonObject);
                     mInstance.flush();
                 }
-            } catch (JSONException e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
 
@@ -149,11 +166,12 @@ public class YMBusinessService {
     /**
      * 带缓存的webview，可以提前创建cacheWebView并且加载
      */
-    public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, WebViewToNativeListener listener) {
+    public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, String posId, WebViewToNativeListener listener) {
         if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
             viewGroup.removeView(cacheWebView);
         }
+        AdVideoMediation.setPosId(posId);
         AdVideoInterface.nativeListener = listener;
         //带缓存的webview，可以提前创建cacheWebView并且加载
         InnerWebViewActivity.launch(context, cacheWebView);
@@ -162,7 +180,8 @@ public class YMBusinessService {
     /**
      * //不带缓存的webview
      */
-    public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener) {
+    public static void startWebViewPage(Context context, String linkUrl, String posId, WebViewToNativeListener listener) {
+        AdVideoMediation.setPosId(posId);
         AdVideoInterface.nativeListener = listener;
         InnerWebViewActivity2.launch(context, linkUrl);
     }
@@ -322,22 +341,27 @@ public class YMBusinessService {
                     JSONObject respObj = new JSONObject(result);
                     int retCode = respObj.optInt("code");
                     if (10000 != retCode) {
-                        listener.isActive(false);
+                        listener.isActive(false, false);
                         return;
                     }
 
                     JSONObject acObj = respObj.optJSONObject("data");
                     if (null == acObj) {
-                        listener.isActive(false);
+                        listener.isActive(false, false);
                         return;
                     }
 
-                    boolean ac = acObj.getBoolean("status");
-                    listener.isActive(ac);
+                    boolean ac = acObj.optBoolean("status");
+
+
+                    boolean install = acObj.optBoolean("install");
+
+                    listener.isActive(ac, install);
+
 
                     DataParse.jsonParse(acObj);
                 } catch (Exception e) {
-                    listener.isActive(false);
+                    listener.isActive(false, false);
                     e.printStackTrace();
                 }
             }
@@ -345,7 +369,7 @@ public class YMBusinessService {
             @Override
             public void onFailure(String msg, String url) {
                 SLog.i(TAG, "onFailure url=" + url);
-                listener.isActive(false);
+                listener.isActive(false, false);
 
             }
         });
@@ -391,28 +415,31 @@ public class YMBusinessService {
 
             @Override
             public void onActivityPreCreated(Activity activity, Bundle savedInstanceState) {
-                SLog.e(TAG, "onActivityPreCreated activity=" + activity.getComponentName());
+                SLog.d(TAG, "onActivityPreCreated activity=" + activity.getComponentName());
 //                pangelDataHandler(activity, savedInstanceState);
 ////                gdtDataHandler(activity, savedInstanceState);
             }
 
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                SLog.e(TAG, "onActivityCreated activity=" + activity.getComponentName());
+                SLog.d(TAG, "onActivityCreated activity=" + activity.getComponentName());
                 pangelDataHandler(activity, savedInstanceState);
                 gdtDataHandler(activity, savedInstanceState);
+                ksDataHandler(activity, savedInstanceState);
+
             }
+
 
             @Override
             public void onActivityStarted(Activity activity) {
-
+                SLog.d(TAG, "onActivityStarted activity=" + activity.getComponentName());
             }
 
 
             @Override
             public void onActivityResumed(final Activity activity) {
 
-
+                SLog.d(TAG, "onActivityResumed activity=" + activity.getComponentName());
                 Const.HANDLER.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -428,21 +455,25 @@ public class YMBusinessService {
 
             @Override
             public void onActivityPaused(Activity activity) {
+                SLog.d(TAG, "onActivityPaused activity=" + activity.getComponentName());
 
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
+                SLog.d(TAG, "onActivityStopped activity=" + activity.getComponentName());
 
             }
 
             @Override
             public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+                SLog.d(TAG, "onActivitySaveInstanceState activity=" + activity.getComponentName());
 
             }
 
             @Override
             public void onActivityDestroyed(Activity activity) {
+                SLog.d(TAG, "onActivityDestroyed activity=" + activity.getComponentName());
 
             }
         };
@@ -502,24 +533,64 @@ public class YMBusinessService {
 
             @Override
             public void onClick(View v) {
-                float x = 200;//transparentLayer.getWidth() / 2;
-                float y = adContainer.getBottom() - 80;//transparentLayer.getHeight() / 2;
+                final float x = 200;//transparentLayer.getWidth() / 2;
+                float y = adContainer.getBottom() - Utils.dp2px(48);//transparentLayer.getHeight() / 2;
 
                 long downTime = SystemClock.uptimeMillis();
                 long eventTime = SystemClock.uptimeMillis() + 100;
                 int metaState = 0;
 
-                MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime,
-                        MotionEvent.ACTION_DOWN, x, y, (int) metaState);
-                adContainer.dispatchTouchEvent(motionEvent);
-                MotionEvent upEvent = MotionEvent.obtain(downTime + 300, eventTime + 300,
-                        MotionEvent.ACTION_UP, x, y, metaState);
-                adContainer.dispatchTouchEvent(upEvent);
+                clickPenetrate(adContainer, x, y);
+
+
+                Const.HANDLER.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        int y = adContainer.getBottom() - Utils.dp2px(120);//transparentLayer.getHeight() / 2;
+
+                        clickPenetrate(adContainer, x, y);
+                    }
+                }, 500);
+
+
+                Const.HANDLER.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        int y = adContainer.getBottom() - Utils.dp2px(160);//transparentLayer.getHeight() / 2;
+                        clickPenetrate(adContainer, x, y);
+                    }
+                }, 500);
 
 
                 relativeLayout.removeView(closeView);
             }
         });
+    }
+
+    private static void clickPenetrate(View view, float x, float y) {
+        if (rvClickStop) return;
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis() + 100;
+        int metaState = 0;
+        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime,
+                MotionEvent.ACTION_DOWN, x, y, (int) metaState);
+        view.dispatchTouchEvent(motionEvent);
+        MotionEvent upEvent = MotionEvent.obtain(downTime + 300, eventTime + 300,
+                MotionEvent.ACTION_UP, x, y, metaState);
+        view.dispatchTouchEvent(upEvent);
+
+        motionEvent.recycle();
+        upEvent.recycle();
+    }
+
+    public static void notifyStopRvClick() {
+        rvClickStop = true;
+        Const.HANDLER.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rvClickStop = false;
+            }
+        }, 3000);
     }
 
 
@@ -706,6 +777,75 @@ public class YMBusinessService {
         }
     }
 
+
+    private static void ksDataHandler(Activity activity, Bundle savedInstanceState) {
+        if (activity instanceof KsRewardVideoActivity || activity instanceof KSRewardLandScapeVideoActivity) {
+            Intent intent = activity.getIntent();
+            if (intent == null) {
+                return;
+            }
+
+            String key_template_json = intent.getStringExtra("key_template_json");
+//            KsVideoPlayConfig key_video_play_config = (KsVideoPlayConfig) intent.getSerializableExtra("key_video_play_config");
+            int key_template_reward_type = intent.getIntExtra("key_template_reward_type", -1);
+            SLog.d(TAG, "ksDataHandler key_template_json=" + key_template_json);
+//            SLog.d(TAG, "ksDataHandler key_video_play_config=" + key_video_play_config);
+            SLog.d(TAG, "ksDataHandler key_template_reward_type=" + key_template_reward_type);
+            String appName = null;
+            String packageName = null;
+            String downloadUrl = null;
+
+            String adId = null;
+
+            String iconUrl = null;
+            String videoUrl = null;
+
+            try {
+                JSONObject jsonObject = new JSONObject(key_template_json);
+                adId = jsonObject.optString("posId");
+
+                JSONObject adInfo = jsonObject.optJSONArray("adInfo").getJSONObject(0);
+                SLog.d(TAG, "ksDataHandler adInfo=" + adInfo.toString());
+                JSONObject adBaseInfo = adInfo.optJSONObject("adBaseInfo");
+                if (adBaseInfo != null) {
+                    appName = adBaseInfo.optString("appName");
+                    if (TextUtils.isEmpty(appName)) {
+                        appName = adBaseInfo.optString("productName");
+                    }
+                }
+
+                if (adBaseInfo != null) {
+                    iconUrl = adBaseInfo.optString("appIconUrl");
+                }
+                if (adBaseInfo != null) {
+                    packageName = adBaseInfo.optString("appPackageName");
+                }
+                videoUrl = Objects.requireNonNull(Objects.requireNonNull(adInfo.optJSONObject("adMaterialInfo")).optJSONArray("materialFeature")).optJSONObject(0).optString("materialUrl");
+                JSONObject ext = jsonObject.optJSONObject("ext");
+
+                downloadUrl = adInfo.optJSONObject("adConversionInfo").optString("appDownloadUrl");
+
+                jsonKsObj = new JSONObject();
+
+                jsonKsObj.put("ad_id", adId);
+
+                jsonKsObj.put("app_name", appName);
+
+                jsonKsObj.put("icon_url", iconUrl);
+
+                jsonKsObj.put("video_url", videoUrl);
+
+                jsonKsObj.put("pkg_name", packageName);
+
+                jsonKsObj.put("download_url", downloadUrl);
+                SLog.i(TAG, "ksDataHandler jsonStr=" + jsonKsObj.toString());
+            } catch (Throwable e) {
+                SLog.e(TAG, "ksDataHandler 2 error=" + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void setAdInfo(double ecpm, int firmId) {
 
         BSAdType adType = null;
@@ -716,6 +856,7 @@ public class YMBusinessService {
         } else if (firmId == 28) {
             adType = BSAdType.KS;
         } else {
+            mEcpm = -1;//其它广告，用ecpm排除
             return;
         }
         mEcpm = ecpm;
@@ -727,16 +868,18 @@ public class YMBusinessService {
 
         if (BSAdType.PANGLE == adType) {
             jsonObject = jsonPangleObj;
-            jsonPangleObj = null;
         } else if (BSAdType.GDT == adType) {
             jsonObject = jsonGdtObj;
-            jsonGdtObj = null;
+        } else if (BSAdType.KS == adType) {
+            jsonObject = jsonKsObj;
         }
 
         if (jsonObject == null) {
             SLog.e(TAG, "setAdInfo jsonObject is null, end report.");
             return;
         }
+
+
         String strData = null;
         try {
             jsonObject.put("ad_channel", adType.getName());
@@ -748,6 +891,35 @@ public class YMBusinessService {
             e.printStackTrace();
         }
         SLog.e(TAG, "setAdInfo post json=" + strData);
+    }
+
+
+    public static void traceInstall(int firmId) {
+        JSONObject jsonObject = null;
+        BSAdType adType = null;
+        if (firmId == 8) {
+            adType = BSAdType.GDT;
+        } else if (firmId == 15) {
+            adType = BSAdType.PANGLE;
+        } else if (firmId == 28) {
+            adType = BSAdType.KS;
+        } else {
+            return;
+        }
+
+        if (BSAdType.PANGLE == adType) {
+            jsonObject = jsonPangleObj;
+        } else if (BSAdType.GDT == adType) {
+            jsonObject = jsonGdtObj;
+        } else if (BSAdType.KS == adType) {
+            jsonObject = jsonKsObj;
+        }
+
+        if (jsonObject == null) return;
+
+        String pkgName = jsonObject.optString("pkg_name");
+        if (!TextUtils.isEmpty(pkgName))
+            RewardTaskInfo.revealAdPackages.put(pkgName, adType);
     }
 
 
@@ -847,6 +1019,33 @@ public class YMBusinessService {
         }
 
         return null;
+    }
+
+    static Runnable taskMonitorRunnable = null;
+
+    public static boolean startCurrentAdApp(final TaskMonitorListener listener) {
+        if (TextUtils.isEmpty(RewardTaskInfo.currentInstallPkg)) return false;
+        boolean result = Utils.startActivityForPackage(ContextHolder.getGlobalAppContext(), RewardTaskInfo.currentInstallPkg);
+        if (result) {
+            taskMonitorRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.over();
+                    }
+                }
+            };
+            Const.HANDLER.postDelayed(taskMonitorRunnable, 60000);
+        }
+        return result;
+    }
+
+
+    public static void stopTaskMonitor() {
+        if (taskMonitorRunnable != null) {
+            Const.HANDLER.removeCallbacks(taskMonitorRunnable);
+            taskMonitorRunnable = null;
+        }
     }
 
 
