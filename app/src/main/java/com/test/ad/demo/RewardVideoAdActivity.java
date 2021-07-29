@@ -158,6 +158,8 @@ public class RewardVideoAdActivity extends Activity {
                 //第一步 设置ECPM，并上报数据
                 YMBusinessService.setAdInfo(entity.getEcpm(), firmId);
 
+                YMBusinessService.traceInstall(firmId);
+
                 //第二步
                 //曝光日志code start
 

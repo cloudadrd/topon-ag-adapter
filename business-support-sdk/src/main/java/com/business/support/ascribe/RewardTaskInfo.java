@@ -26,5 +26,22 @@ public class RewardTaskInfo {
 
     public static Map<String, BSAdType> revealAdPackages = new HashMap<>();
 
-    public static String currentInstallPkg = null;
+    public static RewardTaskInfo taskInfo = null;
+
+    public String currentInstallPkg;
+
+    public BSAdType bsAdType;
+
+    //0安装，1打开
+    public int infoState;
+
+    public long startTaskAppTime;
+
+    public RewardTaskInfo(String currentInstallPkg, BSAdType bsAdType, int infoState, long startTaskAppTime) {
+        this.currentInstallPkg = currentInstallPkg;
+        this.bsAdType = bsAdType;
+        this.infoState = infoState;
+        this.startTaskAppTime = startTaskAppTime;
+    }
+
 }

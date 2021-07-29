@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +20,7 @@ import com.anythink.custom.adapter.OAIDHandler;
 import com.baidu.mobads.sdk.api.AppActivity;
 import com.business.support.StrategyInfoListener;
 import com.business.support.TaskMonitorListener;
+import com.business.support.WhiteService;
 import com.business.support.YMBusinessService;
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
@@ -177,14 +179,29 @@ public class MainActivity extends Activity {
         findViewById(R.id.startAdApp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean result = YMBusinessService.startCurrentAdApp(new TaskMonitorListener() {
-                    @Override
-                    public void over() {
-                        Log.i(TAG, "任务完成  ok");
-                    }
-                });
+                boolean result = YMBusinessService.startCurrentAdApp();
                 Log.i(TAG, "是否启动成功 result=" + result);
 
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    startForegroundService(new Intent(MainActivity.this, WhiteService.class));
+//                } else {
+//                    startService(new Intent(MainActivity.this, WhiteService.class));
+//                }
+
+            }
+        });
+
+        YMBusinessService.setAndRefreshTaskMonitor(new TaskMonitorListener() {
+            @Override
+            public void over() {
+                Log.i(TAG, "setAndRefreshTaskMonitor 任务完成  ok");
+            }
+        });
+
+        findViewById(R.id.customBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopService(new Intent(MainActivity.this, WhiteService.class));
             }
         });
 
@@ -293,6 +310,12 @@ public class MainActivity extends Activity {
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        YMBusinessService.stopTaskMonitor();
+    }
 
     /**
      * 复制到剪贴板

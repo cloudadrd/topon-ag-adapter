@@ -4,10 +4,13 @@ package com.business.support;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
+import android.app.Notification;
+import android.app.TaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -19,10 +22,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
+import com.business.support.ascribe.NativeDataManager;
 import com.business.support.ascribe.RewardTaskInfo;
 import com.business.support.attract.DataParse;
 import com.business.support.attract.PolicyData;
@@ -1021,27 +1027,99 @@ public class YMBusinessService {
         return null;
     }
 
-    static Runnable taskMonitorRunnable = null;
+    static TaskMonitorRunnable taskMonitorRunnable = null;
 
-    public static boolean startCurrentAdApp(final TaskMonitorListener listener) {
-        if (TextUtils.isEmpty(RewardTaskInfo.currentInstallPkg)) return false;
-        boolean result = Utils.startActivityForPackage(ContextHolder.getGlobalAppContext(), RewardTaskInfo.currentInstallPkg);
+
+    static class TaskMonitorRunnable implements Runnable {
+        RewardTaskInfo rewardTaskInfo;
+
+        TaskMonitorRunnable(RewardTaskInfo rewardTaskInfo) {
+            this.rewardTaskInfo = rewardTaskInfo;
+        }
+
+        @Override
+        public void run() {
+            installMission(rewardTaskInfo);
+        }
+    }
+
+    static TaskMonitorListener mTaskMonitorListener;
+
+    static boolean isStartAdApp = false;
+
+    public static boolean startCurrentAdApp() {
+        RewardTaskInfo taskInfo = NativeDataManager.getTaskInfo();
+        if (taskInfo != null && taskInfo.infoState == 0) {
+            RewardTaskInfo.taskInfo = taskInfo;
+        }
+        if (RewardTaskInfo.taskInfo == null) return false;
+        if (TextUtils.isEmpty(RewardTaskInfo.taskInfo.currentInstallPkg)) return false;
+        final Context context = ContextHolder.getGlobalAppContext();
+        boolean result = Utils.startActivityForPackage(context, RewardTaskInfo.taskInfo.currentInstallPkg);
         if (result) {
-            taskMonitorRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (listener != null) {
-                        listener.over();
-                    }
-                }
-            };
+            isStartAdApp = true;
+            if (taskMonitorRunnable != null) {
+                Const.HANDLER.removeCallbacks(taskMonitorRunnable);
+            }
+            taskMonitorRunnable = new TaskMonitorRunnable(RewardTaskInfo.taskInfo);
             Const.HANDLER.postDelayed(taskMonitorRunnable, 60000);
+            RewardTaskInfo.taskInfo.infoState = 1;
+            RewardTaskInfo.taskInfo.startTaskAppTime = System.currentTimeMillis();
+            NativeDataManager.writeFileForTaskInfo(RewardTaskInfo.taskInfo);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startService(new Intent(context, WhiteService.class));
+        } else {
+            context.startService(new Intent(context, WhiteService.class));
         }
         return result;
     }
 
+    public static void setAndRefreshTaskMonitor(TaskMonitorListener taskMonitorListener) {
+        mTaskMonitorListener = taskMonitorListener;
+        RewardTaskInfo taskInfo = NativeDataManager.getTaskInfo();
+        if (taskInfo == null) return;
+
+        if (taskInfo.infoState == 1) {
+            if (System.currentTimeMillis() - taskInfo.startTaskAppTime > 60000) {
+                SLog.d(TAG, "setAndRefreshTaskMonitor ok");
+                installMission(taskInfo);
+            }
+            RewardTaskInfo.taskInfo = null;
+            NativeDataManager.removeFile();
+        }
+
+    }
+
+    private static void installMission(RewardTaskInfo rewardTaskInfo) {
+        SLog.i(TAG, "taskMonitorRunnable pkg=" + rewardTaskInfo.currentInstallPkg);
+        final Context context = ContextHolder.getGlobalAppContext();
+        try {
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("pkg_name", rewardTaskInfo.currentInstallPkg);
+            jsonObject.put("ad_channel", rewardTaskInfo.bsAdType.getName());
+            if (mInstance != null) {
+                mInstance.track("ad_installMission", jsonObject);
+                mInstance.flush();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        if (mTaskMonitorListener != null) {
+            mTaskMonitorListener.over();
+        }
+        context.stopService(new Intent(context, WhiteService.class));
+    }
+
 
     public static void stopTaskMonitor() {
+        if (!isStartAdApp) return;
+        isStartAdApp = false;
+        final Context context = ContextHolder.getGlobalAppContext();
+        RewardTaskInfo.taskInfo = null;
+        NativeDataManager.removeFile();
+        context.stopService(new Intent(context, WhiteService.class));
         if (taskMonitorRunnable != null) {
             Const.HANDLER.removeCallbacks(taskMonitorRunnable);
             taskMonitorRunnable = null;

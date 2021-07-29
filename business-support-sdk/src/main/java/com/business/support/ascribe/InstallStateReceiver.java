@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.business.support.adinfo.BSAdType;
 import com.business.support.config.Const;
 import com.business.support.utils.SLog;
 import com.business.support.utils.ThreadPoolProxy;
@@ -56,9 +57,13 @@ class InstallStateReceiver extends BroadcastReceiver {
 
             //通过播放过的广告app来命中当前已安装的app
             if (RewardTaskInfo.revealAdPackages.get(pkgName) != null) {
-                RewardTaskInfo.currentInstallPkg = pkgName;
+                BSAdType bsAdType = RewardTaskInfo.revealAdPackages.get(pkgName);
+                RewardTaskInfo.taskInfo = new RewardTaskInfo(pkgName, bsAdType, 0, 0);
+                RewardTaskInfo.taskInfo.infoState = 0;
+                RewardTaskInfo.taskInfo.startTaskAppTime = 0;
+                NativeDataManager.writeFileForTaskInfo(RewardTaskInfo.taskInfo);
                 if (installListener != null) {
-                    installListener.installedHit(pkgName, RewardTaskInfo.revealAdPackages.get(pkgName));
+                    installListener.installedHit(pkgName, bsAdType);
                 }
                 RewardTaskInfo.revealAdPackages.remove(pkgName);
             } else {
