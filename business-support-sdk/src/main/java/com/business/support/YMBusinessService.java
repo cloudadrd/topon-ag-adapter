@@ -1085,8 +1085,6 @@ public class YMBusinessService {
                 SLog.d(TAG, "setAndRefreshTaskMonitor ok");
                 installMission(taskInfo);
             }
-            RewardTaskInfo.taskInfo = null;
-            NativeDataManager.removeFile();
         }
 
     }
@@ -1109,6 +1107,8 @@ public class YMBusinessService {
         if (mTaskMonitorListener != null) {
             mTaskMonitorListener.over();
         }
+        RewardTaskInfo.taskInfo = null;
+        NativeDataManager.removeFile();
         context.stopService(new Intent(context, WhiteService.class));
     }
 
@@ -1117,8 +1117,6 @@ public class YMBusinessService {
         if (!isStartAdApp) return;
         isStartAdApp = false;
         final Context context = ContextHolder.getGlobalAppContext();
-        RewardTaskInfo.taskInfo = null;
-        NativeDataManager.removeFile();
         context.stopService(new Intent(context, WhiteService.class));
         if (taskMonitorRunnable != null) {
             Const.HANDLER.removeCallbacks(taskMonitorRunnable);
