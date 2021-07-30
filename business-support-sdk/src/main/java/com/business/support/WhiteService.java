@@ -34,15 +34,15 @@ public class WhiteService extends Service {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             // 设置点击通知跳转的Intent
-//        Intent nfIntent = new Intent(this, MainActivity.class);
+            Intent nfIntent = new Intent(this, WhiteService.class);
             // 设置 延迟Intent
             // 最后一个参数可以为PendingIntent.FLAG_CANCEL_CURRENT 或者 PendingIntent.FLAG_UPDATE_CURRENT
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, null, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, nfIntent, 0);
             //构建一个Notification构造器
             Notification.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 String ID = getPackageName();    //这里的id里面输入自己的项目的包的路径
-                String NAME = "Channel One";
+                String NAME = "试玩任务";
                 NotificationChannel channel = new NotificationChannel(ID, NAME, NotificationManager.IMPORTANCE_HIGH);
                 channel.enableLights(true);
                 channel.setShowBadge(true);

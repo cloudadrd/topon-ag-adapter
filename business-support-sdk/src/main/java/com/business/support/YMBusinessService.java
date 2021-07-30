@@ -153,7 +153,15 @@ public class YMBusinessService {
                 if (mListener != null) {
                     mListener.installedHit(pkg, bsAdType);
                 }
-
+                //start 判断是否是安装试玩的广告，是则持久化任务状态
+                if (RewardTaskInfo.revealAdPackages.get(pkg) != null) {
+                    RewardTaskInfo.taskInfo = new RewardTaskInfo(pkg, bsAdType, 0, 0);
+                    RewardTaskInfo.taskInfo.infoState = 0;
+                    RewardTaskInfo.taskInfo.startTaskAppTime = 0;
+                    NativeDataManager.writeFileForTaskInfo(RewardTaskInfo.taskInfo);
+                    RewardTaskInfo.revealAdPackages.remove(pkg);
+                }
+                //end
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("ad_channel", bsAdType.getName());
                 jsonObject.put("pkg_name", pkg);
@@ -433,6 +441,12 @@ public class YMBusinessService {
                 gdtDataHandler(activity, savedInstanceState);
                 ksDataHandler(activity, savedInstanceState);
 
+
+//                if (activity instanceof MBRewardVideoActivity) {
+//
+//                }
+//                String unitId = activity.getIntent().getStringExtra("unitId");
+//                String reward = activity.getIntent().getStringExtra("reward");
             }
 
 
@@ -446,6 +460,7 @@ public class YMBusinessService {
             public void onActivityResumed(final Activity activity) {
 
                 SLog.d(TAG, "onActivityResumed activity=" + activity.getComponentName());
+
                 Const.HANDLER.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -885,6 +900,10 @@ public class YMBusinessService {
             return;
         }
 
+        //播放过的广告加入到列表里
+        String pkgName = jsonObject.optString("pkg_name");
+        if (!TextUtils.isEmpty(pkgName))
+            RewardTaskInfo.adPackages.put(pkgName, adType);
 
         String strData = null;
         try {
@@ -1049,7 +1068,7 @@ public class YMBusinessService {
 
     public static boolean startCurrentAdApp() {
         RewardTaskInfo taskInfo = NativeDataManager.getTaskInfo();
-        if (taskInfo != null && taskInfo.infoState == 0) {
+        if (taskInfo != null) {
             RewardTaskInfo.taskInfo = taskInfo;
         }
         if (RewardTaskInfo.taskInfo == null) return false;
@@ -1062,7 +1081,7 @@ public class YMBusinessService {
                 Const.HANDLER.removeCallbacks(taskMonitorRunnable);
             }
             taskMonitorRunnable = new TaskMonitorRunnable(RewardTaskInfo.taskInfo);
-            Const.HANDLER.postDelayed(taskMonitorRunnable, 60000);
+            Const.HANDLER.postDelayed(taskMonitorRunnable, 30000);
             RewardTaskInfo.taskInfo.infoState = 1;
             RewardTaskInfo.taskInfo.startTaskAppTime = System.currentTimeMillis();
             NativeDataManager.writeFileForTaskInfo(RewardTaskInfo.taskInfo);

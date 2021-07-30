@@ -50,7 +50,7 @@ public class DemoApplicaion extends MultiDexApplication {
 
 
     //RewardedVideo
-    public static final String mPlacementId_rewardvideo_all = "b6018fd98a9b7e";//b60f4f02b94602 b5ff41a9f64dec
+    public static final String mPlacementId_rewardvideo_all = "b60f4f02b94602";//b6018fd98a9b7e b5ff41a9f64dec
     public static final String mPlacementId_rewardvideo_mintegral = "b5b449f2f58cd7";
     public static final String mPlacementId_rewardvideo_GDT = "b5c2c880cb9d52";
     public static final String mPlacementId_rewardvideo_toutiao = "b5b728e7a08cd4";

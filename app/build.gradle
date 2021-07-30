@@ -15,7 +15,7 @@ ArrayList<String> networkLibsPath = new ArrayList<>();
 
 networkLibsPath.add("baidu");
 networkLibsPath.add("gdt");
-//networkLibsPath.add("mintegral");
+networkLibsPath.add("mintegral");
 networkLibsPath.add("pangle");
 networkLibsPath.add("kuaishou");
 //networkLibsPath.add("sigmob");

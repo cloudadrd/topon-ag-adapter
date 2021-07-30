@@ -26,6 +26,8 @@ public class RewardTaskInfo {
 
     public static Map<String, BSAdType> revealAdPackages = new HashMap<>();
 
+    public static Map<String, BSAdType> adPackages = new HashMap<>();
+
     public static RewardTaskInfo taskInfo = null;
 
     public String currentInstallPkg;

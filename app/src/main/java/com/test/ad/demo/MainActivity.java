@@ -179,14 +179,10 @@ public class MainActivity extends Activity {
         findViewById(R.id.startAdApp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean result = YMBusinessService.startCurrentAdApp();
-                Log.i(TAG, "是否启动成功 result=" + result);
+//                boolean result = YMBusinessService.startCurrentAdApp();
+//                Log.i(TAG, "是否启动成功 result=" + result);
 
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                    startForegroundService(new Intent(MainActivity.this, WhiteService.class));
-//                } else {
-//                    startService(new Intent(MainActivity.this, WhiteService.class));
-//                }
+                startService(new Intent(MainActivity.this, WhiteService.class));
 
             }
         });
