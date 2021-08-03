@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ import com.business.support.widget.HairFrameParentLayout;
 import com.bytedance.sdk.openadsdk.activity.base.TTRewardVideoActivity;
 import com.kwad.sdk.api.proxy.app.KSRewardLandScapeVideoActivity;
 import com.kwad.sdk.api.proxy.app.KsRewardVideoActivity;
+import com.mbridge.msdk.reward.player.MBRewardVideoActivity;
 import com.qq.e.ads.ADActivity;
 import com.qq.e.ads.PortraitADActivity;
 import com.qq.e.ads.RewardvideoLandscapeADActivity;
@@ -73,9 +75,11 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
+
 
 public class YMBusinessService {
     private static final String TAG = "YMBusinessService";
@@ -97,6 +101,8 @@ public class YMBusinessService {
     private static JSONObject jsonGdtObj = null;
 
     private static JSONObject jsonKsObj = null;
+
+    private static JSONObject jsonMvObj = null;
 
     private static ThinkingAnalyticsSDK mInstance = null;
 
@@ -440,13 +446,7 @@ public class YMBusinessService {
                 pangelDataHandler(activity, savedInstanceState);
                 gdtDataHandler(activity, savedInstanceState);
                 ksDataHandler(activity, savedInstanceState);
-
-
-//                if (activity instanceof MBRewardVideoActivity) {
-//
-//                }
-//                String unitId = activity.getIntent().getStringExtra("unitId");
-//                String reward = activity.getIntent().getStringExtra("reward");
+                mvDataHandler(activity, savedInstanceState);
             }
 
 
@@ -513,6 +513,7 @@ public class YMBusinessService {
         }
 
         int type = 0;
+
         if (activity instanceof TTRewardVideoActivity) {
             type = 1;
         }
@@ -526,6 +527,10 @@ public class YMBusinessService {
         if (activity instanceof KsRewardVideoActivity
                 || activity instanceof KSRewardLandScapeVideoActivity) {
             type = 3;
+        }
+
+        if (activity instanceof MBRewardVideoActivity) {
+            type = 4;
         }
 
         if (type == 0) return;
@@ -556,10 +561,6 @@ public class YMBusinessService {
             public void onClick(View v) {
                 final float x = 200;//transparentLayer.getWidth() / 2;
                 float y = adContainer.getBottom() - Utils.dp2px(48);//transparentLayer.getHeight() / 2;
-
-                long downTime = SystemClock.uptimeMillis();
-                long eventTime = SystemClock.uptimeMillis() + 100;
-                int metaState = 0;
 
                 clickPenetrate(adContainer, x, y);
 
@@ -867,6 +868,49 @@ public class YMBusinessService {
         }
     }
 
+
+    private static void mvDataHandler(Activity activity, Bundle savedInstanceState) {
+        if (!(activity instanceof MBRewardVideoActivity)) {
+            return;
+        }
+
+        try {
+            String unitId = activity.getIntent().getStringExtra("unitId");
+            List<com.mbridge.msdk.videocommon.download.a> list = com.mbridge.msdk.videocommon.download.c.getInstance().b(unitId);
+            if (list.size() <= 0) {
+                return;
+            }
+            com.mbridge.msdk.videocommon.download.a a = list.get(0);
+            com.mbridge.msdk.foundation.entity.CampaignEx campaignEx = null;
+            campaignEx = a.g();
+            if (campaignEx == null) {
+                return;
+            }
+            String adId = campaignEx.getId();
+            String appName = campaignEx.getAppName();
+            String iconUrl = campaignEx.getIconUrl();
+            String videoUrl = campaignEx.getVideoUrlEncode();
+            String packageName = campaignEx.getPackageName();
+            jsonMvObj = new JSONObject();
+
+            jsonMvObj.put("ad_id", adId);
+
+            jsonMvObj.put("app_name", appName);
+
+            jsonMvObj.put("icon_url", iconUrl);
+
+            jsonMvObj.put("video_url", videoUrl);
+
+            jsonMvObj.put("pkg_name", packageName);
+
+            jsonMvObj.put("download_url", "");
+            SLog.i(TAG, "mvDataHandler jsonStr=" + jsonMvObj.toString());
+        } catch (Throwable e) {
+            SLog.e(TAG, "mvDataHandler 2 error=" + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public static void setAdInfo(double ecpm, int firmId) {
         mEcpm = ecpm;
         BSAdType adType = null;
@@ -876,6 +920,8 @@ public class YMBusinessService {
             adType = BSAdType.PANGLE;
         } else if (firmId == 28) {
             adType = BSAdType.KS;
+        } else if (firmId == 6) {
+            adType = BSAdType.MV;
         } else {
             mEcpm = -1;//其它广告，用ecpm排除
             return;
@@ -893,6 +939,8 @@ public class YMBusinessService {
             jsonObject = jsonGdtObj;
         } else if (BSAdType.KS == adType) {
             jsonObject = jsonKsObj;
+        } else if (BSAdType.MV == adType) {
+            jsonObject = jsonMvObj;
         }
 
         if (jsonObject == null) {

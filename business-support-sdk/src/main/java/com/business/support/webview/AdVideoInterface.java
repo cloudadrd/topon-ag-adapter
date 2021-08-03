@@ -297,6 +297,8 @@ public class AdVideoInterface {
     public void close() {
         if (webView.getCustomContext() instanceof InnerWebViewActivity) {
             ((InnerWebViewActivity) webView.getCustomContext()).finish();
+        } else if (webView.getCustomContext() instanceof InnerWebViewActivity2) {
+            ((InnerWebViewActivity2) webView.getCustomContext()).finish();
         }
     }
 

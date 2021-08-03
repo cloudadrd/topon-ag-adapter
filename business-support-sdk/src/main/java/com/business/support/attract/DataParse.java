@@ -20,8 +20,8 @@ public class DataParse {
                 String[] values = key.split("-");
                 if (values.length == 2) {
                     PolicyData.RV rv = new PolicyData.RV();
-                    rv.startRange = Integer.parseInt(values[0]);
-                    rv.endRange = Integer.parseInt(values[1]);
+                    rv.startRange = Double.parseDouble(values[0]);
+                    rv.endRange = Double.parseDouble(values[1]);
                     rv.chance = rvJson.optInt(key);
                     policyData.rvs.add(rv);
                 }

@@ -9,12 +9,12 @@ public class PolicyData {
         /**
          * 开始的范围值
          */
-        public int startRange;
+        public double startRange;
 
         /**
          * 结束的范围值
          */
-        public int endRange;
+        public double endRange;
 
         /**
          * 显示概率

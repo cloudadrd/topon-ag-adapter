@@ -6,7 +6,9 @@ public enum BSAdType {
 
     GDT("gdt"),
 
-    KS("ks");
+    KS("ks"),
+
+    MV("mv");
 
     public String getName() {
         return name;
