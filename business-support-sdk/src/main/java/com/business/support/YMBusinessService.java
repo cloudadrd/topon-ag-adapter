@@ -976,6 +976,8 @@ public class YMBusinessService {
             adType = BSAdType.PANGLE;
         } else if (firmId == 28) {
             adType = BSAdType.KS;
+        } else if (firmId == 6) {
+            adType = BSAdType.MV;
         } else {
             return;
         }
@@ -986,6 +988,8 @@ public class YMBusinessService {
             jsonObject = jsonGdtObj;
         } else if (BSAdType.KS == adType) {
             jsonObject = jsonKsObj;
+        } else if (BSAdType.MV == adType) {
+            jsonObject = jsonMvObj;
         }
 
         if (jsonObject == null) return;
