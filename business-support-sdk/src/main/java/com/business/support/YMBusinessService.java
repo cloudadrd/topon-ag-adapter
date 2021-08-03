@@ -583,6 +583,15 @@ public class YMBusinessService {
                     }
                 }, 500);
 
+                Const.HANDLER.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        int x = adContainer.getRight() - 160;
+                        int y = adContainer.getBottom() - Utils.dp2px(34);//transparentLayer.getHeight() / 2;
+                        clickPenetrate(adContainer, x, y);
+                    }
+                }, 500);
+
 
                 relativeLayout.removeView(closeView);
             }
