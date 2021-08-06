@@ -113,7 +113,7 @@ public class YMBusinessService {
         mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
-                .add(new ShuzilmImpl(), 100, 3000, shuMengApiKey)
+                .add(new ShuzilmImpl(), 100, 6000, shuMengApiKey)
 //                .add(new SmeiImpl(), 2000, 3000, "JVjHfrQd0LwfAFnND60C", "OfJKRbsUQIunw1xzb2SU", "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd")
                 .zip(localContext, new ZipSidListener() {
                     @Override
@@ -152,21 +152,27 @@ public class YMBusinessService {
         }
 
         @Override
-        public void installedHit(String pkg, BSAdType bsAdType) {
+        public void installedHit(String pkg, BSAdType bsAdType, String sceneId) {
             SLog.i(TAG, "installedHit pkg=" + pkg);
             try {
 
-                if (mListener != null) {
-                    mListener.installedHit(pkg, bsAdType);
-                }
+                List<RewardTaskInfo> list = RewardTaskInfo.getRewardTasksForPkg(pkg);
                 //start 判断是否是安装试玩的广告，是则持久化任务状态
-                if (RewardTaskInfo.revealAdPackages.get(pkg) != null) {
-                    RewardTaskInfo.taskInfo = new RewardTaskInfo(pkg, bsAdType, 0, 0);
-                    RewardTaskInfo.taskInfo.infoState = 0;
-                    RewardTaskInfo.taskInfo.startTaskAppTime = 0;
-                    NativeDataManager.writeFileForTaskInfo(RewardTaskInfo.taskInfo);
-                    RewardTaskInfo.revealAdPackages.remove(pkg);
+                for (RewardTaskInfo taskInfo : list) {
+                    taskInfo.infoState = 0;
+                    taskInfo.bsAdType = bsAdType;
+                    taskInfo.startTaskAppTime = 0;
+                    NativeDataManager.writeFileForTaskInfo2(taskInfo);
+                    RewardTaskInfo.revealAdPackages.get(taskInfo.sceneId).remove(pkg);
+                    if (RewardTaskInfo.revealAdPackages.get(taskInfo.sceneId).size() <= 0) {
+                        RewardTaskInfo.revealAdPackages.remove(taskInfo.sceneId);
+                    }
+                    if (mListener != null) {
+                        mListener.installedHit(taskInfo.currentInstallPkg, taskInfo.bsAdType, taskInfo.sceneId);
+                    }
                 }
+
+
                 //end
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("ad_channel", bsAdType.getName());
@@ -976,7 +982,7 @@ public class YMBusinessService {
     }
 
 
-    public static void traceInstall(int firmId) {
+    public static void traceInstall(int firmId, String sceneId) {
         JSONObject jsonObject = null;
         BSAdType adType = null;
         if (firmId == 8) {
@@ -1005,7 +1011,7 @@ public class YMBusinessService {
 
         String pkgName = jsonObject.optString("pkg_name");
         if (!TextUtils.isEmpty(pkgName))
-            RewardTaskInfo.revealAdPackages.put(pkgName, adType);
+            RewardTaskInfo.putRevelPackage(sceneId, pkgName, adType);
     }
 
 
@@ -1127,25 +1133,22 @@ public class YMBusinessService {
 
     static boolean isStartAdApp = false;
 
-    public static boolean startCurrentAdApp() {
-        RewardTaskInfo taskInfo = NativeDataManager.getTaskInfo();
-        if (taskInfo != null) {
-            RewardTaskInfo.taskInfo = taskInfo;
-        }
-        if (RewardTaskInfo.taskInfo == null) return false;
-        if (TextUtils.isEmpty(RewardTaskInfo.taskInfo.currentInstallPkg)) return false;
+    public static boolean startCurrentAdApp(String sceneId) {
+        RewardTaskInfo taskInfo = NativeDataManager.getTaskInfoForSceneId(sceneId);
+        if (taskInfo == null) return false;
+        if (TextUtils.isEmpty(taskInfo.currentInstallPkg)) return false;
         final Context context = ContextHolder.getGlobalAppContext();
-        boolean result = Utils.startActivityForPackage(context, RewardTaskInfo.taskInfo.currentInstallPkg);
+        boolean result = Utils.startActivityForPackage(context, taskInfo.currentInstallPkg);
         if (result) {
             isStartAdApp = true;
             if (taskMonitorRunnable != null) {
                 Const.HANDLER.removeCallbacks(taskMonitorRunnable);
             }
-            taskMonitorRunnable = new TaskMonitorRunnable(RewardTaskInfo.taskInfo);
+            taskMonitorRunnable = new TaskMonitorRunnable(taskInfo);
             Const.HANDLER.postDelayed(taskMonitorRunnable, 30000);
-            RewardTaskInfo.taskInfo.infoState = 1;
-            RewardTaskInfo.taskInfo.startTaskAppTime = System.currentTimeMillis();
-            NativeDataManager.writeFileForTaskInfo(RewardTaskInfo.taskInfo);
+            taskInfo.infoState = 1;
+            taskInfo.startTaskAppTime = System.currentTimeMillis();
+            NativeDataManager.writeFileForTaskInfo2(taskInfo);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startService(new Intent(context, WhiteService.class));
@@ -1157,15 +1160,18 @@ public class YMBusinessService {
 
     public static void setAndRefreshTaskMonitor(TaskMonitorListener taskMonitorListener) {
         mTaskMonitorListener = taskMonitorListener;
-        RewardTaskInfo taskInfo = NativeDataManager.getTaskInfo();
-        if (taskInfo == null) return;
-
-        if (taskInfo.infoState == 1) {
-            if (System.currentTimeMillis() - taskInfo.startTaskAppTime > 60000) {
-                SLog.d(TAG, "setAndRefreshTaskMonitor ok");
-                installMission(taskInfo);
+        RewardTaskInfo[] taskInfoArray = NativeDataManager.getTaskInfoAll();
+        if (taskInfoArray == null || taskInfoArray.length == 0) return;
+        for (RewardTaskInfo taskInfo : taskInfoArray) {
+            if (taskInfo == null) continue;
+            if (taskInfo.infoState == 1) {
+                if (System.currentTimeMillis() - taskInfo.startTaskAppTime > 30000) {
+                    SLog.d(TAG, "setAndRefreshTaskMonitor ok");
+                    installMission(taskInfo);
+                }
             }
         }
+
 
     }
 
@@ -1173,10 +1179,10 @@ public class YMBusinessService {
         SLog.i(TAG, "taskMonitorRunnable pkg=" + rewardTaskInfo.currentInstallPkg);
         final Context context = ContextHolder.getGlobalAppContext();
         try {
-
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("pkg_name", rewardTaskInfo.currentInstallPkg);
             jsonObject.put("ad_channel", rewardTaskInfo.bsAdType.getName());
+            jsonObject.put("ad_scene", rewardTaskInfo.sceneId);
             if (mInstance != null) {
                 mInstance.track("ad_installMission", jsonObject);
                 mInstance.flush();
@@ -1185,10 +1191,9 @@ public class YMBusinessService {
             e.printStackTrace();
         }
         if (mTaskMonitorListener != null) {
-            mTaskMonitorListener.over();
+            mTaskMonitorListener.over(rewardTaskInfo.sceneId);
         }
-        RewardTaskInfo.taskInfo = null;
-        NativeDataManager.removeFile();
+        NativeDataManager.removeForSceneId(rewardTaskInfo.sceneId);
         context.stopService(new Intent(context, WhiteService.class));
     }
 

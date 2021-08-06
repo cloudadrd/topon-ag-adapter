@@ -59,9 +59,11 @@ class InstallStateReceiver extends BroadcastReceiver {
             if (RewardTaskInfo.adPackages.get(pkgName) != null) {
                 BSAdType bsAdType = RewardTaskInfo.adPackages.get(pkgName);
                 if (installListener != null) {
-                    installListener.installedHit(pkgName, bsAdType);
+                    installListener.installedHit(pkgName, bsAdType, "");
                 }
-                RewardTaskInfo.adPackages.remove(pkgName);
+                if (!RewardTaskInfo.isExistsForPkg(pkgName)) {
+                    RewardTaskInfo.adPackages.remove(pkgName);
+                }
             } else {
                 SLog.e(TAG, "匹配失败");
             }

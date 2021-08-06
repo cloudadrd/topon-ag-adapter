@@ -11,6 +11,7 @@ import com.anythink.core.api.ATAdInfo;
 import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoListener;
+import com.business.support.utils.SLog;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class AdVideoMediation {
     private Context mContext;
 
     public static void setPosId(String posId) {
+        SLog.d(TAG, "setPosId posId=" + posId);
         AdVideoMediation.POS_ID = posId;
     }
 
@@ -70,6 +72,7 @@ public class AdVideoMediation {
             return;
         }
         isLoad = true;
+        SLog.d(TAG, "loadVideo posId=" + POS_ID);
         mRewardVideoAd = new ATRewardVideoAd(mContext, POS_ID);
         mRewardVideoAd.setAdListener(new ATRewardVideoListener() {
 

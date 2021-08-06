@@ -1,6 +1,7 @@
 package com.business.support.shuzilm;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.business.support.compose.ISdkMain;
 import com.business.support.compose.SdkType;
@@ -10,6 +11,7 @@ import com.business.support.config.Const;
 import com.business.support.http.HttpRequester;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
+import com.kwad.sdk.core.imageloader.utils.L;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +30,8 @@ public class ShuzilmImpl implements ISdkMain {
 
     private Context mContext;
 
+    private int queryCount = 0;
+
     @Override
     public boolean init(Context context, String... params) {
         mContext = context;
@@ -42,13 +46,48 @@ public class ShuzilmImpl implements ISdkMain {
     @Override
     public void requestQuery(TaskResultListener listener) {
         mListener = listener;
-        Main.getQueryID(mContext, "channel", "message", 1, new
-                Listener() {
-                    @Override
-                    public void handler(String s) {
-                        request(s);
+        queryCount++;
+        Listener listener1 = new Listener() {
+            @Override
+            public void handler(String s) {
+                s = "000000000000000000000000000000000000";
+                if ((TextUtils.isEmpty(s) || "000000000000000000000000000000000000".equals(s))) {
+
+                    if (queryCount < 2) {
+                        queryCount++;
+                        getQueryId(this, 2900);
+                    } else {
+                        if (mListener != null) {
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("did", s);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            mListener.result(new TaskResult(false, 55, jsonObject.toString(), SdkType.SHUMENG));
+                        }
                     }
-                });
+                    return;
+                }
+                request(s);
+            }
+        };
+        getQueryId(listener1, 0);
+
+    }
+
+    private void getQueryId(final Listener listener, int delayTime) {
+        if (delayTime > 0) {
+            Const.HANDLER.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Main.getQueryID(mContext, "channel", "message", 1, listener);
+                }
+            }, delayTime);
+        } else {
+            Main.getQueryID(mContext, "channel", "message", 1, listener);
+        }
+
     }
 
     private void request(final String did) {

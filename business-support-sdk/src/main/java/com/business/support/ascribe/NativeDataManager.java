@@ -1,24 +1,38 @@
 package com.business.support.ascribe;
 
+import android.content.Context;
+import android.text.TextUtils;
+
 import com.business.support.adinfo.BSAdType;
 import com.business.support.utils.ContextHolder;
+import com.business.support.utils.PreferenceTools;
+import com.business.support.utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.Set;
 
 public class NativeDataManager {
 
+    public static final String PROCESS_NAME = Utils.getProcessName(ContextHolder.getGlobalAppContext(), android.os.Process.myPid());
+
+    public static final String PREF_REWARD_TASK_FILE_NAME = PROCESS_NAME + "_reward_task";
+
+    @Deprecated
     public static File getRootDirFile() {
         return new File(ContextHolder.getGlobalAppContext().getCacheDir(), "ascribe");
     }
 
+    @Deprecated
     public static File getTaskInfoFile() {
         return new File(getRootDirFile(), "taskinfo");
     }
 
+    @Deprecated
     public static boolean writeFileForTaskInfo(RewardTaskInfo taskInfo) {
         File taskInfoFile = getTaskInfoFile();
 
@@ -57,6 +71,20 @@ public class NativeDataManager {
 
     }
 
+    public static void writeFileForTaskInfo2(RewardTaskInfo taskInfo) {
+        Context context = ContextHolder.getGlobalAppContext();
+        char split = '$';
+        String data = taskInfo.currentInstallPkg + split +
+                taskInfo.bsAdType.getName() + split + taskInfo.sceneId + split + taskInfo.infoState + split + taskInfo.startTaskAppTime;
+        PreferenceTools.persistString(context, PREF_REWARD_TASK_FILE_NAME, taskInfo.sceneId, data);
+    }
+
+    public static void removeForSceneId(String sceneId) {
+        Context context = ContextHolder.getGlobalAppContext();
+        PreferenceTools.removeKey(context, PREF_REWARD_TASK_FILE_NAME, sceneId);
+    }
+
+    @Deprecated
     public static void removeFile() {
         File taskInfoFile = getTaskInfoFile();
         if (taskInfoFile.exists()) {
@@ -64,6 +92,41 @@ public class NativeDataManager {
         }
     }
 
+    public static RewardTaskInfo getTaskInfoForSceneId(String sceneId) {
+        Context context = ContextHolder.getGlobalAppContext();
+        String data = PreferenceTools.getString(context, PREF_REWARD_TASK_FILE_NAME, sceneId, "");
+        if (TextUtils.isEmpty(data)) return null;
+        String[] splits = data.split("\\$");
+        if (splits.length != 5) return null;
+        return new RewardTaskInfo(splits[0], BSAdType.get(splits[1]), splits[2], Integer.parseInt(splits[3]), Long.parseLong(splits[4]));
+    }
+
+    public static RewardTaskInfo[] getTaskInfoAll() {
+        Context context = ContextHolder.getGlobalAppContext();
+        Set<String> strs = PreferenceTools.getAllKeys(context, PREF_REWARD_TASK_FILE_NAME);
+        Iterator<String> iterable = strs.iterator();
+        RewardTaskInfo[] arrays = new RewardTaskInfo[strs.size()];
+        int index = 0;
+        while (iterable.hasNext()) {
+            String data = iterable.next();
+            String[] splits = data.split("\\$");
+            if (splits.length != 5) return null;
+            RewardTaskInfo taskInfo = new RewardTaskInfo(splits[0], BSAdType.get(splits[1]), splits[2], Integer.parseInt(splits[3]), Long.parseLong(splits[4]));
+            arrays[index] = taskInfo;
+            index++;
+        }
+        return arrays;
+    }
+
+//    public static boolean isExistsForPkg(String packageName) {
+//        RewardTaskInfo[] rewardTaskInfos = getTaskInfoAll();
+//        if (rewardTaskInfos == null) return false;
+//        for (RewardTaskInfo taskInfo : rewardTaskInfos) {
+//
+//        }
+//    }
+
+    @Deprecated
     public static RewardTaskInfo getTaskInfo() {
         File taskInfoFile = getTaskInfoFile();
         if (!taskInfoFile.exists() || !taskInfoFile.isFile()) {
