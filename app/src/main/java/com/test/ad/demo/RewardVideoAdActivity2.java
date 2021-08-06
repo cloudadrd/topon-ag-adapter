@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anythink.core.api.ATAdConst;
@@ -21,20 +22,16 @@ import com.anythink.core.api.ATAdStatusInfo;
 import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoExListener;
+import com.business.support.YMBusinessService;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.business.support.YMBusinessService;
-
-import com.business.support.adinfo.BSAdType;
-
-import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
-public class RewardVideoAdActivity extends Activity {
+public class RewardVideoAdActivity2 extends Activity {
 
-    private static final String TAG = RewardVideoAdActivity.class.getSimpleName();
+    private static final String TAG = RewardVideoAdActivity2.class.getSimpleName();
 
     String placementIds[] = new String[]{
             DemoApplicaion.mPlacementId_rewardvideo_all
@@ -72,7 +69,7 @@ public class RewardVideoAdActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
-
+        ((TextView) findViewById(R.id.scene_txt)).setText("scene2");
         mRadioGroup = (RadioGroup) findViewById(R.id.placement_select_group);
 
         for (int i = 0; i < placementIds.length; i++) {
@@ -100,7 +97,7 @@ public class RewardVideoAdActivity extends Activity {
             public void onClick(View v) {
 //                boolean isReady = mRewardVideoAd.isAdReady();
                 ATAdStatusInfo atAdStatusInfo = mRewardVideoAd.checkAdStatus();
-                Toast.makeText(RewardVideoAdActivity.this, "video ad ready status:" + atAdStatusInfo.isReady(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "video ad ready status:" + atAdStatusInfo.isReady(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -114,7 +111,7 @@ public class RewardVideoAdActivity extends Activity {
         findViewById(R.id.show_ad_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRewardVideoAd.show(RewardVideoAdActivity.this);
+                mRewardVideoAd.show(RewardVideoAdActivity2.this);
 //                mRewardVideoAd.show(RewardVideoAdActivity.this, "f5e5492eca9668");
             }
         });
@@ -140,25 +137,25 @@ public class RewardVideoAdActivity extends Activity {
             @Override
             public void onRewardedVideoAdLoaded() {
                 Log.i(TAG, "onRewardedVideoAdLoaded");
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRewardedVideoAdFailed(AdError errorCode) {
                 Log.i(TAG, "onRewardedVideoAdFailed error:" + errorCode.getFullErrorInfo());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdFailed:" + errorCode.getFullErrorInfo(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onRewardedVideoAdFailed:" + errorCode.getFullErrorInfo(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRewardedVideoAdPlayStart(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayStart", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onRewardedVideoAdPlayStart", Toast.LENGTH_SHORT).show();
                 int firmId = entity.getNetworkFirmId();
 
                 //第一步 设置ECPM，并上报数据
                 YMBusinessService.setAdInfo(entity.getEcpm(), firmId);
 
-                YMBusinessService.traceInstall(firmId,"1");
+                YMBusinessService.traceInstall(firmId, "2");
 
                 //第二步
                 //曝光日志code start
@@ -178,25 +175,25 @@ public class RewardVideoAdActivity extends Activity {
             @Override
             public void onRewardedVideoAdPlayEnd(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayEnd:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayEnd", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onRewardedVideoAdPlayEnd", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRewardedVideoAdPlayFailed(AdError errorCode, ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayFailed error:" + errorCode.getFullErrorInfo());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayFailed:" + errorCode.getFullErrorInfo(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onRewardedVideoAdPlayFailed:" + errorCode.getFullErrorInfo(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRewardedVideoAdClosed(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdClosed:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRewardedVideoAdPlayClicked(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayClicked:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onRewardedVideoAdPlayClicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onRewardedVideoAdPlayClicked", Toast.LENGTH_SHORT).show();
                 YMBusinessService.notifyStopRvClick();
                 //第二步
                 //点击日志code start
@@ -214,7 +211,7 @@ public class RewardVideoAdActivity extends Activity {
             @Override
             public void onReward(ATAdInfo entity) {
                 Log.e(TAG, "onReward:\n" + entity.toString());
-                Toast.makeText(RewardVideoAdActivity.this, "onReward", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RewardVideoAdActivity2.this, "onReward", Toast.LENGTH_SHORT).show();
             }
         });
     }

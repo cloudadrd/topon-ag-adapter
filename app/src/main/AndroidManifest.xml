@@ -47,6 +47,10 @@
             android:label="AT RewardedVideo"
             android:launchMode="singleTask" />
         <activity
+            android:name="com.test.ad.demo.RewardVideoAdActivity2"
+            android:label="AT RewardedVideo2"
+            android:launchMode="singleTask" />
+        <activity
             android:name="com.test.ad.demo.InterstitialAdActivity"
             android:label="AT Interstitial"
             android:launchMode="singleTask" />

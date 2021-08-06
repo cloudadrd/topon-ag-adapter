@@ -48,9 +48,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        cacheWebView = new CacheWebView(this);
-        //http://redbag.adspools.cn:8081/?appId=119&token=ad6736e3-8384-42b0-90de-11924877129a&uid=20210324105106534533243063316480&IMEI=cd389fbee1d57a31231365551111&team=002&isNew=false
-        cacheWebView.loadUrl("https://m.baidu.com");
+//        cacheWebView = new CacheWebView(this);
+//        //http://redbag.adspools.cn:8081/?appId=119&token=ad6736e3-8384-42b0-90de-11924877129a&uid=20210324105106534533243063316480&IMEI=cd389fbee1d57a31231365551111&team=002&isNew=false
+//        cacheWebView.loadUrl("https://m.baidu.com");
         findViewById(R.id.nativeAdBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +70,13 @@ public class MainActivity extends Activity {
         });
 
         findViewById(R.id.rewardedVideoBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, RewardVideoAdActivity.class));
+            }
+        });
+
+        findViewById(R.id.rewardedVideoBtn2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, RewardVideoAdActivity.class));
@@ -148,7 +155,7 @@ public class MainActivity extends Activity {
                 //不带缓存的webview content://com.scqdd.mobi.bssdk/bs_external_res_h5/forumweb/forumweb/index.html?user=1
                 //file:///android_asset/forumweb/index.html?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5
                 YMBusinessService.startWebViewPage(MainActivity.this, "file:///android_asset/forumweb/index.html?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5",
-                        "b5fb2228113cf7", new WebViewToNativeListener() {
+                        "b5fb2228113cf7-2", new WebViewToNativeListener() {
                             @Override
                             public void event1(InnerWebViewActivity activity) {
 
@@ -179,18 +186,25 @@ public class MainActivity extends Activity {
         findViewById(R.id.startAdApp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                boolean result = YMBusinessService.startCurrentAdApp();
-//                Log.i(TAG, "是否启动成功 result=" + result);
+                boolean result = YMBusinessService.startCurrentAdApp("1");
+                Log.i(TAG, "是否启动成功 result=" + result);
 
-                startService(new Intent(MainActivity.this, WhiteService.class));
+            }
+        });
+
+        findViewById(R.id.startAdApp2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean result = YMBusinessService.startCurrentAdApp("2");
+                Log.i(TAG, "是否启动成功 result=" + result);
 
             }
         });
 
         YMBusinessService.setAndRefreshTaskMonitor(new TaskMonitorListener() {
             @Override
-            public void over() {
-                Log.i(TAG, "setAndRefreshTaskMonitor 任务完成  ok");
+            public void over(String sceneId) {
+                Log.i(TAG, "setAndRefreshTaskMonitor 任务完成  ok sceneId=" + sceneId);
             }
         });
 
@@ -268,8 +282,8 @@ public class MainActivity extends Activity {
                 });
         YMBusinessService.enableAdTrace(new InstallListener() {
             @Override
-            public void installedHit(String pkg, BSAdType bsAdType) {
-                SLog.i(TAG, "installedHit pkg=" + pkg);
+            public void installedHit(String pkg, BSAdType bsAdType, String sceneId) {
+                SLog.i(TAG, "installedHit pkg=" + pkg + ",sceneId=" + sceneId);
             }
         });
 //        ResUpdateManager.getH5ResPathAndUpdate("95", "95", 101, new ResH5Listener() {

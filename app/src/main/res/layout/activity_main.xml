@@ -55,6 +55,15 @@
             android:textSize="15dp" />
 
         <Button
+            android:id="@+id/rewardedVideoBtn2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="RewardedVideo Demo2"
+            android:textSize="15dp" />
+
+        <Button
             android:id="@+id/bannerBtn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -117,6 +126,14 @@
             android:text="startAdApp"
             android:textSize="15dp" />
 
+        <Button
+            android:id="@+id/startAdApp2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="startAdApp2"
+            android:textSize="15dp" />
 
 
         <Button
