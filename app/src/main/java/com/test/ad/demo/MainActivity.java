@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.rewardedVideoBtn2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, RewardVideoAdActivity.class));
+                startActivity(new Intent(MainActivity.this, RewardVideoAdActivity2.class));
             }
         });
 

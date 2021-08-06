@@ -1171,8 +1171,6 @@ public class YMBusinessService {
                 }
             }
         }
-
-
     }
 
     private static void installMission(RewardTaskInfo rewardTaskInfo) {
