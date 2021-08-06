@@ -28,6 +28,9 @@ public enum BSAdType {
         } else if (value.equals(KS.name)) {
             return KS;
         }
+        else if (value.equals(MV.name)) {
+            return MV;
+        }
         return null;
     }
 }
