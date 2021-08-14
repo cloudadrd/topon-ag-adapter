@@ -8,11 +8,11 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 
 public class HairFrameLayout extends FrameLayout {
 

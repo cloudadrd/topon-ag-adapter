@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.core.content.FileProvider;
 
 import com.business.support.config.Const;
 import com.business.support.http.HttpRequester;

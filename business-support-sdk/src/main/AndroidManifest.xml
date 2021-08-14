@@ -14,6 +14,11 @@
     <!-- 强烈建议权限 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+
+    <!--安装apk的权限 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+
     <application android:usesCleartextTraffic="true">
         <activity
             android:name=".webview.InnerWebViewActivity"
@@ -25,30 +30,28 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-        <service
-            android:name=".WhiteService"
-            />
+        <service android:name=".WhiteService" />
 
 
-<!--        <provider-->
-<!--            android:name="androidx.core.content.FileProvider"-->
-<!--            android:authorities="${applicationId}.bssdk"-->
-<!--            android:exported="false"-->
-<!--            android:grantUriPermissions="true">-->
-<!--            <meta-data-->
-<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--                android:resource="@xml/business_support_path" />-->
-<!--        </provider>-->
+        <!--        <provider-->
+        <!--            android:name="androidx.core.content.FileProvider"-->
+        <!--            android:authorities="${applicationId}.bssdk"-->
+        <!--            android:exported="false"-->
+        <!--            android:grantUriPermissions="true">-->
+        <!--            <meta-data-->
+        <!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
+        <!--                android:resource="@xml/business_support_path" />-->
+        <!--        </provider>-->
 
-<!--        <provider-->
-<!--            android:name="androidx.core.content.FileProvider"-->
-<!--            android:authorities="${applicationId}.takePhotoFileProvider"-->
-<!--            android:exported="false"-->
-<!--            android:grantUriPermissions="true">-->
-<!--            <meta-data-->
-<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--                android:resource="@xml/take_photo_file_paths" />-->
-<!--        </provider>-->
+        <provider
+            android:name=".webview.BSFileProvider"
+            android:authorities="${applicationId}.takePhotoFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/take_photo_file_paths" />
+        </provider>
     </application>
 
 </manifest>

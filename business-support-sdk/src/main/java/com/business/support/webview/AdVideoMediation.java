@@ -11,7 +11,14 @@ import com.anythink.core.api.ATAdInfo;
 import com.anythink.core.api.AdError;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoListener;
+import com.business.support.config.Const;
+import com.business.support.utils.ContextHolder;
+import com.business.support.utils.MDIDHandler;
 import com.business.support.utils.SLog;
+import com.business.support.utils.Utils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,16 +36,21 @@ public class AdVideoMediation {
 
     public boolean isReadyLoad;
 
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
+    private BSRewardVideoListener mRewardVideoListener;
 
     private Context mContext;
+
+    public static String POS_ID = "b5fb2228113cf7";
 
     public static void setPosId(String posId) {
         SLog.d(TAG, "setPosId posId=" + posId);
         AdVideoMediation.POS_ID = posId;
     }
 
-    public static String POS_ID = "b5fb2228113cf7";
+    public void setRewardVideoListener(BSRewardVideoListener rewardVideoListener) {
+        this.mRewardVideoListener = rewardVideoListener;
+    }
+
 
     private static class Holder {
         @SuppressLint("StaticFieldLeak")
@@ -81,6 +93,9 @@ public class AdVideoMediation {
                 Log.i(TAG, "onRewardedVideoAdLoaded");
                 isReadyLoad = true;
                 trackState(AdLogType.LOAD_SUCCESS);
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onRewardedVideoAdLoaded();
+                }
             }
 
             @Override
@@ -88,6 +103,9 @@ public class AdVideoMediation {
                 Log.i(TAG, "onRewardedVideoAdFailed error:" + errorCode.printStackTrace());
                 isReadyLoad = false;
                 loadDelay();
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onRewardedVideoAdFailed(errorCode);
+                }
             }
 
             @Override
@@ -95,10 +113,14 @@ public class AdVideoMediation {
                 Log.i(TAG, "onRewardedVideoAdPlayStart:\n" + entity.toString());
 
                 trackState(AdLogType.IMP_SUCCESS, entity.getEcpm());
+
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onRewardedVideoAdPlayStart(entity);
+                }
             }
 
             public void loadDelay() {
-                mainHandler.postDelayed(new Runnable() {
+                Const.HANDLER.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mRewardVideoAd.load();
@@ -109,6 +131,10 @@ public class AdVideoMediation {
             @Override
             public void onRewardedVideoAdPlayEnd(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayEnd:\n" + entity.toString());
+
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onRewardedVideoAdPlayEnd(entity);
+                }
             }
 
 
@@ -118,6 +144,10 @@ public class AdVideoMediation {
                 isReadyLoad = false;
                 trackState(AdLogType.PLAY_FAIL);
                 loadDelay();
+
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onRewardedVideoAdPlayFailed(errorCode, entity);
+                }
             }
 
             @Override
@@ -126,23 +156,36 @@ public class AdVideoMediation {
                 isReadyLoad = false;
                 trackState(AdLogType.PLAY_END_CLOSE);
                 mRewardVideoAd.load();
+
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onRewardedVideoAdClosed(entity);
+                }
             }
 
             @Override
             public void onRewardedVideoAdPlayClicked(ATAdInfo entity) {
                 Log.i(TAG, "onRewardedVideoAdPlayClicked:\n" + entity.toString());
                 trackState(AdLogType.VIDEO_CLICK);
+
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onRewardedVideoAdPlayClicked(entity);
+                }
             }
 
             @Override
             public void onReward(ATAdInfo entity) {
                 Log.e(TAG, "onReward:\n" + entity.toString());
                 trackState(AdLogType.VIDEO_REWARD);
+
+                if (mRewardVideoListener != null) {
+                    mRewardVideoListener.onReward(entity);
+                }
             }
         });
 
         mRewardVideoAd.load();
     }
+
 
     private void trackState(AdLogType adLogType) {
         trackState(adLogType, 0);

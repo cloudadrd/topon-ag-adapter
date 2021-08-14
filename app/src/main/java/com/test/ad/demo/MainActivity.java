@@ -129,7 +129,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                YMBusinessService.startCacheWebViewPage(MainActivity.this, cacheWebView, "b5fb2228113cf7", new WebViewToNativeListener() {
+                YMBusinessService.startCacheWebViewPage(MainActivity.this, cacheWebView, new WebViewToNativeListener() {
                     @Override
                     public void event1(InnerWebViewActivity activity) {
 
@@ -140,10 +140,6 @@ public class MainActivity extends Activity {
 
                     }
 
-                    @Override
-                    public void tracking(String name, JSONObject properties) {
-//                        AppActivity.app.biInstance.track(name, properties);
-                    }
                 });
             }
         });
@@ -154,23 +150,19 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 //不带缓存的webview content://com.scqdd.mobi.bssdk/bs_external_res_h5/forumweb/forumweb/index.html?user=1
                 //file:///android_asset/forumweb/index.html?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5
-                YMBusinessService.startWebViewPage(MainActivity.this, "file:///android_asset/forumweb/index.html?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5",
-                        "b5fb2228113cf7-2", new WebViewToNativeListener() {
-                            @Override
-                            public void event1(InnerWebViewActivity activity) {
+                YMBusinessService.startWebViewPage(MainActivity.this, "file:///android_asset/test.html", new WebViewToNativeListener() {
 
-                            }
+                    @Override
+                    public void event1(InnerWebViewActivity activity) {
 
-                            @Override
-                            public void event2(InnerWebViewActivity2 activity) {
+                    }
 
-                            }
+                    @Override
+                    public void event2(InnerWebViewActivity2 activity) {
 
-                            @Override
-                            public void tracking(String name, JSONObject properties) {
-//                              AppActivity.app.biInstance.track(name, properties);
-                            }
-                        });
+                    }
+
+                });
             }
         });
 
@@ -317,6 +309,8 @@ public class MainActivity extends Activity {
 //            }
 //        });
 
+        YMBusinessService.setH5RewardPlacementId("广告位ID");
+        YMBusinessService.setH5InterstitialPlacementId("b603f37c4ebe4e");
 
     }
 

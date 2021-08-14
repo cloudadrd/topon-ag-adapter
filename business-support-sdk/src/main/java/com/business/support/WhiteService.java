@@ -11,9 +11,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 
 public class WhiteService extends Service {
     private static final String TAG = WhiteService.class.getSimpleName();

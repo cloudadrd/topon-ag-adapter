@@ -4,8 +4,6 @@ package com.business.support;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.app.Notification;
-import android.app.TaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +11,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+
+import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
@@ -47,11 +44,14 @@ import com.business.support.reallycheck.RootCheck;
 import com.business.support.reallycheck.VirtualAppCheck;
 import com.business.support.reallycheck.WireSharkCheck;
 import com.business.support.shuzilm.ShuzilmImpl;
+import com.business.support.utils.BSInterstitialListener;
 import com.business.support.utils.ContextHolder;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
+import com.business.support.webview.AdInterstitialMediation;
 import com.business.support.webview.AdVideoInterface;
 import com.business.support.webview.AdVideoMediation;
+import com.business.support.webview.BSRewardVideoListener;
 import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
@@ -104,7 +104,7 @@ public class YMBusinessService {
 
     private static JSONObject jsonMvObj = null;
 
-    private static ThinkingAnalyticsSDK mInstance = null;
+    public static ThinkingAnalyticsSDK mInstance = null;
 
     private static boolean rvClickStop = false;
 
@@ -113,7 +113,7 @@ public class YMBusinessService {
         mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
-                .add(new ShuzilmImpl(), 100, 6000, shuMengApiKey)
+                .add(new ShuzilmImpl(), 100, 9000, shuMengApiKey)
 //                .add(new SmeiImpl(), 2000, 3000, "JVjHfrQd0LwfAFnND60C", "OfJKRbsUQIunw1xzb2SU", "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd")
                 .zip(localContext, new ZipSidListener() {
                     @Override
@@ -189,15 +189,32 @@ public class YMBusinessService {
         }
     }
 
+
+    public static void setH5RewardPlacementId(String placementId) {
+        AdVideoMediation.setPosId(placementId);
+    }
+
+    public static void setH5InterstitialPlacementId(String placementId) {
+        AdInterstitialMediation.setPosId(placementId);
+    }
+
+
+    public static void setH5RewardListener(BSRewardVideoListener listener) {
+        AdVideoMediation.getInstance().setRewardVideoListener(listener);
+    }
+
+    public static void setH5InterstitialListener(BSInterstitialListener listener) {
+        AdInterstitialMediation.getInstance().setInterstitialListener(listener);
+    }
+
     /**
      * 带缓存的webview，可以提前创建cacheWebView并且加载
      */
-    public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, String posId, WebViewToNativeListener listener) {
+    public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, WebViewToNativeListener listener) {
         if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
             viewGroup.removeView(cacheWebView);
         }
-        AdVideoMediation.setPosId(posId);
         AdVideoInterface.nativeListener = listener;
         //带缓存的webview，可以提前创建cacheWebView并且加载
         InnerWebViewActivity.launch(context, cacheWebView);
@@ -206,8 +223,7 @@ public class YMBusinessService {
     /**
      * //不带缓存的webview
      */
-    public static void startWebViewPage(Context context, String linkUrl, String posId, WebViewToNativeListener listener) {
-        AdVideoMediation.setPosId(posId);
+    public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener) {
         AdVideoInterface.nativeListener = listener;
         InnerWebViewActivity2.launch(context, linkUrl);
     }

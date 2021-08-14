@@ -27,7 +27,6 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -35,7 +34,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import com.business.support.R;
 import com.business.support.config.Assets;
@@ -406,7 +404,7 @@ public class InnerWebViewActivity2 extends Activity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                Uri photoURI = BSFileProvider.getUriForFile(this,
                         getPackageName() + ".takePhotoFileProvider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -619,8 +617,12 @@ public class InnerWebViewActivity2 extends Activity {
         super.onDestroy();
 //        mediationHelper.setAdVideoInterface(null);
         AppInstallReceiver.setInstallCallback(null);
-        webView.setContext(null);
-        webView = null;
+        if (webView != null) {
+            webView.destroy();
+            webView.setContext(null);
+            webView = null;
+        }
+
         if (mSelectPhotoDialog != null) {
             mSelectPhotoDialog.dismiss();
         }

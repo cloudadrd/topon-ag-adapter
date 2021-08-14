@@ -5,17 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
-
 import androidx.annotation.MainThread;
 import androidx.annotation.RequiresApi;
-import androidx.core.content.FileProvider;
 
+import com.anythink.core.api.ATAdInfo;
+import com.business.support.YMBusinessService;
+import com.business.support.utils.MDIDHandler;
+import com.business.support.utils.Utils;
 import com.zcoup.multidownload.entitis.FileInfo;
 import com.zcoup.multidownload.service.LoadListener;
 
@@ -36,18 +40,23 @@ public class AdVideoInterface {
 
     private static final String TAG = "AdVideoInterface";
 
-    private final AdVideoMediation mAdVideoMediationHelper;
+    private final AdVideoMediation mAdVideoMediation;
+
+    private final AdInterstitialMediation mAdInterstitialMediation;
 
     public static WebViewToNativeListener nativeListener = null;
 
     private String callback;
 
-    public AdVideoInterface(CacheWebView webView, AdVideoMediation adVideoMediationHelper) {
+    private String callbackInterstitial;
+
+    public AdVideoInterface(CacheWebView webView, AdVideoMediation adVideoMediation, AdInterstitialMediation adInterstitialMediation) {
         if (webView == null) {
             throw new IllegalArgumentException("webView null");
         }
         this.webView = webView;
-        mAdVideoMediationHelper = adVideoMediationHelper;
+        mAdVideoMediation = adVideoMediation;
+        mAdInterstitialMediation = adInterstitialMediation;
     }
 
     @JavascriptInterface
@@ -55,9 +64,60 @@ public class AdVideoInterface {
         webView.post(new Runnable() {
             @Override
             public void run() {
-                showInterfaceForMain(callback);
+                showInterfaceForMain(callback, AdType.REWARD);
             }
         });
+    }
+
+
+    @JavascriptInterface
+    public void showInterstitial(final String callback) {
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                showInterfaceForMain(callback, AdType.INTERSTITIAL);
+            }
+        });
+    }
+
+    @MainThread
+    private void showInterfaceForMain(String callback, AdType adType) {
+        if (adType == AdType.REWARD) {
+            this.callback = callback;
+        } else {
+            this.callbackInterstitial = callback;
+        }
+
+        showAd(adType);
+    }
+
+    /**
+     * * * * * * *
+     */
+    public void showAd(AdType adType) {
+        boolean flag = false;
+        if (webView.getCustomContext() instanceof Activity) {
+            Log.d(TAG, "call showAd, webView.getCustomContext() is Activity. adType=" + adType.name());
+            Activity activity = (Activity) webView.getCustomContext();
+            if (!activity.isDestroyed()) {
+                if (adType == AdType.REWARD) {
+                    flag = mAdVideoMediation.show(activity);
+                } else {
+                    flag = mAdInterstitialMediation.show(activity);
+                }
+
+            } else {
+                Log.d(TAG, "call showAd, Activity is destroyed.");
+            }
+        }
+        if (!flag) {
+            if (adType == AdType.REWARD) {
+                trackState(AdLogType.PLAY_FAIL);
+            } else {
+                trackStateInterstitial(AdLogType.PLAY_FAIL);
+            }
+
+        }
     }
 
     @JavascriptInterface
@@ -65,10 +125,24 @@ public class AdVideoInterface {
         webView.post(new Runnable() {
             @Override
             public void run() {
-                if (mAdVideoMediationHelper.isReadyLoad) {
+                if (mAdVideoMediation != null && mAdVideoMediation.isReadyLoad) {
                     trackState(AdLogType.LOAD_SUCCESS);
                 } else {
                     trackState(AdLogType.LOAD_NO_READY);
+                }
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void isLoadInterstitial() {
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mAdInterstitialMediation != null && mAdInterstitialMediation.isReadyLoad) {
+                    trackStateInterstitial(AdLogType.LOAD_SUCCESS);
+                } else {
+                    trackStateInterstitial(AdLogType.LOAD_NO_READY);
                 }
             }
         });
@@ -187,23 +261,6 @@ public class AdVideoInterface {
     }
 
 
-//    public void startInstall(String pkg) {
-//        File apkFile = new File(DownloadManager.getPath(pkg));
-//        if (!apkFile.exists()) {
-//            return;
-//        }
-//        Intent intent = new Intent(Intent.ACTION_VIEW);
-////      安装完成后，启动app（源码中少了这句话）
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        Context context = webView.getContext();
-//        Uri photoURI = FileProvider.getUriForFile(context,
-//                context.getPackageName() + ".takePhotoFileProvider",
-//                apkFile);
-//        intent.setDataAndType(photoURI, "application/vnd.android.package-archive");
-//        webView.getCustomContext().startActivity(intent);
-//    }
-
-
     public void startInstall(String pkg) {
         File apkFile = new File(DownloadManager.getPath(pkg));
         if (!apkFile.exists()) {
@@ -213,17 +270,25 @@ public class AdVideoInterface {
         Intent intent = new Intent(Intent.ACTION_VIEW);
 //      安装完成后，启动app（源码中少了这句话）
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Uri uri = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Uri photoURI = FileProvider.getUriForFile(context,
+            uri = BSFileProvider.getUriForFile(context,
                     context.getPackageName() + ".takePhotoFileProvider",
                     apkFile);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setDataAndType(photoURI, "application/vnd.android.package-archive");
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
         } else {
-            Uri uri = Uri.fromFile(apkFile);
+            uri = Uri.fromFile(apkFile);
             intent.setDataAndType(uri, "application/vnd.android.package-archive");
         }
-        webView.getCustomContext().startActivity(intent);
+
+        List<ResolveInfo> resolveLists = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        // 然后全部授权
+        for (ResolveInfo resolveInfo : resolveLists) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+        context.startActivity(intent);
     }
 
     public void download(String url, String pkg) {
@@ -264,13 +329,6 @@ public class AdVideoInterface {
     }
 
 
-    @MainThread
-    private void showInterfaceForMain(String callback) {
-        this.callback = callback;
-        showAd();
-    }
-
-
     @JavascriptInterface
     public void goBack() {
         Log.d(TAG, "goBack");
@@ -307,8 +365,8 @@ public class AdVideoInterface {
         try {
             JSONObject properties = new JSONObject();
             properties.put("action", action);
-            if (nativeListener != null) {
-                nativeListener.tracking(name, properties);
+            if (YMBusinessService.mInstance != null) {
+                YMBusinessService.mInstance.track(name, properties);
             }
 //            AppActivity.app.biInstance.track(name, properties);
             Log.d(TAG, "tracking name=" + name + ",action=" + action);
@@ -323,24 +381,6 @@ public class AdVideoInterface {
         Log.d(TAG, "log WebView callback str=" + str);
     }
 
-    /**
-     * * * * * * *
-     */
-    public void showAd() {
-        boolean flag = false;
-        if (webView.getCustomContext() instanceof Activity) {
-            Log.d(TAG, "call showAd, webView.getCustomContext() is Activity.");
-            Activity activity = (Activity) webView.getCustomContext();
-            if (!activity.isDestroyed()) {
-                flag = mAdVideoMediationHelper.show(activity);
-            } else {
-                Log.d(TAG, "call showAd, Activity is destroyed.");
-            }
-        }
-        if (!flag) {
-            trackState(AdLogType.PLAY_FAIL);
-        }
-    }
 
     public void trackState(AdLogType adLogType) {
         trackState(adLogType, 0);
@@ -348,9 +388,48 @@ public class AdVideoInterface {
 
     public void trackState(AdLogType adLogType, double ecpm) {
         if (adLogType == null) return;
-        String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s','%s',%.2f)", "callbackfun", AdVideoMediation.POS_ID, adLogType.getTypeId(), ecpm);
+        if (TextUtils.isEmpty(callback)) {
+            callback = "callbackfun";
+        }
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s','%s',%.2f)", callback, AdVideoMediation.POS_ID, adLogType.getTypeId(), ecpm);
         Log.d(TAG, "trackState loaStr=" + loadStr);
         webView.loadUrl(loadStr);
     }
+
+    public void trackStateInterstitial(AdLogType adLogType) {
+        trackStateInterstitial(adLogType, 0);
+    }
+
+    public void trackStateInterstitial(AdLogType adLogType, double ecpm) {
+        if (adLogType == null) return;
+        if (TextUtils.isEmpty(callbackInterstitial)) {
+            callbackInterstitial = "callbackInterstitial";
+        }
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s','%s',%.2f)", callbackInterstitial, AdInterstitialMediation.POS_ID, adLogType.getTypeId(), ecpm);
+        Log.d(TAG, "trackStateInterstitial loaStr=" + loadStr);
+        webView.loadUrl(loadStr);
+    }
+
+    @JavascriptInterface
+    public String androidUserId() {
+        String oaid = MDIDHandler.getMdid();
+        String androidId = Utils.getAndroidId(webView.getContext());
+        String imei = Utils.getIMEI(webView.getContext());
+        Log.d(TAG, "androidUserId---oaid=" + oaid);
+        Log.d(TAG, "androidUserId---imei=" + imei);
+        Log.d(TAG, "androidUserId---androidId=" + androidId);
+
+        String id = "";
+        if (!TextUtils.isEmpty(imei)) {
+            id = imei;
+        } else if (!TextUtils.isEmpty(oaid)) {
+            id = oaid;
+        } else {
+            id = androidId;
+        }
+        return id;
+    }
+
+
 
 }

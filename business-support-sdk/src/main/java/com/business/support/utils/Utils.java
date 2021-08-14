@@ -1,5 +1,7 @@
 package com.business.support.utils;
 
+import static android.Manifest.permission.READ_PHONE_STATE;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -10,16 +12,16 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import androidx.annotation.Keep;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.util.TypedValue;
 import android.webkit.WebSettings;
 
-import androidx.annotation.Keep;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -338,6 +340,52 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    /**
+     * @return 获取手机IMEI
+     */
+    @SuppressLint({"HardwareIds", "MissingPermission"})
+    public static String getIMEI(final Context context) {
+        if (!isPermissionGranted(context, READ_PHONE_STATE)) {
+            return null;
+        }
+        String imei = "";
+        try {
+            TelephonyManager mTelephony =
+                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (mTelephony == null) return null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (mTelephony.getPhoneCount() == 2) {
+                        imei = mTelephony.getImei(0);
+                    } else {
+                        imei = mTelephony.getImei();
+                    }
+                } else {
+                    if (mTelephony.getPhoneCount() == 2) {
+                        imei = mTelephony.getDeviceId(0);
+                    } else {
+                        imei = mTelephony.getDeviceId();
+                    }
+                }
+            } else {
+                imei = mTelephony.getDeviceId();
+            }
+            Log.d("getIMEI", imei);
+        } catch (Exception e) {
+            Log.d("getIMEI", e.getMessage());
+        }
+        return imei;
+    }
+
+    public static boolean isPermissionGranted(final Context context, final String permission) {
+        if (null == context || TextUtils.isEmpty(permission)) {
+            return false;
+        }
+
+        //之前的方法,对版本有要求,必须是23以上
+        return context.checkPermission(permission, android.os.Process.myPid(), android.os.Process.myUid()) == PackageManager.PERMISSION_GRANTED;
     }
 
 

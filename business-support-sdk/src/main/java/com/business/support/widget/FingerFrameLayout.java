@@ -2,12 +2,12 @@ package com.business.support.widget;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
 
 import com.business.support.R;
 import com.business.support.utils.Utils;

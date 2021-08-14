@@ -50,12 +50,10 @@ public class ShuzilmImpl implements ISdkMain {
         Listener listener1 = new Listener() {
             @Override
             public void handler(String s) {
-                s = "000000000000000000000000000000000000";
                 if ((TextUtils.isEmpty(s) || "000000000000000000000000000000000000".equals(s))) {
-
                     if (queryCount < 2) {
                         queryCount++;
-                        getQueryId(this, 2900);
+                        getQueryId(this, 3000);
                     } else {
                         if (mListener != null) {
                             JSONObject jsonObject = new JSONObject();

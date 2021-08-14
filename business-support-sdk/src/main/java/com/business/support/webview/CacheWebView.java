@@ -22,6 +22,8 @@ public class CacheWebView extends WebView {
 
     private AdVideoMediation mediationHelper = null;
 
+    private AdInterstitialMediation mediationInterstitialHelper = null;
+
     private AdVideoInterface adVideoInterface = null;
 
     public Context getCustomContext() {
@@ -99,11 +101,14 @@ public class CacheWebView extends WebView {
         super.setWebChromeClient(webChromeClient);
 
         mediationHelper = AdVideoMediation.getInstance();
-
-        adVideoInterface = new AdVideoInterface(this, mediationHelper);
+        mediationInterstitialHelper = AdInterstitialMediation.getInstance();
+        adVideoInterface = new AdVideoInterface(this, mediationHelper, mediationInterstitialHelper);
         mediationHelper.setContext(context);
         mediationHelper.addAdVideoInterface(adVideoInterface);
         mediationHelper.loadVideo();
+        mediationInterstitialHelper.setContext(context);
+        mediationInterstitialHelper.addAdVideoInterface(adVideoInterface);
+        mediationInterstitialHelper.loadInterstitial();
         addJavascriptInterface(adVideoInterface, "android");
     }
 
@@ -211,6 +216,8 @@ public class CacheWebView extends WebView {
     public void destroy() {
         super.destroy();
         mediationHelper.removeAdVideoInterface(adVideoInterface);
+        mediationInterstitialHelper.removeAdVideoInterface(adVideoInterface);
+        setContext(null);
         mediationHelper = null;
         adVideoInterface = null;
     }

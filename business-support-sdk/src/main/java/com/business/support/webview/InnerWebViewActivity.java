@@ -25,8 +25,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import androidx.core.content.FileProvider;
-
 import com.business.support.R;
 import com.business.support.config.Assets;
 import com.business.support.config.Const;
@@ -421,7 +419,7 @@ public class InnerWebViewActivity extends Activity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                Uri photoURI = BSFileProvider.getUriForFile(this,
                         getPackageName() + ".takePhotoFileProvider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);

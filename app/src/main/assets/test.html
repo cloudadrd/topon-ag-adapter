@@ -14,6 +14,7 @@
 
 
 
+
     </style>
     <script type="text/javascript">
 
@@ -22,7 +23,39 @@
             android.showAd("callbackfun");
         }
 
-        function callbackfun(posid,logType){
+        function showInterstitial(){
+            android.showInterstitial("callbackfunInterstitial");
+        }
+
+        function callbackfunInterstitial(posId,logType,ecpm){
+            var desc=document.querySelector("#desc_inter");
+            var msgStr="none";
+            if(logType=="12"){
+                msgStr = "插屏加载成功";
+
+            }else if(logType=="5"){
+                msgStr = "插屏曝光成功";
+
+            }else if(logType=="6"){
+                msgStr = "插屏播放完成关闭";
+
+            }else if(logType=="7"){
+                msgStr = "插屏广告点击";
+
+            }else if(logType=="8"){
+                msgStr = "视频奖励";
+
+            }else if(logType=="11"){
+                msgStr = "插屏播放失败";
+
+            }else if(logType=="13"){
+                msgStr = "插屏未加载";
+            }
+            desc.innerHTML = msgStr;
+            android.printLog(msgStr);
+        }
+
+        function callbackfun(posid,logType,ecpm){
             var desc=document.querySelector("#desc");
             var msgStr="none";
             if(logType=="12"){
@@ -43,6 +76,8 @@
             }else if(logType=="11"){
                 msgStr = "视频播放失败";
 
+            }else if(logType=="13"){
+                msgStr = "视频未加载";
             }
 
             desc.innerHTML = msgStr;
@@ -88,12 +123,12 @@
         }
 
        function download(){
-            var params='{"url":"http://gamefilecdn.adspools.cn/downloadfile/app/push-release.apk","pkg":"com.cg.caige"}'
+            var params='{"url":"http://gamefilecdn.adspools.cn/downloadfile/app/xyct-release.apk","pkg":"com.restaurant.mobi"}'
             android.customCall(3,params)
         }
 
         function validateApk(){
-            var params='{"pkg":"com.cg.caige"}'
+            var params='{"pkg":"com.restaurant.mobi"}'
             android.customCall(5,params)
         }
 
@@ -114,7 +149,7 @@
                     str=str.format(pkg,"下载失败 "+state,progress);
                     break;
                 case 5:
-                    var params='{"pkg":"com.cg.caige"}'
+                    var params='{"pkg":"com.restaurant.mobi"}'
                     android.customCall(4,params)
                     str=str.format(pkg,"安装成功 "+state,progress);
                     break;
@@ -153,7 +188,7 @@
         }
 
     function customCalltest(){
-        var params='{"pkg":"com.cg.caige"}'
+        var params='{"pkg":"com.restaurant.mobi"}'
         android.customCall(4,params)
     }
 
@@ -161,6 +196,7 @@
         window.location.href='forumweb/task/index.html';
         window.location.reload="forumweb/task/index.html";
     }
+
 
     </script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -179,6 +215,11 @@
 
 <div>
     <button onclick="showVideo()">showVideo</button>
+</div>
+<br>
+<br>
+<div>
+    <button onclick="showInterstitial()">showInterstitial</button>
 </div>
 <br>
 <div>
@@ -205,6 +246,9 @@
 
 <br><br>
 <div id="desc">未显示</div>
+
+<br><br>
+<div id="desc_inter">插屏未显示</div>
 
 <br>
 </body>
