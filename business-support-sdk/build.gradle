@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def version = "1.8.1"
+def version = "1.8.2"
 android {
     compileSdkVersion 29
 
@@ -72,6 +72,7 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'org.jetbrains:annotations-java5:15.0'
 
     compileOnly fileTree(dir: "libs", include: ["*.aar"])
 //    implementation fileTree(dir: "libs", include: ["open_ad_sdk_3.6.1.4.aar"])

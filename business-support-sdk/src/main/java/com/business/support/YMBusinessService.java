@@ -1,19 +1,18 @@
 package com.business.support;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-
-import androidx.annotation.Nullable;
-
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
@@ -30,6 +31,8 @@ import com.business.support.ascribe.NativeDataManager;
 import com.business.support.ascribe.RewardTaskInfo;
 import com.business.support.attract.DataParse;
 import com.business.support.attract.PolicyData;
+import com.business.support.calendar.CalendarOperate;
+import com.business.support.calendar.CalendarPara;
 import com.business.support.compose.SIDListener;
 import com.business.support.compose.SdkTaskManager;
 import com.business.support.compose.TaskResult;
@@ -70,6 +73,7 @@ import com.qq.e.ads.RewardvideoPortraitADActivity;
 import com.qq.e.comm.managers.GDTADManager;
 import com.qq.e.comm.pi.POFactory;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -105,7 +109,7 @@ public class YMBusinessService {
     private static JSONObject jsonMvObj = null;
 
     public static ThinkingAnalyticsSDK mInstance = null;
-
+    private static final int PERMISSION_REQUEST = 1;
     private static boolean rvClickStop = false;
 
     public static void init(final Context context, ThinkingAnalyticsSDK instance, String shuMengApiKey, final SIDListener listener) {
@@ -1223,5 +1227,73 @@ public class YMBusinessService {
         }
     }
 
+    //日历
+    public static void checkAndAddCalendarPermission(Context context) {
+        if(ContextCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            // 如果没有授权，就请求用户授权
+            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+        }
+    }
 
+    public static void insertCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
+        if(ContextCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED) {
+            CalendarOperate.insertCalendar(context,appName,appid,para);
+        } else {
+            // 如果没有授权，就请求用户授权
+            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+        }
+    }
+    public static void updateCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
+        if(ContextCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED) {
+            CalendarOperate.updateCalendar(context,appName,appid,para);
+        } else {
+            // 如果没有授权，就请求用户授权
+            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+        }
+    }
+
+    public static  void deleteCalendar(final Context context,  final long eventId) {
+        if(ContextCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED) {
+            CalendarOperate.deleteCalendar(context,eventId);
+        } else {
+            // 如果没有授权，就请求用户授权
+            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+        }
+    }
+
+    public static boolean searchCalendar(final Context context,  final long eventId) {
+        if(ContextCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                == PackageManager.PERMISSION_GRANTED) {
+            return CalendarOperate.searchCalendar(context,eventId);
+        } else {
+            // 如果没有授权，就请求用户授权
+            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            return false;
+        }
+    }
 }
