@@ -9,6 +9,9 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Looper;
 import android.provider.CalendarContract;
+
+import com.business.support.utils.ContextHolder;
+
 import java.util.TimeZone;
 
 
@@ -49,6 +52,21 @@ public class CalendarOperate {
        }
     }
 
+
+    public static void batchInsertCalendar(final Context context, final String appName, final String appid, final CalendarPara para){
+        paraRedefine(appName, appid);
+        if (isMainThread()) {
+            Thread insert = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    batchInsertCalendarOperate(context,appName, appid, para);
+                }
+            });
+            insert.start();
+        }else {
+            batchInsertCalendarOperate(context,appName, appid, para);
+        }
+    }
     public static void updateCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
         paraRedefine(appName,appid);
         if (isMainThread()) {
@@ -61,6 +79,22 @@ public class CalendarOperate {
             update.start();
         }else {
             updateCalendarOperate(context, appName,appid, para);
+        }
+    }
+
+
+    public static void batchUpdateCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
+        paraRedefine(appName,appid);
+        if (isMainThread()) {
+            Thread update = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    batchUpdateCalendarOperate(context, appName,appid, para);
+                }
+            });
+            update.start();
+        }else {
+            batchUpdateCalendarOperate(context, appName,appid, para);
         }
     }
 
@@ -130,6 +164,55 @@ public class CalendarOperate {
         return true;
     }
 
+    private static synchronized boolean batchInsertCalendarOperate(Context context, final String appName, String appid, CalendarPara para) {
+        if (context == null) {
+            return false;
+        }
+        calendarId = checkAndAddCalendarAccount(context);
+        if (0 > calendarId || isHadEvent(context, para.eventId)){
+            return false;
+        }
+
+        //Log.e(LOG_TAG,"addNewRemindEvent" + scheduleInformation.id + "..." +  scheduleInformation.remindEventId+ "..." +  mCourseInfo.autoRemind);
+        try {
+            /** 插入日程 */
+            ContentValues eventValues = new ContentValues();
+            eventValues.put(CalendarContract.Events.DTSTART, para.startTime);
+            eventValues.put(CalendarContract.Events.DTEND, para.endTime);
+            eventValues.put(CalendarContract.Events.RRULE, "FREQ=DAILY;" + "INTERVAL="+para.repeatInterval + ";COUNT="+para.repeatCount);
+            eventValues.put(CalendarContract.Events.TITLE, para.title);
+            eventValues.put(CalendarContract.Events.DESCRIPTION, para.description);
+            eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarId);
+            eventValues.put(CalendarContract.Events._ID, para.eventId);
+            eventValues.put(CalendarContract.Events.HAS_ALARM, para.alarm ? 1 : 0);
+            eventValues.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_DEFAULT);
+            TimeZone tz = TimeZone.getDefault(); // 获取默认时区
+            eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, tz.getID());
+            Uri eUri = context.getContentResolver().insert(Uri.parse(CALENDAR_EVENT_URL), eventValues);
+            long eventId = ContentUris.parseId(eUri);
+            if (eventId == 0) { // 插入失败
+                return false;
+            }
+
+            /** 插入提醒 - 依赖插入日程成功 */
+            ContentValues reminderValues = new ContentValues();
+            reminderValues.put(CalendarContract.Reminders.EVENT_ID, eventId);
+            reminderValues.put(CalendarContract.Reminders.MINUTES, 5); // 提前提醒
+            reminderValues.put(CalendarContract.Reminders.METHOD,
+                    CalendarContract.Reminders.METHOD_ALERT);
+            Uri rUri = context.getContentResolver().insert(Uri.parse(CALENDAR_REMINDER_URL),
+                    reminderValues);
+            if (rUri == null || ContentUris.parseId(rUri) == 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
     private static synchronized boolean updateCalendarOperate(Context context, final String appName, String appid, CalendarPara para) {
         if (context == null) {
             return false;
@@ -144,6 +227,47 @@ public class CalendarOperate {
             ContentValues eventValues = new ContentValues();
             eventValues.put(CalendarContract.Events.DTSTART, para.startTime);
             eventValues.put(CalendarContract.Events.DTEND, para.endTime);
+            eventValues.put(CalendarContract.Events.TITLE, para.title);
+            eventValues.put(CalendarContract.Events.DESCRIPTION, para.description);
+            eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarId);
+            eventValues.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_DEFAULT);
+            eventValues.put(CalendarContract.Events.HAS_ALARM, para.alarm ? 1 : 0);
+            TimeZone tz = TimeZone.getDefault(); // 获取默认时区
+            eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, tz.getID());
+            Uri rUri = ContentUris.withAppendedId(Uri.parse(CALENDAR_EVENT_URL), para.eventId);
+            final int row =  context.getContentResolver().update(rUri, eventValues, null, null);
+            if (row > 0)/*更新event不成功，说明用户在日历中删除了提醒事件，重新添加*/
+            {
+                /** 更新提醒 - 依赖更新日程成功 */
+                ContentValues reminderValues = new ContentValues();
+                reminderValues.put(CalendarContract.Reminders.MINUTES, 5); // 提前提醒
+                Uri uri = Uri.parse(CALENDAR_REMINDER_URL);
+                context.getContentResolver().update(uri, reminderValues, CalendarContract.Reminders.EVENT_ID + "= ?", new String[]{String.valueOf(para.eventId)});
+                return true;
+            }
+            return false;
+        }catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    private static synchronized boolean batchUpdateCalendarOperate(Context context, final String appName, String appid, CalendarPara para) {
+        if (context == null) {
+            return false;
+        }
+
+        calendarId =  checkAndAddCalendarAccount(context);
+        if (0 > calendarId) {
+            return false;
+        }
+        try {
+            /** 更新日程 */
+            ContentValues eventValues = new ContentValues();
+            eventValues.put(CalendarContract.Events.DTSTART, para.startTime);
+            eventValues.put(CalendarContract.Events.DTEND, para.endTime);
+            eventValues.put(CalendarContract.Events.RRULE, "FREQ=DAILY;" + "INTERVAL="+para.repeatInterval + ";COUNT="+para.repeatCount);
             eventValues.put(CalendarContract.Events.TITLE, para.title);
             eventValues.put(CalendarContract.Events.DESCRIPTION, para.description);
             eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarId);
@@ -275,7 +399,7 @@ public class CalendarOperate {
     private static void paraRedefine(String appName,String appid){
          CALENDARS_NAME = appName;
          CALENDARS_ACCOUNT_NAME = appid+"@game.com";
-         CALENDARS_ACCOUNT_TYPE = "com.android.ymgame";
+         CALENDARS_ACCOUNT_TYPE = ContextHolder.getGlobalAppContext().getPackageName();
          CALENDARS_DISPLAY_NAME = appName;
     }
 
