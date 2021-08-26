@@ -798,7 +798,7 @@ public class YMBusinessService {
                 Object parcelable = extras.getParcelable("admodel");
                 ClassLoader classLoader = pOFactory.getClass().getClassLoader();
                 Class<?> classData = classLoader.loadClass("com.qq.e.comm.plugin.model.BaseAdInfo");
-                Field fieldJson = classData.getDeclaredField("ap");
+                Field fieldJson = classData.getDeclaredField("aM");
                 fieldJson.setAccessible(true);
                 String jsonStr = fieldJson.get(parcelable).toString();
                 JSONObject jsonObject = new JSONObject(jsonStr);
