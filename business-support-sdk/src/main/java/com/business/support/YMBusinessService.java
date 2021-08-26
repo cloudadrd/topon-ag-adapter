@@ -125,12 +125,18 @@ public class YMBusinessService {
                         int score = 0;
                         String data = null;
                         for (TaskResult taskResult : taskResults) {
-                            if (taskResult.isError) continue;
+                            String taskData;
+
+                            if (taskResult.isError) {
+                                taskData="{\"did\":\"errorCode="+taskResult.getErrorType()+"\"}";
+                            }else{
+                                taskData = taskResult.getData();
+                            }
                             score += taskResult.getScore();
                             if (data != null) {
-                                data = Utils.combineJson(data, taskResult.getData());
+                                data = Utils.combineJson(data, taskData);
                             } else {
-                                data = taskResult.getData();
+                                data = taskData;
                             }
                         }
                         if (TextUtils.isEmpty(data)) {
@@ -286,43 +292,45 @@ public class YMBusinessService {
 
             if (listener != null) {
                 listener.onSuccess(score, jsonObject.toString());
-
-                JSONObject properties = new JSONObject();
-                properties.put("score", score);
-
-                //自研
-                properties.put("EmulatorCheck", jsonObject.get("Emulator"));
-                properties.put("RootCheck", jsonObject.get("Root"));
-                properties.put("HookCheck", jsonObject.get("Hook"));
-                properties.put("WireSharkCheck", jsonObject.get("WireShark"));
-                properties.put("debug", jsonObject.get("Debug"));
-
-                //数盟
-                if (jsonObject.has("device_type"))
-                    properties.put("shumeng", jsonObject.get("device_type"));
-                if (jsonObject.has("did"))
-                    properties.put("shumengid", jsonObject.get("did"));
-
-                //数美
-                if (jsonObject.has("riskLevel"))
-                    properties.put("riskLevel", jsonObject.get("riskLevel"));
-
-                if (jsonObject.has("description"))
-                    properties.put("description", jsonObject.get("description"));
-
-                if (jsonObject.has("model"))
-                    properties.put("model", jsonObject.get("model"));
-
-                if (jsonObject.has("riskType"))
-                    properties.put("riskType", jsonObject.get("riskType"));
-
-                if (jsonObject.has("shuMeiDid"))
-                    properties.put("shuMeiDid", jsonObject.get("shuMeiDid"));
-
-
-                mInstance.track("Phonecheck", properties);
-                mInstance.flush();
             }
+
+            JSONObject properties = new JSONObject();
+            properties.put("score", score);
+
+            //自研
+            properties.put("EmulatorCheck", jsonObject.get("Emulator"));
+            properties.put("RootCheck", jsonObject.get("Root"));
+            properties.put("HookCheck", jsonObject.get("Hook"));
+            properties.put("WireSharkCheck", jsonObject.get("WireShark"));
+            properties.put("debug", jsonObject.get("Debug"));
+
+            //数盟
+            if (jsonObject.has("device_type"))
+                properties.put("shumeng", jsonObject.get("device_type"));
+            if (jsonObject.has("did"))
+                properties.put("shumengid", jsonObject.get("did"));
+            if (jsonObject.has("cheat_type"))
+                properties.put("cheat_type", jsonObject.get("cheat_type"));
+
+            //数美
+            if (jsonObject.has("riskLevel"))
+                properties.put("riskLevel", jsonObject.get("riskLevel"));
+
+            if (jsonObject.has("description"))
+                properties.put("description", jsonObject.get("description"));
+
+            if (jsonObject.has("model"))
+                properties.put("model", jsonObject.get("model"));
+
+            if (jsonObject.has("riskType"))
+                properties.put("riskType", jsonObject.get("riskType"));
+
+            if (jsonObject.has("shuMeiDid"))
+                properties.put("shuMeiDid", jsonObject.get("shuMeiDid"));
+
+            mInstance.track("Phonecheck", properties);
+            mInstance.flush();
+
         } catch (Exception e) {
             e.printStackTrace();
             if (listener != null) {

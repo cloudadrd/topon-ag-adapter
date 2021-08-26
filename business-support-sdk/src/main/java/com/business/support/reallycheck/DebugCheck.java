@@ -24,13 +24,13 @@ public class DebugCheck {
         if (debugVersionCheck(context)) {
 //            Log.e(TAG, "判斷是debug版本");
             stringBuilder.append(",2");
-            score += 40;
+            score += 30;
         }
 
         if (connectedCheck()) {
 //            Log.e(TAG, "正在调试");
             stringBuilder.append(",3");
-            score += 40;
+            score += 30;
         }
 
         return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(), score);

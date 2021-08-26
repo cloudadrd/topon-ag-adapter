@@ -11,7 +11,6 @@ import com.business.support.config.Const;
 import com.business.support.http.HttpRequester;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
-import com.kwad.sdk.core.imageloader.utils.L;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,12 +56,7 @@ public class ShuzilmImpl implements ISdkMain {
                     } else {
                         if (mListener != null) {
                             JSONObject jsonObject = new JSONObject();
-                            try {
-                                jsonObject.put("did", s);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            mListener.result(new TaskResult(false, 55, jsonObject.toString(), SdkType.SHUMENG));
+                            mListener.result(new TaskResult(true, 55, jsonObject.toString(), SdkType.SHUMENG,4));
                         }
                     }
                     return;
@@ -108,7 +102,7 @@ public class ShuzilmImpl implements ISdkMain {
             public void onFailure(String msg, String url) {
                 SLog.i(TAG + " requestQuery-onFailure msg=" + msg);
                 if (mListener != null) {
-                    mListener.result(new TaskResult(true, 0, msg, SdkType.SHUMENG));
+                    mListener.result(new TaskResult(true, 0, msg, SdkType.SHUMENG,2));
                 }
             }
         });
@@ -127,11 +121,17 @@ public class ShuzilmImpl implements ISdkMain {
 //            String duplicate_times = Utils.optStringHelper(jsonObject, "duplicate_times");
 //            String update_times = Utils.optStringHelper(jsonObject, "update_times");
 //            String recall_times = Utils.optStringHelper(jsonObject, "recall_times");
-            jsonObject.remove("protocol");
-            jsonObject.remove("normal_times");
-            jsonObject.remove("duplicate_times");
-            jsonObject.remove("update_times");
-            jsonObject.remove("recall_times");
+            if(jsonObject.has("protocol"))
+                jsonObject.remove("protocol");
+            if(jsonObject.has("normal_times"))
+                jsonObject.remove("normal_times");
+            if(jsonObject.has("duplicate_times"))
+                jsonObject.remove("duplicate_times");
+            if(jsonObject.has("update_times"))
+                jsonObject.remove("update_times");
+            if(jsonObject.has("update_times"))
+                jsonObject.remove("recall_times");
+
             jsonObject.put("did", did);
             int score = 0;
             if ("0".equals(errCode)) {
@@ -142,13 +142,12 @@ public class ShuzilmImpl implements ISdkMain {
                 }
             }
             if (mListener != null) {
-                mListener.result(new TaskResult(false, score, jsonObject.toString(), SdkType.SHUMENG));
+                mListener.result(new TaskResult(false, score, jsonObject.toString(), SdkType.SHUMENG,0));
             }
-
         } catch (JSONException e) {
             SLog.e(e);
             if (mListener != null) {
-                mListener.result(new TaskResult(true, 0, e.getMessage(), SdkType.SHUMENG));
+                mListener.result(new TaskResult(true, 0, e.getMessage(),  SdkType.SHUMENG,3));
             }
         }
     }
