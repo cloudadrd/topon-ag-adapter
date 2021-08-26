@@ -133,7 +133,7 @@ public class SdkTaskManager {
 
             if (taskResults.get(mSdkType) != null) return;
 
-            taskResults.put(mSdkType, new TaskResult(true, 0, "time out", mSdkType, 2));
+            taskResults.put(mSdkType, new TaskResult(true, 0, "time out", mSdkType, 1));
             if (countDownLatch != null) {
                 countDownLatch.countDown();
             }

@@ -52,7 +52,7 @@ public class ShuzilmImpl implements ISdkMain {
                 if ((TextUtils.isEmpty(s) || "000000000000000000000000000000000000".equals(s))) {
                     if (queryCount < 2) {
                         queryCount++;
-                        getQueryId(this, 3000);
+                        getQueryId(this, 4000);
                     } else {
                         if (mListener != null) {
                             JSONObject jsonObject = new JSONObject();

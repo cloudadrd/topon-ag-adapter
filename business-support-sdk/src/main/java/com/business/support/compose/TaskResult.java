@@ -10,7 +10,7 @@ public class TaskResult {
 
     private SdkType sdkType;
 
-    //1 net error,2 time out,3 exception, 4,retry 2
+    //1 mission timeout ,2 network timeout,3 exception, 4,retry 2
     private int errorType;
 
     public TaskResult(boolean isError, int score, String data, SdkType sdkType, int errorType) {
