@@ -222,6 +222,15 @@ public class AdVideoInterface {
                     e.printStackTrace();
                 }
                 break;
+            case 6://调起app
+                try {
+                    JSONObject jsonObject = new JSONObject(params);
+                    String pkg = jsonObject.optString("pkg");
+                    Utils.startActivityForPackage(webView.getContext().getApplicationContext(),pkg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
 
         }
     }

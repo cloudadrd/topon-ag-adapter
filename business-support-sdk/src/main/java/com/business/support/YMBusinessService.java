@@ -221,21 +221,35 @@ public class YMBusinessService {
      * 带缓存的webview，可以提前创建cacheWebView并且加载
      */
     public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, WebViewToNativeListener listener) {
-        if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
-            viewGroup.removeView(cacheWebView);
-        }
-        AdVideoInterface.nativeListener = listener;
-        //带缓存的webview，可以提前创建cacheWebView并且加载
-        InnerWebViewActivity.launch(context, cacheWebView);
+        startCacheWebViewPage(context, cacheWebView, listener, false);
     }
 
     /**
      * //不带缓存的webview
      */
     public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener) {
+        startWebViewPage(context, linkUrl, listener, false);
+    }
+
+    /**
+     * 带缓存的webview，可以提前创建cacheWebView并且加载
+     */
+    public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, WebViewToNativeListener listener, boolean isLoadBarHide) {
+        if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
+            viewGroup.removeView(cacheWebView);
+        }
         AdVideoInterface.nativeListener = listener;
-        InnerWebViewActivity2.launch(context, linkUrl);
+        //带缓存的webview，可以提前创建cacheWebView并且加载
+        InnerWebViewActivity.launch(context, cacheWebView, isLoadBarHide);
+    }
+
+    /**
+     * //不带缓存的webview
+     */
+    public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener, boolean isLoadBarHide) {
+        AdVideoInterface.nativeListener = listener;
+        InnerWebViewActivity2.launch(context, linkUrl, isLoadBarHide);
     }
 
 
@@ -1237,100 +1251,100 @@ public class YMBusinessService {
 
     //日历
     public static void checkAndAddCalendarPermission(Context context) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
 
     public static void insertCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.insertCalendar(context,appName,appid,para);
+            CalendarOperate.insertCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
     public static void batchInsertCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.batchInsertCalendar(context,appName,appid,para);
+            CalendarOperate.batchInsertCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
     public static void updateCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.updateCalendar(context,appName,appid,para);
+            CalendarOperate.updateCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
     public static void batchUpdateCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.batchUpdateCalendar(context,appName,appid,para);
+            CalendarOperate.batchUpdateCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
-    public static  void deleteCalendar(final Context context,  final long eventId) {
-        if(ContextCompat.checkSelfPermission(context,
+    public static void deleteCalendar(final Context context, final long eventId) {
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.deleteCalendar(context,eventId);
+            CalendarOperate.deleteCalendar(context, eventId);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
-    public static boolean searchCalendar(final Context context,  final long eventId) {
-        if(ContextCompat.checkSelfPermission(context,
+    public static boolean searchCalendar(final Context context, final long eventId) {
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            return CalendarOperate.searchCalendar(context,eventId);
+            return CalendarOperate.searchCalendar(context, eventId);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
             return false;
         }
     }

@@ -7,17 +7,26 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class AppInstallReceiver extends BroadcastReceiver {
 
 
     private static final String TAG = "AppInstallReceiver";
 
 
-    public static void setInstallCallback(InstallCallback installCallback) {
-        AppInstallReceiver.installCallback = installCallback;
+    public static void addInstallCallback(InstallCallback installCallback) {
+        installCallbacks.add(installCallback);
     }
 
-    private static InstallCallback installCallback;
+    public static void removeInstallCallback(InstallCallback installCallback) {
+        installCallbacks.remove(installCallback);
+    }
+
+
+    private static final List<InstallCallback> installCallbacks = new LinkedList<>();
 
     public interface InstallCallback {
 
@@ -39,8 +48,8 @@ public class AppInstallReceiver extends BroadcastReceiver {
 
             if (action.equals(Intent.ACTION_PACKAGE_ADDED)) {
                 Log.d(TAG, "installed pkg -> " + pkgName);
-                if (installCallback != null) {
-                    installCallback.success(pkgName);
+                for (InstallCallback callback : installCallbacks) {
+                    callback.success(pkgName);
                 }
                 DownloadManager.APK_LIST.remove(pkgName);
                 DownloadManager.deleteFile(pkgName);
