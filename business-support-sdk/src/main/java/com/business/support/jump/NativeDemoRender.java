@@ -5,7 +5,7 @@
  * https://github.com/toponteam/TopOn-Android-SDK/blob/master/LICENSE
  */
 
-package com.test.ad.demo;
+package com.business.support.jump;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.anythink.nativead.api.ATNativeAdRenderer;
 import com.anythink.nativead.api.ATNativeImageView;
 import com.anythink.nativead.unitgroup.api.CustomNativeAd;
+import com.business.support.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,17 +96,17 @@ public class NativeDemoRender implements ATNativeAdRenderer<CustomNativeAd> {
         iconArea.setVisibility(View.VISIBLE);
 
 
-        View adiconView = ad.getAdIconView();
+        View adIconView = ad.getAdIconView();
 
 
         final ATNativeImageView iconView = new ATNativeImageView(mContext);
         if (!TextUtils.isEmpty(ad.getIconImageUrl())) {
-            if (adiconView == null) {
+            if (adIconView == null) {
                 iconArea.addView(iconView);
                 iconView.setImage(ad.getIconImageUrl());
                 mClickView.add(iconView);
             } else {
-                iconArea.addView(adiconView);
+                iconArea.addView(adIconView);
             }
         } else {
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) iconArea.getLayoutParams();

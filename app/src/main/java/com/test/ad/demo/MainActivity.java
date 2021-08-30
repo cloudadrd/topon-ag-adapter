@@ -1,20 +1,31 @@
 package com.test.ad.demo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import com.anythink.custom.adapter.OAIDHandler;
 import com.baidu.mobads.sdk.api.AppActivity;
@@ -26,10 +37,18 @@ import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
+import com.business.support.config.Const;
 import com.business.support.h5_update.ResH5Listener;
 import com.business.support.h5_update.ResUpdateManager;
+import com.business.support.jump.JumpService;
+import com.business.support.jump.NativeActivity;
+import com.business.support.jump.NativeAdManager;
+import com.business.support.jump.NotificationUtils;
+import com.business.support.jump.ScreenBroadcastReceiver;
+import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
+import com.business.support.webview.ImagePreserve;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
@@ -48,13 +67,22 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Window window = getWindow();
+        if (window != null) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                    | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                    | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        }
 //        cacheWebView = new CacheWebView(this);
 //        //http://redbag.adspools.cn:8081/?appId=119&token=ad6736e3-8384-42b0-90de-11924877129a&uid=20210324105106534533243063316480&IMEI=cd389fbee1d57a31231365551111&team=002&isNew=false
 //        cacheWebView.loadUrl("https://m.baidu.com");
         findViewById(R.id.nativeAdBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
+                Intent intent = new Intent(MainActivity.this, NativeAdActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
 
             }
         });
@@ -312,6 +340,74 @@ public class MainActivity extends Activity {
         YMBusinessService.setH5RewardPlacementId("广告位ID");
         YMBusinessService.setH5InterstitialPlacementId("b603f37c4ebe4e");
 
+
+        ImagePreserve.downloadToSysPicture("https://pic2.zhimg.com/80/v2-fca32e14dea7f716d425d337a4f201f5_720w.jpg", new ImageResultListener() {
+            @Override
+            public void onSuccess() {
+                Log.e("tjt852", "downloadToSysPicture onSuccess");
+            }
+
+            @Override
+            public void onFailure(String message) {
+                Log.e("tjt852", "downloadToSysPicture onFailure message=" + message);
+            }
+        });
+
+        NativeAdManager.getInstance().load(this);
+//        Const.HANDLER.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                disableSystemLockScreen(MainActivity.this);
+////                Intent intent = new Intent(MainActivity.this, NativeActivity.class);
+////                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+////                startActivity(intent);
+//
+////                NotificationUtils notificationUtils = new NotificationUtils(MainActivity.this);
+////                String content = "fullscreen intent test";
+////                notificationUtils.clearAllNotifiication();
+////                notificationUtils.sendNotificationFullScreen("nihao", content, "1");
+//
+//
+//                Intent fullScreenIntent = new Intent(MainActivity.this, NativeActivity.class);
+//                fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                fullScreenIntent.putExtra("action", "callfromdevice");
+//                fullScreenIntent.putExtra("type", "1");
+//                PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(MainActivity.this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//                try {
+//                    fullScreenPendingIntent.send();
+//                } catch (PendingIntent.CanceledException e) {
+//                    Log.e("tjt852", "send error");
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, 6000);
+        Const.HANDLER.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startService(new Intent(MainActivity.this, JumpService.class));
+
+            }
+        },8000);
+//        ScreenBroadcastReceiver.registerListener();
+
+    }
+
+
+    public static void disableSystemLockScreen(Activity activity) {
+        try {
+            @SuppressLint("WrongConstant") KeyguardManager keyguardManager = (KeyguardManager) activity.getSystemService("keyguard");
+            if (Build.VERSION.SDK_INT >= 26) {
+                keyguardManager.requestDismissKeyguard(activity, new KeyguardDismiss());
+            } else {
+                keyguardManager.newKeyguardLock("unlock").disableKeyguard();
+            }
+        } catch (Exception unused) {
+        }
+    }
+
+
+    @RequiresApi(api = 26)
+    public static class KeyguardDismiss extends KeyguardManager.KeyguardDismissCallback {
     }
 
 

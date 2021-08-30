@@ -79,7 +79,7 @@ public class NativeAdActivity extends Activity {
         super.onCreate(savedInstanceState);
 
 
-        setContentView(R.layout.activity_native);
+        setContentView(R.layout.bs_activity_native);
 
         Spinner spinner = (Spinner) findViewById(R.id.native_spinner);
 

@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DownloadManager {
+public class ApkDownloadManager {
 
     @Keep
     public static final String PATH = ContextHolder.getGlobalAppContext().getCacheDir().getAbsolutePath() + "/creative/";
@@ -68,7 +68,7 @@ public class DownloadManager {
     }
 
 
-    private final static String TAG = "DownloadManager";
+    private final static String TAG = "ApkDownloadManager";
 
     public static void download(Context context, String url, final String packageName, final LoadListener loadListener) {
 
@@ -135,7 +135,7 @@ public class DownloadManager {
             @Override
             public void onFailed(FileInfo fileInfo) {
                 Log.i(TAG, "下载失败: >> " + fileInfo.getFileName());
-                DownloadManager.APK_LIST.remove(packageName);
+                ApkDownloadManager.APK_LIST.remove(packageName);
                 if (loadListener != null) {
                     loadListener.onFailed(fileInfo);
                 }

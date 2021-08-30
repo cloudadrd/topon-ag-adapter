@@ -42,8 +42,8 @@ public class AppInstallReceiver extends BroadcastReceiver {
                 if (installCallback != null) {
                     installCallback.success(pkgName);
                 }
-                DownloadManager.APK_LIST.remove(pkgName);
-                DownloadManager.deleteFile(pkgName);
+                ApkDownloadManager.APK_LIST.remove(pkgName);
+                ApkDownloadManager.deleteFile(pkgName);
             }
 
         } catch (Exception e) {

@@ -16,7 +16,6 @@ import android.webkit.JavascriptInterface;
 import androidx.annotation.MainThread;
 import androidx.annotation.RequiresApi;
 
-import com.anythink.core.api.ATAdInfo;
 import com.business.support.YMBusinessService;
 import com.business.support.utils.MDIDHandler;
 import com.business.support.utils.Utils;
@@ -227,7 +226,7 @@ public class AdVideoInterface {
     }
 
     public void validateApkState(Context context, String pkg) {
-        DownloadManager.cleanTimeOutFiles();
+        ApkDownloadManager.cleanTimeOutFiles();
         boolean isInstall = false;
         try {
             PackageManager pm = context.getPackageManager();
@@ -246,12 +245,12 @@ public class AdVideoInterface {
         }
 
         if (isInstall) {
-            DownloadManager.deleteFile(pkg);
+            ApkDownloadManager.deleteFile(pkg);
             notifyDownStated(pkg, DownloadState.INSTALLED, 0);
             return;
         }
 
-        boolean isExists = DownloadManager.isFileExists(pkg);
+        boolean isExists = ApkDownloadManager.isFileExists(pkg);
         if (isExists) {
             notifyDownStated(pkg, DownloadState.DOWNLOADED, 0);
         } else {
@@ -262,7 +261,7 @@ public class AdVideoInterface {
 
 
     public void startInstall(String pkg) {
-        File apkFile = new File(DownloadManager.getPath(pkg));
+        File apkFile = new File(ApkDownloadManager.getPath(pkg));
         if (!apkFile.exists()) {
             return;
         }
@@ -292,7 +291,7 @@ public class AdVideoInterface {
     }
 
     public void download(String url, String pkg) {
-        DownloadManager.download(webView.getCustomContext().getApplicationContext(), url, pkg, new LoadListener() {
+        ApkDownloadManager.download(webView.getCustomContext().getApplicationContext(), url, pkg, new LoadListener() {
             @Override
             public void onStart(FileInfo fileInfo) {
                 notifyDownStated(fileInfo.getFileName().replace(".apk.temp", ""), DownloadState.START, 0);
