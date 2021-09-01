@@ -1,7 +1,5 @@
 package com.business.support.utils;
 
-import static android.Manifest.permission.READ_PHONE_STATE;
-
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -14,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
-import androidx.annotation.Keep;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -22,6 +19,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.webkit.WebSettings;
 
+import androidx.annotation.Keep;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static android.Manifest.permission.READ_PHONE_STATE;
 
 public class Utils {
 
@@ -388,5 +388,27 @@ public class Utils {
         return context.checkPermission(permission, android.os.Process.myPid(), android.os.Process.myUid()) == PackageManager.PERMISSION_GRANTED;
     }
 
+    public static long getAvailMemory(Context c) {
+        ActivityManager am = (ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        if (am != null) {
+            am.getMemoryInfo(mi);
+        }
+        return mi.availMem;
+    }
 
+    public static long getTotalMemory(Context c) {
+        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        ActivityManager am = (ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            am.getMemoryInfo(memInfo);
+        }
+        return memInfo.totalMem;
+    }
+
+    public static String getNetworkOperatorName(Context context) {
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(
+                Context.TELEPHONY_SERVICE);
+        return telephonyManager.getNetworkOperatorName();
+    }
 }

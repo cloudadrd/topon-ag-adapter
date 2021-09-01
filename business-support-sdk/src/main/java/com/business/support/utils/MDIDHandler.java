@@ -1,11 +1,5 @@
 package com.business.support.utils;
 
-import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_DEVICE_NOSUPPORT;
-import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_LOAD_CONFIGFILE;
-import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_MANUFACTURER_NOSUPPORT;
-import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_RESULT_DELAY;
-import static com.bun.miitmdid.core.ErrorCode.INIT_HELPER_CALL_ERROR;
-
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
@@ -14,6 +8,12 @@ import android.util.Log;
 import com.bun.miitmdid.core.MdidSdkHelper;
 import com.bun.miitmdid.interfaces.IIdentifierListener;
 import com.bun.miitmdid.interfaces.IdSupplier;
+
+import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_DEVICE_NOSUPPORT;
+import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_LOAD_CONFIGFILE;
+import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_MANUFACTURER_NOSUPPORT;
+import static com.bun.miitmdid.core.ErrorCode.INIT_ERROR_RESULT_DELAY;
+import static com.bun.miitmdid.core.ErrorCode.INIT_HELPER_CALL_ERROR;
 
 
 /**

@@ -23,7 +23,6 @@ public class HttpRunnable implements Runnable {
 
     private final String requestBody;
 
-
     public HttpRunnable(String urlStr, HttpRequester.Listener listener, String userAgentStr, RequestMethod method,
                         String requestBody) {
         this.urlStr = urlStr;
@@ -32,7 +31,6 @@ public class HttpRunnable implements Runnable {
         this.method = method;
         this.requestBody = requestBody;
     }
-
 
     @Override
     public void run() {

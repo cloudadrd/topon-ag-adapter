@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.business.support.adinfo.BSAdType;
+import com.business.support.adinfo.TKCreator;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.ascribe.NativeDataManager;
@@ -1325,5 +1326,9 @@ public class YMBusinessService {
                     Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
             return false;
         }
+    }
+
+    public static void getDeviceInfo(Context context, String appid) {
+        TKCreator.send(context, appid);
     }
 }

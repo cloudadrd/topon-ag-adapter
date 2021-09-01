@@ -31,4 +31,5 @@ public class HttpRequester {
         Runnable runnable = new HttpRunnable(urlStr, listener, userAgentStr, RequestMethod.POST, requestBody);
         ThreadPoolProxy.getInstance().execute(runnable);
     }
+
 }

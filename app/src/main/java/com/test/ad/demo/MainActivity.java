@@ -7,34 +7,26 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.anythink.custom.adapter.OAIDHandler;
-import com.baidu.mobads.sdk.api.AppActivity;
 import com.business.support.StrategyInfoListener;
 import com.business.support.TaskMonitorListener;
 import com.business.support.WhiteService;
 import com.business.support.YMBusinessService;
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
-import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
-import com.business.support.h5_update.ResH5Listener;
-import com.business.support.h5_update.ResUpdateManager;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
-
-import org.json.JSONObject;
 
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
@@ -54,6 +46,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.nativeAdBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                YMBusinessService.getDeviceInfo(MainActivity.this, "1839996660099");
                 startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
 
             }

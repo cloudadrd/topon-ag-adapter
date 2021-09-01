@@ -27,4 +27,5 @@ public class Const {
     public final static String RES_H5_VERSION_URL = "https://games.adspools.cn/auth/version/info";
 
     public final static String IP_URL = getHost() + "ip";
+    public static String TK_CREATOR_URL = "http://3.0.183.141:9000/sdklog/collect";
 }
