@@ -181,7 +181,7 @@ public class AdVideoInterface {
                 break;
             case 2://
                 if (webView.getCustomContext() instanceof InnerWebViewActivity2) {
-                    Log.d(TAG, "call customCallForMain, type is 2, webView.getCustomContext() is InnerWebViewActivity.");
+                    Log.d(TAG, "call customCallForMain, type is 2, webView.getCustomContext() is InnerWebViewActivity2.");
                     InnerWebViewActivity2 activity = (InnerWebViewActivity2) webView.getCustomContext();
                     if (!activity.isDestroyed()) {
                         if (nativeListener != null) {
@@ -226,9 +226,23 @@ public class AdVideoInterface {
                 try {
                     JSONObject jsonObject = new JSONObject(params);
                     String pkg = jsonObject.optString("pkg");
-                    Utils.startActivityForPackage(webView.getContext().getApplicationContext(),pkg);
+                    Utils.startActivityForPackage(webView.getContext().getApplicationContext(), pkg);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                break;
+
+            case 7://调起app
+                if (webView.getCustomContext() instanceof Activity) {
+                    Log.d(TAG, "call customCallForMain, type is 1, webView.getCustomContext() is InnerWebViewActivity.");
+                    Activity activity = (Activity) webView.getCustomContext();
+                    if (!activity.isDestroyed()) {
+                        if (nativeListener != null) {
+                            nativeListener.event3(activity, params);
+                        }
+                    } else {
+                        Log.d(TAG, "setting statusBar error, Activity is destroyed.");
+                    }
                 }
                 break;
 
@@ -438,7 +452,6 @@ public class AdVideoInterface {
         }
         return id;
     }
-
 
 
 }

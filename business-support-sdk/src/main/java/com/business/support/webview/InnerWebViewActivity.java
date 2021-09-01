@@ -77,7 +77,14 @@ public class InnerWebViewActivity extends Activity {
 //        bundle.putString(KEY_URL, loadUrl);
 //        intent.putExtras(bundle);
         intent.putExtra(KEY_IS_LOAD_BAR_HIDE, isLoadBarHide);
-        ContextHolder.getGlobalAppContext().startActivity(intent);
+        context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
     }
 
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})

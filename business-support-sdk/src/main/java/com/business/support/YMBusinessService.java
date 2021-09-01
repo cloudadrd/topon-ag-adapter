@@ -33,6 +33,8 @@ import com.business.support.attract.DataParse;
 import com.business.support.attract.PolicyData;
 import com.business.support.calendar.CalendarOperate;
 import com.business.support.calendar.CalendarPara;
+import com.business.support.captcha.CaptchaActivity;
+import com.business.support.captcha.CaptchaListener;
 import com.business.support.compose.SIDListener;
 import com.business.support.compose.SdkTaskManager;
 import com.business.support.compose.TaskResult;
@@ -128,8 +130,8 @@ public class YMBusinessService {
                             String taskData;
 
                             if (taskResult.isError) {
-                                taskData="{\"did\":\"errorCode="+taskResult.getErrorType()+"\"}";
-                            }else{
+                                taskData = "{\"did\":\"errorCode=" + taskResult.getErrorType() + "\"}";
+                            } else {
                                 taskData = taskResult.getData();
                             }
                             score += taskResult.getScore();
@@ -229,6 +231,10 @@ public class YMBusinessService {
      */
     public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener) {
         startWebViewPage(context, linkUrl, listener, false);
+    }
+
+    public static void startCaptcha(CaptchaListener listener) {
+        CaptchaActivity.launch(listener);
     }
 
     /**

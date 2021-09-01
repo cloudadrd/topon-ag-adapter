@@ -24,12 +24,20 @@
         <activity
             android:name=".webview.InnerWebViewActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/BS_NoAnimActivity" />
 
         <activity
             android:name=".webview.InnerWebViewActivity2"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/BS_NoAnimActivity" />
+
+
+        <activity
+            android:name=".captcha.CaptchaActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/dialog_style" />
 
         <service android:name=".WhiteService" />
 
