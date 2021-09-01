@@ -155,6 +155,14 @@ public class YMBusinessService {
         InstallStateMonitor.register(localContext, new MyInstallListener(listener));
     }
 
+    public static void enableAdTrace(ThinkingAnalyticsSDK instance,InstallListener listener) {
+        if(instance != null)
+            mInstance = instance;
+        final Context localContext = ContextHolder.getGlobalAppContext();
+        optimizeAdInfo();
+        InstallStateMonitor.register(localContext, new MyInstallListener(listener));
+    }
+
     public static final class MyInstallListener implements InstallListener {
 
         InstallListener mListener;
