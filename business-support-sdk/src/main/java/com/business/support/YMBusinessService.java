@@ -662,7 +662,56 @@ public class YMBusinessService {
         upEvent.recycle();
     }
 
-    public static void notifyStopRvClick() {
+    public static void setAdClick(int firmId) {
+        //先上报点击
+        if (rvClickStop == false) {
+            BSAdType adType = null;
+            if (firmId == 8) {
+                adType = BSAdType.GDT;
+            } else if (firmId == 15) {
+                adType = BSAdType.PANGLE;
+            } else if (firmId == 28) {
+                adType = BSAdType.KS;
+            } else if (firmId == 6) {
+                adType = BSAdType.MV;
+            } else {
+                mEcpm = -1;//其它广告，用ecpm排除
+                return;
+            }
+
+            JSONObject jsonObject = null;
+
+            if (BSAdType.PANGLE == adType) {
+                jsonObject = jsonPangleObj;
+            } else if (BSAdType.GDT == adType) {
+                jsonObject = jsonGdtObj;
+            } else if (BSAdType.KS == adType) {
+                jsonObject = jsonKsObj;
+            } else if (BSAdType.MV == adType) {
+                jsonObject = jsonMvObj;
+            }
+
+            if (jsonObject == null) {
+                SLog.e(TAG, "setAdInfo jsonObject is null, end report.");
+                return;
+            }
+
+            //播放过的广告加入到列表里
+            String pkgName = jsonObject.optString("pkg_name");
+            if (!TextUtils.isEmpty(pkgName))
+                RewardTaskInfo.adPackages.put(pkgName, adType);
+
+            String strData = null;
+            try {
+                jsonObject.put("ad_channel", adType.getName());
+                mInstance.track("ad_collection_click", jsonObject);
+                mInstance.flush();
+                strData = jsonObject.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         rvClickStop = true;
         Const.HANDLER.postDelayed(new Runnable() {
             @Override
