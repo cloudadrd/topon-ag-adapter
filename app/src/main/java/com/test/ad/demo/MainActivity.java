@@ -21,14 +21,9 @@ import com.business.support.WhiteService;
 import com.business.support.YMBusinessService;
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
-import com.business.support.compose.SIDListener;
-
-import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.captcha.CaptchaListener;
 import com.business.support.compose.SIDListener;
 import com.business.support.config.Const;
-import com.business.support.h5_update.ResH5Listener;
-import com.business.support.h5_update.ResUpdateManager;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
@@ -53,7 +48,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.nativeAdBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                YMBusinessService.getDeviceInfo(MainActivity.this, "1839996660099");
+//                YMBusinessService.getDeviceInfo(MainActivity.this, "1839996660099");
                 startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
 
             }
