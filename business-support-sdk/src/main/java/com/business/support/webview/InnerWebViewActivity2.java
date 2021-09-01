@@ -53,6 +53,7 @@ public class InnerWebViewActivity2 extends Activity {
     private static final int PROGRESSBAR = Utils.generateViewId();
     private static final int WEB_VIEW = Utils.generateViewId();
     public static final String KEY_URL = "link";
+    public static final String KEY_IS_LOAD_BAR_HIDE = "isLoadBarHide";
     public static final String KEY_CLOSE_LINEAR = "closeLinear";
 
     private ProgressBar progressBar;
@@ -70,16 +71,26 @@ public class InnerWebViewActivity2 extends Activity {
 
     private AdVideoMediation mediationHelper = null;
 
+    private boolean isLoadBarHide;
+
     @SuppressLint("StaticFieldLeak")
     private CacheWebView webView = null;
 
-    public static void launch(Context context, String loadUrl) {
+    public static void launch(Context context, String loadUrl, boolean isLoadBarHide) {
         Intent intent = new Intent(context, InnerWebViewActivity2.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle bundle = new Bundle();
         bundle.putString(KEY_URL, loadUrl);
         intent.putExtras(bundle);
-        ContextHolder.getGlobalAppContext().startActivity(intent);
+        intent.putExtra(KEY_IS_LOAD_BAR_HIDE, isLoadBarHide);
+        context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
     }
 
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
@@ -92,14 +103,14 @@ public class InnerWebViewActivity2 extends Activity {
         View view = generateLayout(this);
         setContentView(view);
         String link = getIntent().getStringExtra(KEY_URL);  //跳转链接
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                boolean flag = isNavigationBarShow2(getWindowManager());
-            }
-        });
+
+        isLoadBarHide = getIntent().getBooleanExtra(KEY_IS_LOAD_BAR_HIDE, false);
 
         progressBar = findViewById(PROGRESSBAR);
+        if (isLoadBarHide) {
+            progressBar.setVisibility(View.GONE);
+        }
+
         webView = findViewById(WEB_VIEW);
 
         //webview显示加载进度，WebChromeClient是WebView的辅助类，用来处理js，favicon和标题等一些操作
@@ -186,13 +197,15 @@ public class InnerWebViewActivity2 extends Activity {
 //        mediationHelper.loadVideo();
 //        webView.addJavascriptInterface(adVideoInterface, "android");
         webView.loadUrl(link);
-        AppInstallReceiver.setInstallCallback(new AppInstallReceiver.InstallCallback() {
-            @Override
-            public void success(String pkg) {
-                webView.notifyDownStated(pkg, DownloadState.INSTALL_OK, 0);
-            }
-        });
+        AppInstallReceiver.addInstallCallback(installCallback);
     }
+
+    AppInstallReceiver.InstallCallback installCallback = new AppInstallReceiver.InstallCallback() {
+        @Override
+        public void success(String pkg) {
+            webView.notifyDownStated(pkg, DownloadState.INSTALL_OK, 0);
+        }
+    };
 
 //    private boolean isBackLoad() {
 //        WebBackForwardList list = webView.copyBackForwardList();
@@ -238,7 +251,9 @@ public class InnerWebViewActivity2 extends Activity {
             if (newProgress == 100) {  //加载完成，进度条消失
                 progressBar.setVisibility(View.GONE);
             } else {
-                progressBar.setVisibility(View.VISIBLE);
+                if (!isLoadBarHide) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
             }
             super.onProgressChanged(view, newProgress);
         }
@@ -616,7 +631,7 @@ public class InnerWebViewActivity2 extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 //        mediationHelper.setAdVideoInterface(null);
-        AppInstallReceiver.setInstallCallback(null);
+        AppInstallReceiver.removeInstallCallback(installCallback);
         if (webView != null) {
             webView.destroy();
             webView.setContext(null);

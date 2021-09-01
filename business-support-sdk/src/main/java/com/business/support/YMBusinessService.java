@@ -34,6 +34,8 @@ import com.business.support.attract.DataParse;
 import com.business.support.attract.PolicyData;
 import com.business.support.calendar.CalendarOperate;
 import com.business.support.calendar.CalendarPara;
+import com.business.support.captcha.CaptchaActivity;
+import com.business.support.captcha.CaptchaListener;
 import com.business.support.compose.SIDListener;
 import com.business.support.compose.SdkTaskManager;
 import com.business.support.compose.TaskResult;
@@ -118,7 +120,7 @@ public class YMBusinessService {
         mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
-                .add(new ShuzilmImpl(), 100, 9000, shuMengApiKey)
+                .add(new ShuzilmImpl(), 100, 20000, shuMengApiKey)
 //                .add(new SmeiImpl(), 2000, 3000, "JVjHfrQd0LwfAFnND60C", "OfJKRbsUQIunw1xzb2SU", "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd")
                 .zip(localContext, new ZipSidListener() {
                     @Override
@@ -126,12 +128,18 @@ public class YMBusinessService {
                         int score = 0;
                         String data = null;
                         for (TaskResult taskResult : taskResults) {
-                            if (taskResult.isError) continue;
+                            String taskData;
+
+                            if (taskResult.isError) {
+                                taskData = "{\"did\":\"errorCode=" + taskResult.getErrorType() + "\"}";
+                            } else {
+                                taskData = taskResult.getData();
+                            }
                             score += taskResult.getScore();
                             if (data != null) {
-                                data = Utils.combineJson(data, taskResult.getData());
+                                data = Utils.combineJson(data, taskData);
                             } else {
-                                data = taskResult.getData();
+                                data = taskData;
                             }
                         }
                         if (TextUtils.isEmpty(data)) {
@@ -143,6 +151,14 @@ public class YMBusinessService {
     }
 
     public static void enableAdTrace(InstallListener listener) {
+        final Context localContext = ContextHolder.getGlobalAppContext();
+        optimizeAdInfo();
+        InstallStateMonitor.register(localContext, new MyInstallListener(listener));
+    }
+
+    public static void enableAdTrace(ThinkingAnalyticsSDK instance,InstallListener listener) {
+        if(instance != null)
+            mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         optimizeAdInfo();
         InstallStateMonitor.register(localContext, new MyInstallListener(listener));
@@ -216,21 +232,39 @@ public class YMBusinessService {
      * 带缓存的webview，可以提前创建cacheWebView并且加载
      */
     public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, WebViewToNativeListener listener) {
-        if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
-            viewGroup.removeView(cacheWebView);
-        }
-        AdVideoInterface.nativeListener = listener;
-        //带缓存的webview，可以提前创建cacheWebView并且加载
-        InnerWebViewActivity.launch(context, cacheWebView);
+        startCacheWebViewPage(context, cacheWebView, listener, false);
     }
 
     /**
      * //不带缓存的webview
      */
     public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener) {
+        startWebViewPage(context, linkUrl, listener, false);
+    }
+
+    public static void startCaptcha(CaptchaListener listener) {
+        CaptchaActivity.launch(listener);
+    }
+
+    /**
+     * 带缓存的webview，可以提前创建cacheWebView并且加载
+     */
+    public static void startCacheWebViewPage(Context context, CacheWebView cacheWebView, WebViewToNativeListener listener, boolean isLoadBarHide) {
+        if (cacheWebView.getParent() != null && cacheWebView.getParent() instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) cacheWebView.getParent();
+            viewGroup.removeView(cacheWebView);
+        }
         AdVideoInterface.nativeListener = listener;
-        InnerWebViewActivity2.launch(context, linkUrl);
+        //带缓存的webview，可以提前创建cacheWebView并且加载
+        InnerWebViewActivity.launch(context, cacheWebView, isLoadBarHide);
+    }
+
+    /**
+     * //不带缓存的webview
+     */
+    public static void startWebViewPage(Context context, String linkUrl, WebViewToNativeListener listener, boolean isLoadBarHide) {
+        AdVideoInterface.nativeListener = listener;
+        InnerWebViewActivity2.launch(context, linkUrl, isLoadBarHide);
     }
 
 
@@ -287,43 +321,45 @@ public class YMBusinessService {
 
             if (listener != null) {
                 listener.onSuccess(score, jsonObject.toString());
-
-                JSONObject properties = new JSONObject();
-                properties.put("score", score);
-
-                //自研
-                properties.put("EmulatorCheck", jsonObject.get("Emulator"));
-                properties.put("RootCheck", jsonObject.get("Root"));
-                properties.put("HookCheck", jsonObject.get("Hook"));
-                properties.put("WireSharkCheck", jsonObject.get("WireShark"));
-                properties.put("debug", jsonObject.get("Debug"));
-
-                //数盟
-                if (jsonObject.has("device_type"))
-                    properties.put("shumeng", jsonObject.get("device_type"));
-                if (jsonObject.has("did"))
-                    properties.put("shumengid", jsonObject.get("did"));
-
-                //数美
-                if (jsonObject.has("riskLevel"))
-                    properties.put("riskLevel", jsonObject.get("riskLevel"));
-
-                if (jsonObject.has("description"))
-                    properties.put("description", jsonObject.get("description"));
-
-                if (jsonObject.has("model"))
-                    properties.put("model", jsonObject.get("model"));
-
-                if (jsonObject.has("riskType"))
-                    properties.put("riskType", jsonObject.get("riskType"));
-
-                if (jsonObject.has("shuMeiDid"))
-                    properties.put("shuMeiDid", jsonObject.get("shuMeiDid"));
-
-
-                mInstance.track("Phonecheck", properties);
-                mInstance.flush();
             }
+
+            JSONObject properties = new JSONObject();
+            properties.put("score", score);
+
+            //自研
+            properties.put("EmulatorCheck", jsonObject.get("Emulator"));
+            properties.put("RootCheck", jsonObject.get("Root"));
+            properties.put("HookCheck", jsonObject.get("Hook"));
+            properties.put("WireSharkCheck", jsonObject.get("WireShark"));
+            properties.put("debug", jsonObject.get("Debug"));
+
+            //数盟
+            if (jsonObject.has("device_type"))
+                properties.put("shumeng", jsonObject.get("device_type"));
+            if (jsonObject.has("did"))
+                properties.put("shumengid", jsonObject.get("did"));
+            if (jsonObject.has("cheat_type"))
+                properties.put("cheat_type", jsonObject.get("cheat_type"));
+
+            //数美
+            if (jsonObject.has("riskLevel"))
+                properties.put("riskLevel", jsonObject.get("riskLevel"));
+
+            if (jsonObject.has("description"))
+                properties.put("description", jsonObject.get("description"));
+
+            if (jsonObject.has("model"))
+                properties.put("model", jsonObject.get("model"));
+
+            if (jsonObject.has("riskType"))
+                properties.put("riskType", jsonObject.get("riskType"));
+
+            if (jsonObject.has("shuMeiDid"))
+                properties.put("shuMeiDid", jsonObject.get("shuMeiDid"));
+
+            mInstance.track("Phonecheck", properties);
+            mInstance.flush();
+
         } catch (Exception e) {
             e.printStackTrace();
             if (listener != null) {
@@ -641,7 +677,56 @@ public class YMBusinessService {
         upEvent.recycle();
     }
 
-    public static void notifyStopRvClick() {
+    public static void setAdClick(int firmId) {
+        //先上报点击
+        if (rvClickStop == false) {
+            BSAdType adType = null;
+            if (firmId == 8) {
+                adType = BSAdType.GDT;
+            } else if (firmId == 15) {
+                adType = BSAdType.PANGLE;
+            } else if (firmId == 28) {
+                adType = BSAdType.KS;
+            } else if (firmId == 6) {
+                adType = BSAdType.MV;
+            } else {
+                mEcpm = -1;//其它广告，用ecpm排除
+                return;
+            }
+
+            JSONObject jsonObject = null;
+
+            if (BSAdType.PANGLE == adType) {
+                jsonObject = jsonPangleObj;
+            } else if (BSAdType.GDT == adType) {
+                jsonObject = jsonGdtObj;
+            } else if (BSAdType.KS == adType) {
+                jsonObject = jsonKsObj;
+            } else if (BSAdType.MV == adType) {
+                jsonObject = jsonMvObj;
+            }
+
+            if (jsonObject == null) {
+                SLog.e(TAG, "setAdInfo jsonObject is null, end report.");
+                return;
+            }
+
+            //播放过的广告加入到列表里
+            String pkgName = jsonObject.optString("pkg_name");
+            if (!TextUtils.isEmpty(pkgName))
+                RewardTaskInfo.adPackages.put(pkgName, adType);
+
+            String strData = null;
+            try {
+                jsonObject.put("ad_channel", adType.getName());
+                mInstance.track("ad_collection_click", jsonObject);
+                mInstance.flush();
+                strData = jsonObject.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         rvClickStop = true;
         Const.HANDLER.postDelayed(new Runnable() {
             @Override
@@ -791,7 +876,7 @@ public class YMBusinessService {
                 Object parcelable = extras.getParcelable("admodel");
                 ClassLoader classLoader = pOFactory.getClass().getClassLoader();
                 Class<?> classData = classLoader.loadClass("com.qq.e.comm.plugin.model.BaseAdInfo");
-                Field fieldJson = classData.getDeclaredField("ap");
+                Field fieldJson = classData.getDeclaredField("aM");
                 fieldJson.setAccessible(true);
                 String jsonStr = fieldJson.get(parcelable).toString();
                 JSONObject jsonObject = new JSONObject(jsonStr);
@@ -1230,100 +1315,100 @@ public class YMBusinessService {
 
     //日历
     public static void checkAndAddCalendarPermission(Context context) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
 
     public static void insertCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.insertCalendar(context,appName,appid,para);
+            CalendarOperate.insertCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
     public static void batchInsertCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.batchInsertCalendar(context,appName,appid,para);
+            CalendarOperate.batchInsertCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
     public static void updateCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.updateCalendar(context,appName,appid,para);
+            CalendarOperate.updateCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
     public static void batchUpdateCalendar(final Context context, final String appName, final String appid, final CalendarPara para) {
-        if(ContextCompat.checkSelfPermission(context,
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.batchUpdateCalendar(context,appName,appid,para);
+            CalendarOperate.batchUpdateCalendar(context, appName, appid, para);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
-    public static  void deleteCalendar(final Context context,  final long eventId) {
-        if(ContextCompat.checkSelfPermission(context,
+    public static void deleteCalendar(final Context context, final long eventId) {
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            CalendarOperate.deleteCalendar(context,eventId);
+            CalendarOperate.deleteCalendar(context, eventId);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
         }
     }
 
-    public static boolean searchCalendar(final Context context,  final long eventId) {
-        if(ContextCompat.checkSelfPermission(context,
+    public static boolean searchCalendar(final Context context, final long eventId) {
+        if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 == PackageManager.PERMISSION_GRANTED) {
-            return CalendarOperate.searchCalendar(context,eventId);
+            return CalendarOperate.searchCalendar(context, eventId);
         } else {
             // 如果没有授权，就请求用户授权
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR},PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR}, PERMISSION_REQUEST);
             return false;
         }
     }

@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Path;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ public class InnerWebViewActivity extends Activity {
     private static final int PROGRESSBAR = Utils.generateViewId();
     private static final int WEB_VIEW = Utils.generateViewId();
     public static final String KEY_URL = "link";
+    public static final String KEY_IS_LOAD_BAR_HIDE = "isLoadBarHide";
     public static final String KEY_CLOSE_LINEAR = "closeLinear";
 
     private ProgressBar progressBar;
@@ -65,14 +67,24 @@ public class InnerWebViewActivity extends Activity {
 
     private long startTime;
 
-    public static void launch(Context context, CacheWebView webView) {
+    private boolean isLoadBarHide;
+
+    public static void launch(Context context, CacheWebView webView, boolean isLoadBarHide) {
         Intent intent = new Intent(context, InnerWebViewActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         InnerWebViewActivity.webView = webView;
 //        Bundle bundle = new Bundle();
 //        bundle.putString(KEY_URL, loadUrl);
 //        intent.putExtras(bundle);
-        ContextHolder.getGlobalAppContext().startActivity(intent);
+        intent.putExtra(KEY_IS_LOAD_BAR_HIDE, isLoadBarHide);
+        context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
     }
 
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
@@ -86,8 +98,12 @@ public class InnerWebViewActivity extends Activity {
         setContentView(view);
 
 //        String link = getIntent().getStringExtra(KEY_URL);  //跳转链接
+        isLoadBarHide = getIntent().getBooleanExtra(KEY_IS_LOAD_BAR_HIDE, false);
 
         progressBar = findViewById(PROGRESSBAR);
+        if (isLoadBarHide) {
+            progressBar.setVisibility(View.GONE);
+        }
         webView = findViewById(WEB_VIEW);
 
         //webview显示加载进度，WebChromeClient是WebView的辅助类，用来处理js，favicon和标题等一些操作
@@ -186,7 +202,15 @@ public class InnerWebViewActivity extends Activity {
         if (webView.isLoadFinish()) {//页面缓存完毕，上报打点日志
             loadFinish();
         }
+        AppInstallReceiver.addInstallCallback(installCallback);
     }
+
+    AppInstallReceiver.InstallCallback installCallback = new AppInstallReceiver.InstallCallback() {
+        @Override
+        public void success(String pkg) {
+            webView.notifyDownStated(pkg, DownloadState.INSTALL_OK, 0);
+        }
+    };
 
 //    private boolean isBackLoad() {
 //        WebBackForwardList list = webView.copyBackForwardList();
@@ -236,7 +260,9 @@ public class InnerWebViewActivity extends Activity {
                 }
                 loadFinish();
             } else {
-                progressBar.setVisibility(View.VISIBLE);
+                if (!isLoadBarHide) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
             }
             super.onProgressChanged(view, newProgress);
         }
@@ -527,6 +553,7 @@ public class InnerWebViewActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 //        mediationHelper.setAdVideoInterface(null);
+        AppInstallReceiver.removeInstallCallback(installCallback);
         webView.setContext(null);
         webView.setWebViewClient(null);
         webView.setWebChromeClient(null);

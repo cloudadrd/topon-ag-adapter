@@ -22,6 +22,13 @@ import com.business.support.YMBusinessService;
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.compose.SIDListener;
+
+import com.business.support.ascribe.InstallStateMonitor;
+import com.business.support.captcha.CaptchaListener;
+import com.business.support.compose.SIDListener;
+import com.business.support.config.Const;
+import com.business.support.h5_update.ResH5Listener;
+import com.business.support.h5_update.ResUpdateManager;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
@@ -40,9 +47,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        cacheWebView = new CacheWebView(this);
-//        //http://redbag.adspools.cn:8081/?appId=119&token=ad6736e3-8384-42b0-90de-11924877129a&uid=20210324105106534533243063316480&IMEI=cd389fbee1d57a31231365551111&team=002&isNew=false
-//        cacheWebView.loadUrl("https://m.baidu.com");
+        cacheWebView = new CacheWebView(this);
+        //http://redbag.adspools.cn:8081/?appId=119&token=ad6736e3-8384-42b0-90de-11924877129a&uid=20210324105106534533243063316480&IMEI=cd389fbee1d57a31231365551111&team=002&isNew=false
+        cacheWebView.loadUrl("https://m.baidu.com");
         findViewById(R.id.nativeAdBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,6 +140,11 @@ public class MainActivity extends Activity {
 
                     }
 
+                    @Override
+                    public void event3(Activity activity, String params) {
+                        activity.finish();
+                    }
+
                 });
             }
         });
@@ -153,6 +165,11 @@ public class MainActivity extends Activity {
                     @Override
                     public void event2(InnerWebViewActivity2 activity) {
 
+                    }
+
+                    @Override
+                    public void event3(Activity activity, String params) {
+                        activity.finish();
                     }
 
                 });
@@ -305,6 +322,29 @@ public class MainActivity extends Activity {
         YMBusinessService.setH5RewardPlacementId("广告位ID");
         YMBusinessService.setH5InterstitialPlacementId("b603f37c4ebe4e");
 
+        YMBusinessService.startCaptcha(new CaptchaListener() {
+            @Override
+            public String onAccess(long time) {
+                Log.i(TAG, "onAccess time=" + time);
+                return "验证通过,耗时" + time + "毫秒";
+            }
+
+            @Override
+            public String onFailed(int failCount) {
+                Log.i(TAG, "onFailed failCount=" + failCount);
+                if (failCount > 4) {
+                    Const.HANDLER.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.exit(1);
+                        }
+                    }, 1500);
+                    return "验证失败,帐号已封锁";
+                }
+                return "验证失败,已失败" + failCount + "次";
+            }
+
+        });
     }
 
 

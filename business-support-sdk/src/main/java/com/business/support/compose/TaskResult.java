@@ -10,11 +10,15 @@ public class TaskResult {
 
     private SdkType sdkType;
 
-    public TaskResult(boolean isError, int score, String data, SdkType sdkType) {
+    //1 mission timeout ,2 network timeout,3 exception, 4,retry 2
+    private int errorType;
+
+    public TaskResult(boolean isError, int score, String data, SdkType sdkType, int errorType) {
         this.isError = isError;
         this.score = score;
         this.data = data;
         this.sdkType = sdkType;
+        this.errorType = errorType;
     }
 
     public boolean isError() {
@@ -47,5 +51,13 @@ public class TaskResult {
 
     public void setSdkType(SdkType sdkType) {
         this.sdkType = sdkType;
+    }
+
+    public int getErrorType() {
+        return errorType;
+    }
+
+    public void setErrorType(int errorType) {
+        this.errorType = errorType;
     }
 }
