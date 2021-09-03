@@ -279,8 +279,8 @@ public class MainActivity extends Activity {
                 });
         YMBusinessService.enableAdTrace(new InstallListener() {
             @Override
-            public void installedHit(String pkg, BSAdType bsAdType, String sceneId) {
-                SLog.i(TAG, "installedHit pkg=" + pkg + ",sceneId=" + sceneId);
+            public void installedHit(String pkg, String appName, BSAdType bsAdType, String sceneId) {
+                SLog.i(TAG, "installedHit pkg=" + pkg + ",sceneId=" + sceneId + ",appName=" + appName);
             }
         });
 //        ResUpdateManager.getH5ResPathAndUpdate("95", "95", 101, new ResH5Listener() {

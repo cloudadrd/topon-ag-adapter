@@ -27,9 +27,9 @@ public class RewardTaskInfo {
 //        }
 //    }
 
-    public static Map<String, Map<String, BSAdType>> revealAdPackages = new HashMap<>();
+    public static Map<String, Map<String, RewardTaskInfo>> revealAdPackages = new HashMap<>();
 
-    public static Map<String, BSAdType> adPackages = new HashMap<>();
+    public static Map<String, RewardTaskInfo> adPackages = new HashMap<>();
 
     public static RewardTaskInfo currentStartPkg = null;
 
@@ -39,14 +39,16 @@ public class RewardTaskInfo {
 
     public String sceneId;
 
+    public String appName;
+
     //0安装，1打开
     public int infoState;
 
     public long startTaskAppTime;
 
     public static boolean isExistsForPkg(String packageName) {
-        Collection<Map<String, BSAdType>> list = revealAdPackages.values();
-        for (Map<String, BSAdType> map : list) {
+        Collection<Map<String, RewardTaskInfo>> list = revealAdPackages.values();
+        for (Map<String, RewardTaskInfo> map : list) {
             if (map.get(packageName) != null) {
                 return true;
             }
@@ -58,19 +60,21 @@ public class RewardTaskInfo {
         List<RewardTaskInfo> list = new ArrayList<>();
         Set<String> keys = revealAdPackages.keySet();
         for (String key : keys) {
-            if (revealAdPackages.get(key).get(packageName) != null) {
-                list.add(new RewardTaskInfo(packageName, revealAdPackages.get(key).get(packageName), key, 0, 0));
+            RewardTaskInfo rewardTaskInfo = revealAdPackages.get(key).get(packageName);
+            if (rewardTaskInfo != null) {
+                list.add(new RewardTaskInfo(packageName, rewardTaskInfo.bsAdType, key, rewardTaskInfo.appName, 0, 0));
             }
         }
         return list;
     }
 
-    public static void putRevelPackage(String sceneId, String packageName, BSAdType bsAdType) {
+    public static void putRevelPackage(String sceneId, String packageName, String appName, BSAdType bsAdType) {
+        RewardTaskInfo rewardTaskInfo = new RewardTaskInfo(packageName, bsAdType, sceneId, appName, 0, 0);
         if (revealAdPackages.get(sceneId) != null) {
-            revealAdPackages.get(sceneId).put(packageName, bsAdType);
+            revealAdPackages.get(sceneId).put(packageName, rewardTaskInfo);
         } else {
-            Map<String, BSAdType> map = new HashMap<>();
-            map.put(packageName, bsAdType);
+            Map<String, RewardTaskInfo> map = new HashMap<>();
+            map.put(packageName, rewardTaskInfo);
             revealAdPackages.put(sceneId, map);
         }
     }
@@ -82,10 +86,25 @@ public class RewardTaskInfo {
         this.startTaskAppTime = startTaskAppTime;
     }
 
+    public RewardTaskInfo(String currentInstallPkg, BSAdType bsAdType, String appName) {
+        this.currentInstallPkg = currentInstallPkg;
+        this.bsAdType = bsAdType;
+        this.appName = appName;
+    }
+
     public RewardTaskInfo(String currentInstallPkg, BSAdType bsAdType, String sceneId, int infoState, long startTaskAppTime) {
         this.currentInstallPkg = currentInstallPkg;
         this.bsAdType = bsAdType;
         this.sceneId = sceneId;
+        this.infoState = infoState;
+        this.startTaskAppTime = startTaskAppTime;
+    }
+
+    public RewardTaskInfo(String currentInstallPkg, BSAdType bsAdType, String sceneId, String appName, int infoState, long startTaskAppTime) {
+        this.currentInstallPkg = currentInstallPkg;
+        this.bsAdType = bsAdType;
+        this.sceneId = sceneId;
+        this.appName = appName;
         this.infoState = infoState;
         this.startTaskAppTime = startTaskAppTime;
     }

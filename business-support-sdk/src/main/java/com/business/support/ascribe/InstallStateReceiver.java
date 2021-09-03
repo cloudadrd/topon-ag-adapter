@@ -57,9 +57,9 @@ class InstallStateReceiver extends BroadcastReceiver {
 
             //通过播放过的广告app来命中当前已安装的app
             if (RewardTaskInfo.adPackages.get(pkgName) != null) {
-                BSAdType bsAdType = RewardTaskInfo.adPackages.get(pkgName);
+                RewardTaskInfo rewardTaskInfo = RewardTaskInfo.adPackages.get(pkgName);
                 if (installListener != null) {
-                    installListener.installedHit(pkgName, bsAdType, "");
+                    installListener.installedHit(pkgName, rewardTaskInfo.appName, rewardTaskInfo.bsAdType, "");
                 }
                 if (!RewardTaskInfo.isExistsForPkg(pkgName)) {
                     RewardTaskInfo.adPackages.remove(pkgName);

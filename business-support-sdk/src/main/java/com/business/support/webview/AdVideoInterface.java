@@ -232,7 +232,7 @@ public class AdVideoInterface {
                 }
                 break;
 
-            case 7://调起app
+            case 7://传送事件、比如关闭当前页面，并且传递标识值
                 if (webView.getCustomContext() instanceof Activity) {
                     Log.d(TAG, "call customCallForMain, type is 1, webView.getCustomContext() is InnerWebViewActivity.");
                     Activity activity = (Activity) webView.getCustomContext();

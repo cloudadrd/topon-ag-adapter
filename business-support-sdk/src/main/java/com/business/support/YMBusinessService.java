@@ -156,8 +156,8 @@ public class YMBusinessService {
         InstallStateMonitor.register(localContext, new MyInstallListener(listener));
     }
 
-    public static void enableAdTrace(ThinkingAnalyticsSDK instance,InstallListener listener) {
-        if(instance != null)
+    public static void enableAdTrace(ThinkingAnalyticsSDK instance, InstallListener listener) {
+        if (instance != null)
             mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         optimizeAdInfo();
@@ -173,7 +173,7 @@ public class YMBusinessService {
         }
 
         @Override
-        public void installedHit(String pkg, BSAdType bsAdType, String sceneId) {
+        public void installedHit(String pkg, String appName, BSAdType bsAdType, String sceneId) {
             SLog.i(TAG, "installedHit pkg=" + pkg);
             try {
 
@@ -189,7 +189,7 @@ public class YMBusinessService {
                         RewardTaskInfo.revealAdPackages.remove(taskInfo.sceneId);
                     }
                     if (mListener != null) {
-                        mListener.installedHit(taskInfo.currentInstallPkg, taskInfo.bsAdType, taskInfo.sceneId);
+                        mListener.installedHit(taskInfo.currentInstallPkg, taskInfo.appName, taskInfo.bsAdType, taskInfo.sceneId);
                     }
                 }
 
@@ -198,6 +198,7 @@ public class YMBusinessService {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("ad_channel", bsAdType.getName());
                 jsonObject.put("pkg_name", pkg);
+                jsonObject.put("app_name", appName);
                 if (mInstance != null) {
                     mInstance.track("ad_install", jsonObject);
                     mInstance.flush();
@@ -713,15 +714,15 @@ public class YMBusinessService {
 
             //播放过的广告加入到列表里
             String pkgName = jsonObject.optString("pkg_name");
+            String appName = jsonObject.optString("app_name");
             if (!TextUtils.isEmpty(pkgName))
-                RewardTaskInfo.adPackages.put(pkgName, adType);
+                RewardTaskInfo.adPackages.put(pkgName, new RewardTaskInfo(pkgName, adType, appName));
 
-            String strData = null;
             try {
                 jsonObject.put("ad_channel", adType.getName());
+                jsonObject.put("app_name", appName);
                 mInstance.track("ad_collection_click", jsonObject);
                 mInstance.flush();
-                strData = jsonObject.toString();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -783,6 +784,8 @@ public class YMBusinessService {
             String adId = null;
             String videoUrl = null;
 
+            String targetUrl = tempObj.optString("target_url");
+
             JSONObject iconObj = tempObj.optJSONObject("icon");
             if (iconObj != null) {
                 iconUrl = iconObj.optString("url");
@@ -810,6 +813,10 @@ public class YMBusinessService {
 
             try {
                 jsonPangleObj = new JSONObject();
+
+                if (targetUrl != null) {
+                    jsonPangleObj.put("target_url", targetUrl);
+                }
 
                 if (adId != null) {
                     jsonPangleObj.put("ad_id", adId);
@@ -1071,8 +1078,9 @@ public class YMBusinessService {
 
         //播放过的广告加入到列表里
         String pkgName = jsonObject.optString("pkg_name");
+        String appName = jsonObject.optString("app_name");
         if (!TextUtils.isEmpty(pkgName))
-            RewardTaskInfo.adPackages.put(pkgName, adType);
+            RewardTaskInfo.adPackages.put(pkgName, new RewardTaskInfo(pkgName, adType, appName));
 
         String strData = null;
         try {
@@ -1116,8 +1124,9 @@ public class YMBusinessService {
         if (jsonObject == null) return;
 
         String pkgName = jsonObject.optString("pkg_name");
-        if (!TextUtils.isEmpty(pkgName))
-            RewardTaskInfo.putRevelPackage(sceneId, pkgName, adType);
+        String appName = jsonObject.optString("app_name");
+        if (!TextUtils.isEmpty(pkgName) && !TextUtils.isEmpty(appName))
+            RewardTaskInfo.putRevelPackage(sceneId, pkgName, appName, adType);
     }
 
 
@@ -1287,6 +1296,7 @@ public class YMBusinessService {
             jsonObject.put("pkg_name", rewardTaskInfo.currentInstallPkg);
             jsonObject.put("ad_channel", rewardTaskInfo.bsAdType.getName());
             jsonObject.put("ad_scene", rewardTaskInfo.sceneId);
+            jsonObject.put("app_name", rewardTaskInfo.appName);
             if (mInstance != null) {
                 mInstance.track("ad_installMission", jsonObject);
                 mInstance.flush();

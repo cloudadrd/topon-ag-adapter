@@ -74,9 +74,20 @@ public class NativeDataManager {
     public static void writeFileForTaskInfo2(RewardTaskInfo taskInfo) {
         Context context = ContextHolder.getGlobalAppContext();
         char split = '$';
-        String data = taskInfo.currentInstallPkg + split +
-                taskInfo.bsAdType.getName() + split + taskInfo.sceneId + split + taskInfo.infoState + split + taskInfo.startTaskAppTime;
-        PreferenceTools.persistString(context, PREF_REWARD_TASK_FILE_NAME, taskInfo.sceneId, data);
+        StringBuilder sbConcat = new StringBuilder();
+        sbConcat.append(taskInfo.currentInstallPkg)
+                .append(split)
+                .append(taskInfo.bsAdType.getName())
+                .append(split)
+                .append(taskInfo.sceneId)
+                .append(split)
+                .append(taskInfo.appName)
+                .append(split)
+                .append(taskInfo.infoState)
+                .append(split)
+                .append(taskInfo.startTaskAppTime);
+
+        PreferenceTools.persistString(context, PREF_REWARD_TASK_FILE_NAME, taskInfo.sceneId, sbConcat.toString());
     }
 
     public static void removeForSceneId(String sceneId) {
@@ -98,7 +109,7 @@ public class NativeDataManager {
         if (TextUtils.isEmpty(data)) return null;
         String[] splits = data.split("\\$");
         if (splits.length != 5) return null;
-        return new RewardTaskInfo(splits[0], BSAdType.get(splits[1]), splits[2], Integer.parseInt(splits[3]), Long.parseLong(splits[4]));
+        return new RewardTaskInfo(splits[0], BSAdType.get(splits[1]), splits[2], splits[3], Integer.parseInt(splits[4]), Long.parseLong(splits[5]));
     }
 
     public static RewardTaskInfo[] getTaskInfoAll() {
