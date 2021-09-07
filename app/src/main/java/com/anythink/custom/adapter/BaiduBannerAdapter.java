@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
     public static final int ID_LARGE_IMAGE = generateViewId();
     public static final int ID_ADLOGO_IMAGE = generateViewId();
+    public static final int ID_ADICON_IMAGE = generateViewId();
 
     private final String TAG = getClass().getSimpleName();
     private String slotId;
@@ -42,13 +44,38 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
     private BaiduNativeManager mBaiduNativeManager;
     private NativeResponse nativeAd;
     private RelativeLayout mNBView;
+    private boolean is320_50 = false;
+    private boolean is300_250 = false;
 
 
     @Override
     public void loadCustomNetworkAd(Context context, Map<String, Object> serverExtra, Map<String, Object> localExtra) {
         String appId = (String) serverExtra.get("app_id");
         slotId = (String) serverExtra.get("slot_id");
+        String w = (String) serverExtra.get("width");
+        String h = (String) serverExtra.get("height");
+        int width = 0, height= 0;
+        if (null != w){
+            width = Integer.parseInt(w);
+        }
+        if (null != h){
+            height = Integer.parseInt(h);
+        }
 
+        if (320 == width && 50 == height) {
+            is320_50 = true;
+        }
+
+        if (300 == width && 250 == height) {
+            is300_250 = true;
+        }
+
+        if (!(is320_50 || is300_250)) {
+            if (mLoadListener != null) {
+                mLoadListener.onAdLoadError(TAG, "banner Ad size error!");
+            }
+            return;
+        }
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
                 mLoadListener.onAdLoadError(TAG, "app_id or slot_id is empty!");
@@ -130,9 +157,19 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         });
     }
 
-    private void renderAd(Context context) {
+    private void createAd32050(Context context) {
+        String title = nativeAd.getTitle();
+        String desc = nativeAd.getDesc();
+        if (null == title) title = desc;
+        if (null == desc ) desc = title;
+        if ((null != title && null != desc) && (title.length() > desc.length())){
+            String temp = desc;
+            desc = title;
+            title = desc;
+        }
+
         mNBView = new RelativeLayout(context);
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(dip2px(context,300.0f),dip2px(context,250.0f));
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(dip2px(context, 320.0f), dip2px(context, 50.0f));
         lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         mNBView.setLayoutParams(lp);
         ShapeDrawable rectShapeDrawable = new ShapeDrawable();
@@ -143,41 +180,120 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         mNBView.setBackground(rectShapeDrawable);
 
         ImageView imageView = new ImageView(context);
-        imageView.setId(ID_LARGE_IMAGE);
-        RelativeLayout.LayoutParams imageViewLayout = new RelativeLayout.LayoutParams(dip2px(context,300.0f), dip2px(context,200.0f));
+        imageView.setId(ID_ADICON_IMAGE);
+        RelativeLayout.LayoutParams imageViewLayout = new RelativeLayout.LayoutParams(dip2px(context, 75.0f), dip2px(context, 49.0f));
         imageViewLayout.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        imageView.setScaleType(ImageView.ScaleType. CENTER_CROP);//CENTER_CROP
-        imageViewLayout.setMargins(dip2px(context,1.0f),dip2px(context,1.0f),dip2px(context,1.0f),dip2px(context,1.0f));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);//CENTER_CROP
+        imageViewLayout.setMargins(dip2px(context, 1.0f), dip2px(context, 0.5f), dip2px(context, 243.0f), dip2px(context, 0.5f));
         mNBView.addView(imageView, imageViewLayout);
         AQuery aq = new AQuery(imageView);
-        aq.id(ID_LARGE_IMAGE).image(nativeAd.getImageUrl(), false, true);
+        if (null == nativeAd.getIconUrl()){
+            aq.id(ID_ADICON_IMAGE).image(nativeAd.getImageUrl(), false, true);
+        }else{
+            aq.id(ID_ADICON_IMAGE).image(nativeAd.getIconUrl(), false, true);
+        }
 
         TextView textView = new TextView(context);
-        textView.setTextSize(16);
+        textView.setTextSize(15);
         textView.setLines(1);
-        textView.setTextColor(Color.GRAY);
-        String txt = nativeAd.getTitle();
+        textView.setTextColor(Color.BLACK);
+        String txt = title;
         textView.setText(txt);
         textView.setGravity(Gravity.LEFT);
         //给TextView添加位置布局
-        RelativeLayout.LayoutParams textLayout = new RelativeLayout.LayoutParams(dip2px(context,276),dip2px(context,40.0f));
-        textLayout.addRule(RelativeLayout.BELOW,ID_LARGE_IMAGE);
-        textLayout.addRule(RelativeLayout.ALIGN_LEFT,ID_LARGE_IMAGE);
-        textLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        textLayout.setMargins(dip2px(context,5.0f),dip2px(context,10.0f),dip2px(context,20.0f),dip2px(context,0.0f));
+        RelativeLayout.LayoutParams textLayout = new RelativeLayout.LayoutParams(dip2px(context, 160.0f), dip2px(context, 20.0f));
+        textLayout.addRule(RelativeLayout.LEFT_OF);
+        textLayout.setMargins(dip2px(context, 80.0f), dip2px(context, 5.0f), dip2px(context, 80.0f), dip2px(context, 25.0f));
         //加入到RelativeLayout的布局里
         mNBView.addView(textView, textLayout);
 
-        ImageView adLogo = new ImageView(context);
-        adLogo.setId(ID_ADLOGO_IMAGE);
-        RelativeLayout.LayoutParams logoViewLayout = new RelativeLayout.LayoutParams(dip2px(context,16), dip2px(context,16));
-        logoViewLayout.addRule(RelativeLayout.ALIGN_RIGHT,ID_LARGE_IMAGE);
-        logoViewLayout.addRule(RelativeLayout.BELOW,ID_LARGE_IMAGE);
-        logoViewLayout.setMargins(dip2px(context,283.5f),dip2px(context,34.0f),dip2px(context,0.5f),dip2px(context,0.0f));
-        mNBView.addView(adLogo, logoViewLayout);
-        AQuery aqLogo = new AQuery(adLogo);
-        aqLogo.id(ID_ADLOGO_IMAGE).image(nativeAd.getBaiduLogoUrl(), false, true);
-        
+        TextView desView = new TextView(context);
+        desView.setTextSize(10);
+        desView.setLines(1);
+        desView.setTextColor(Color.GRAY);
+        String des = desc;
+        desView.setText(des);
+        desView.setGravity(Gravity.LEFT);
+        //给TextView添加位置布局
+        RelativeLayout.LayoutParams desLayout = new RelativeLayout.LayoutParams(dip2px(context, 160.0f), dip2px(context, 15.0f));
+        desLayout.addRule(RelativeLayout.LEFT_OF);
+        desLayout.setMargins(dip2px(context, 80.0f), dip2px(context, 30.0f), dip2px(context, 80.0f), dip2px(context, 5.0f));
+        //加入到RelativeLayout的布局里
+        mNBView.addView(desView, desLayout);
+
+        Button btn = new Button(context);
+        btn.setText("立即查看");
+        btn.setTextSize(11);
+        RelativeLayout.LayoutParams btnLayout = new RelativeLayout.LayoutParams(dip2px(context, 70.0f), dip2px(context, 40.0f));
+        btnLayout.addRule(RelativeLayout.LEFT_OF);
+        btnLayout.setMargins(dip2px(context, 245.0f), dip2px(context, 5.0f), dip2px(context, 5.0f), dip2px(context, 5.0f));
+        //加入到RelativeLayout的布局里
+        mNBView.addView(btn, btnLayout);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "nativeAd.handleClick");
+                nativeAd.handleClick(v);
+            }
+        });
+
+
+
+    }
+    private void renderAd(Context context) {
+        if (is320_50) {
+            createAd32050(context);
+        }else if (is300_250){
+            mNBView = new RelativeLayout(context);
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(dip2px(context, 300.0f), dip2px(context, 250.0f));
+            lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            mNBView.setLayoutParams(lp);
+            ShapeDrawable rectShapeDrawable = new ShapeDrawable();
+            Paint paint = rectShapeDrawable.getPaint();
+            paint.setColor(Color.GRAY);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(1);
+            mNBView.setBackground(rectShapeDrawable);
+
+            ImageView imageView = new ImageView(context);
+            imageView.setId(ID_LARGE_IMAGE);
+            RelativeLayout.LayoutParams imageViewLayout = new RelativeLayout.LayoutParams(dip2px(context, 300.0f), dip2px(context, 200.0f));
+            imageViewLayout.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);//CENTER_CROP
+            imageViewLayout.setMargins(dip2px(context, 1.0f), dip2px(context, 1.0f), dip2px(context, 1.0f), dip2px(context, 1.0f));
+            mNBView.addView(imageView, imageViewLayout);
+            AQuery aq = new AQuery(imageView);
+            aq.id(ID_LARGE_IMAGE).image(nativeAd.getImageUrl(), false, true);
+
+            TextView textView = new TextView(context);
+            textView.setTextSize(16);
+            textView.setLines(1);
+            textView.setTextColor(Color.GRAY);
+            String txt = nativeAd.getTitle();
+            textView.setText(txt);
+            textView.setGravity(Gravity.LEFT);
+            //给TextView添加位置布局
+            RelativeLayout.LayoutParams textLayout = new RelativeLayout.LayoutParams(dip2px(context, 276), dip2px(context, 40.0f));
+            textLayout.addRule(RelativeLayout.BELOW, ID_LARGE_IMAGE);
+            textLayout.addRule(RelativeLayout.ALIGN_LEFT, ID_LARGE_IMAGE);
+            textLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            textLayout.setMargins(dip2px(context, 5.0f), dip2px(context, 10.0f), dip2px(context, 20.0f), dip2px(context, 0.0f));
+            //加入到RelativeLayout的布局里
+            mNBView.addView(textView, textLayout);
+
+            ImageView adLogo = new ImageView(context);
+            adLogo.setId(ID_ADLOGO_IMAGE);
+            RelativeLayout.LayoutParams logoViewLayout = new RelativeLayout.LayoutParams(dip2px(context, 16), dip2px(context, 16));
+            logoViewLayout.addRule(RelativeLayout.ALIGN_RIGHT, ID_LARGE_IMAGE);
+            logoViewLayout.addRule(RelativeLayout.BELOW, ID_LARGE_IMAGE);
+            logoViewLayout.setMargins(dip2px(context, 283.5f), dip2px(context, 34.0f), dip2px(context, 0.5f), dip2px(context, 0.0f));
+            mNBView.addView(adLogo, logoViewLayout);
+            AQuery aqLogo = new AQuery(adLogo);
+            aqLogo.id(ID_ADLOGO_IMAGE).image(nativeAd.getBaiduLogoUrl(), false, true);
+        }else {
+            return;
+        }
         mNBView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
