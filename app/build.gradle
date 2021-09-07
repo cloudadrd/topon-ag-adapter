@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.ele.lancet'
 
 import com.android.annotations.NonNull
 import com.android.manifmerger.ManifestMerger2
@@ -25,11 +26,11 @@ networkLibsPath.add("jingdong");
 
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.scqdd.mobi"//" com.tc.fm.ppx2048数盟、数美测试包名"//com.hbasc.mobi京东测试
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0.0"
         multiDexEnabled = true
@@ -142,6 +143,10 @@ dependencies {
 
     //chrome custom tabs
     implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.2.2'
+
+    provided 'me.ele:lancet-base:1.0.6'
+
+
 }
 
 

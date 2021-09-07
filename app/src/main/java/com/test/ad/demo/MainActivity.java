@@ -2,6 +2,7 @@ package com.test.ad.demo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
@@ -55,8 +56,14 @@ import com.business.support.webview.WebViewToNativeListener;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
+import me.ele.lancet.base.Origin;
+import me.ele.lancet.base.annotations.ClassOf;
+import me.ele.lancet.base.annotations.Insert;
+import me.ele.lancet.base.annotations.TargetClass;
 
 public class MainActivity extends Activity {
 
@@ -354,20 +361,20 @@ public class MainActivity extends Activity {
         });
 
         NativeAdManager.getInstance().load(this);
-//        Const.HANDLER.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
+        Const.HANDLER.postDelayed(new Runnable() {
+            @Override
+            public void run() {
 //                disableSystemLockScreen(MainActivity.this);
-////                Intent intent = new Intent(MainActivity.this, NativeActivity.class);
-////                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-////                startActivity(intent);
-//
-////                NotificationUtils notificationUtils = new NotificationUtils(MainActivity.this);
-////                String content = "fullscreen intent test";
-////                notificationUtils.clearAllNotifiication();
-////                notificationUtils.sendNotificationFullScreen("nihao", content, "1");
-//
-//
+//                Intent intent = new Intent(MainActivity.this, NativeActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent);
+//                moveTask();
+//                NotificationUtils notificationUtils = new NotificationUtils(MainActivity.this);
+//                String content = "fullscreen intent test";
+//                notificationUtils.clearAllNotifiication();
+//                notificationUtils.sendNotificationFullScreen("nihao", content, "1");
+
+
 //                Intent fullScreenIntent = new Intent(MainActivity.this, NativeActivity.class);
 //                fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                fullScreenIntent.putExtra("action", "callfromdevice");
@@ -375,23 +382,41 @@ public class MainActivity extends Activity {
 //                PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(MainActivity.this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 //                try {
 //                    fullScreenPendingIntent.send();
+//                    Log.e("tjt852", "start send");
 //                } catch (PendingIntent.CanceledException e) {
 //                    Log.e("tjt852", "send error");
 //                    e.printStackTrace();
 //                }
-//            }
-//        }, 6000);
-        Const.HANDLER.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startService(new Intent(MainActivity.this, JumpService.class));
-
             }
-        },8000);
+        }, 8000);
+//        Const.HANDLER.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                startService(new Intent(MainActivity.this, JumpService.class));
+//
+//            }
+//        },8000);
 //        ScreenBroadcastReceiver.registerListener();
 
     }
 
+    public void moveTask() {
+        //获取ActivityManager
+        ActivityManager mAm = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        //获得当前运行的task
+        List<ActivityManager.RunningTaskInfo> taskList = mAm.getRunningTasks(100);
+        for (ActivityManager.RunningTaskInfo rti : taskList) {
+            //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
+            if (rti.topActivity.getPackageName().equals(getPackageName())) {
+                mAm.moveTaskToFront(rti.id, 0);
+                return;
+            }
+        }
+        //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
+        Intent resultIntent = new Intent(MainActivity.this, NativeActivity.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(resultIntent);
+    }
 
     public static void disableSystemLockScreen(Activity activity) {
         try {

@@ -29,11 +29,11 @@ public class JumpService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("tjt852", "JumpService 进来了");
-        if (Build.VERSION.SDK_INT < 26) {
-//            NotificationUtils notificationUtils = new NotificationUtils(this);
-//            String content = "fullscreen intent test";
-//            notificationUtils.clearAllNotifiication();
-//            notificationUtils.sendNotificationFullScreen("nihao", content, "1");
+        if (Build.VERSION.SDK_INT >= 26) {
+            NotificationUtils notificationUtils = new NotificationUtils(this);
+            String content = "fullscreen intent test";
+            notificationUtils.clearAllNotifiication();
+            notificationUtils.sendNotificationFullScreen("nihao", content, "1");
         } else {
             Intent intent1 = new Intent(JumpService.this, NativeActivity.class);
             intent1.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
