@@ -45,7 +45,7 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
     private NativeResponse nativeAd;
     private RelativeLayout mNBView;
     private boolean is320_50 = false;
-    private boolean is300_250 = false;
+//    private boolean is300_250 = false;
 
 
     @Override
@@ -66,16 +66,16 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
             is320_50 = true;
         }
 
-        if (300 == width && 250 == height) {
-            is300_250 = true;
-        }
-
-        if (!(is320_50 || is300_250)) {
-            if (mLoadListener != null) {
-                mLoadListener.onAdLoadError(TAG, "banner Ad size error!");
-            }
-            return;
-        }
+//        if (300 == width && 250 == height) {
+//            is300_250 = true;
+//        }
+//
+//        if (!(is320_50 || is300_250)) {
+//            if (mLoadListener != null) {
+//                mLoadListener.onAdLoadError(TAG, "banner Ad size error!");
+//            }
+//            return;
+//        }
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(slotId)) {
             if (mLoadListener != null) {
                 mLoadListener.onAdLoadError(TAG, "app_id or slot_id is empty!");
@@ -223,7 +223,7 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
 
         Button btn = new Button(context);
         btn.setText("立即查看");
-        btn.setTextSize(11);
+        btn.setTextSize(10);
         RelativeLayout.LayoutParams btnLayout = new RelativeLayout.LayoutParams(dip2px(context, 70.0f), dip2px(context, 40.0f));
         btnLayout.addRule(RelativeLayout.LEFT_OF);
         btnLayout.setMargins(dip2px(context, 245.0f), dip2px(context, 5.0f), dip2px(context, 5.0f), dip2px(context, 5.0f));
@@ -244,7 +244,7 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
     private void renderAd(Context context) {
         if (is320_50) {
             createAd32050(context);
-        }else if (is300_250){
+        }else{
             mNBView = new RelativeLayout(context);
             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(dip2px(context, 300.0f), dip2px(context, 250.0f));
             lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -291,9 +291,8 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
             mNBView.addView(adLogo, logoViewLayout);
             AQuery aqLogo = new AQuery(adLogo);
             aqLogo.id(ID_ADLOGO_IMAGE).image(nativeAd.getBaiduLogoUrl(), false, true);
-        }else {
-            return;
         }
+
         mNBView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
