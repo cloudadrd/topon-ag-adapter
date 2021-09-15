@@ -49,6 +49,12 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                YMBusinessService.getDeviceInfo(MainActivity.this, "1839996660099");
+//                YMBusinessService.getAdChannel(MainActivity.this, "1004", new GetAdChannelListener() {
+//                    @Override
+//                    public void adChannel(String channel) {
+//                        Log.d("channel**",channel);
+//                    }
+//                });
                 startActivity(new Intent(MainActivity.this, NativeAdActivity.class));
 
             }

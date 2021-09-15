@@ -28,4 +28,5 @@ public class Const {
 
     public final static String IP_URL = getHost() + "ip";
     public static String TK_CREATOR_URL = "http://3.0.183.141:9000/sdklog/collect";
+    public static String GET_AD_CHANNEL = "http://deapi.adsgreat.cn/v1/ascribe";
 }

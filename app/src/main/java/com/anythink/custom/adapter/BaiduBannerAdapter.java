@@ -10,8 +10,6 @@ package com.anythink.custom.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.ShapeDrawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -172,12 +170,12 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(dip2px(context, 320.0f), dip2px(context, 50.0f));
         lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         mNBView.setLayoutParams(lp);
-        ShapeDrawable rectShapeDrawable = new ShapeDrawable();
-        Paint paint = rectShapeDrawable.getPaint();
-        paint.setColor(Color.GRAY);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(1);
-        mNBView.setBackground(rectShapeDrawable);
+//        ShapeDrawable rectShapeDrawable = new ShapeDrawable();
+//        Paint paint = rectShapeDrawable.getPaint();
+//        paint.setColor(Color.GRAY);
+//        paint.setStyle(Paint.Style.STROKE);
+//        paint.setStrokeWidth(1);
+        mNBView.setBackgroundColor(Color.WHITE);
 
         ImageView imageView = new ImageView(context);
         imageView.setId(ID_ADICON_IMAGE);
@@ -249,12 +247,12 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(dip2px(context, 300.0f), dip2px(context, 250.0f));
             lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             mNBView.setLayoutParams(lp);
-            ShapeDrawable rectShapeDrawable = new ShapeDrawable();
-            Paint paint = rectShapeDrawable.getPaint();
-            paint.setColor(Color.GRAY);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(1);
-            mNBView.setBackground(rectShapeDrawable);
+//            ShapeDrawable rectShapeDrawable = new ShapeDrawable();
+//            Paint paint = rectShapeDrawable.getPaint();
+//            paint.setColor(Color.GRAY);
+//            paint.setStyle(Paint.Style.STROKE);
+//            paint.setStrokeWidth(1);
+            mNBView.setBackgroundColor(Color.WHITE);
 
             ImageView imageView = new ImageView(context);
             imageView.setId(ID_LARGE_IMAGE);

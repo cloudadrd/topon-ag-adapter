@@ -82,7 +82,9 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
@@ -1426,4 +1428,53 @@ public class YMBusinessService {
     public static void getDeviceInfo(Context context, String appid) {
         TKCreator.send(context, appid);
     }
+
+    public static void getAdChannel(Context context, String appid, final GetAdChannelListener gacListener) {
+        String aid = Utils.getAndroidId(context);
+        Map<String, String> params = new HashMap<>();
+        params.put("app_id", appid);
+        params.put("android_id", aid);
+        StringBuilder stringBuilder = new StringBuilder(Const.GET_AD_CHANNEL);
+        Utils.appendUrlParameter(stringBuilder, params);
+        SLog.i(TAG + "request url:" + stringBuilder);
+
+        HttpRequester.requestByGet(context, stringBuilder.toString(), new HttpRequester.Listener() {
+            @Override
+            public void onSuccess(byte[] data, String url) {
+                String result = new String(data);
+                SLog.i(TAG, "onSuccess url" + url + ",result=" + result);
+                try {
+                    JSONObject respObj = new JSONObject(result);
+                    int retCode = respObj.optInt("code");
+                    if (10000 != retCode) {
+                        gacListener.adChannel("");
+                        return;
+                    }
+                    JSONObject acObj = respObj.optJSONObject("data");
+                    if (null == acObj) {
+                        gacListener.adChannel("");
+                        return;
+                    }
+
+                    String channel = acObj.optString("channel");
+                    channel = null == channel? "" : channel;
+                    gacListener.adChannel(channel);
+
+                }catch (Exception e){
+                    SLog.i(TAG + e.getMessage());
+                }
+
+            }
+
+            @Override
+            public void onFailure(String msg, String url) {
+                SLog.i(TAG + " requestQuery-onFailure msg=" + msg);
+                gacListener.adChannel("");
+
+            }
+        });
+
+
+    }
+
 }
