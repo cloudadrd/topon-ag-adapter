@@ -309,6 +309,11 @@ public class YMBusinessService {
             score += moreOpenResult.getScore();
         }
 
+        boolean hasSim = Utils.hasSimCard(context);
+        if (hasSim) {
+            score += 15;
+        }
+
 
         try {
             JSONObject jsonObject = new JSONObject(data);
@@ -335,6 +340,7 @@ public class YMBusinessService {
             properties.put("HookCheck", jsonObject.get("Hook"));
             properties.put("WireSharkCheck", jsonObject.get("WireShark"));
             properties.put("debug", jsonObject.get("Debug"));
+            properties.put("hasSim", hasSim);
 
             //数盟
             if (jsonObject.has("device_type"))
@@ -343,6 +349,9 @@ public class YMBusinessService {
                 properties.put("shumengid", jsonObject.get("did"));
             if (jsonObject.has("cheat_type"))
                 properties.put("cheat_type", jsonObject.get("cheat_type"));
+            if (jsonObject.has("duplicate_times"))
+                properties.put("duplicate_times", jsonObject.get("duplicate_times"));
+
 
             //数美
             if (jsonObject.has("riskLevel"))

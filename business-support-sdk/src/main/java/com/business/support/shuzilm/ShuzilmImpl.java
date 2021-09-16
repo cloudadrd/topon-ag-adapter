@@ -56,7 +56,7 @@ public class ShuzilmImpl implements ISdkMain {
                     } else {
                         if (mListener != null) {
                             JSONObject jsonObject = new JSONObject();
-                            mListener.result(new TaskResult(true, 55, jsonObject.toString(), SdkType.SHUMENG,4));
+                            mListener.result(new TaskResult(true, 55, jsonObject.toString(), SdkType.SHUMENG, 4));
                         }
                     }
                     return;
@@ -102,7 +102,7 @@ public class ShuzilmImpl implements ISdkMain {
             public void onFailure(String msg, String url) {
                 SLog.i(TAG + " requestQuery-onFailure msg=" + msg);
                 if (mListener != null) {
-                    mListener.result(new TaskResult(true, 0, msg, SdkType.SHUMENG,2));
+                    mListener.result(new TaskResult(true, 0, msg, SdkType.SHUMENG, 2));
                 }
             }
         });
@@ -117,19 +117,18 @@ public class ShuzilmImpl implements ISdkMain {
             JSONObject jsonObject = new JSONObject(strData);
             String errCode = Utils.optStringHelper(jsonObject, "err");
             String device_type = Utils.optStringHelper(jsonObject, "device_type");
+            String duplicate_times = Utils.optStringHelper(jsonObject, "duplicate_times");
 //            String normal_times = Utils.optStringHelper(jsonObject, "normal_times");
-//            String duplicate_times = Utils.optStringHelper(jsonObject, "duplicate_times");
+
 //            String update_times = Utils.optStringHelper(jsonObject, "update_times");
 //            String recall_times = Utils.optStringHelper(jsonObject, "recall_times");
-            if(jsonObject.has("protocol"))
+            if (jsonObject.has("protocol"))
                 jsonObject.remove("protocol");
-            if(jsonObject.has("normal_times"))
+            if (jsonObject.has("normal_times"))
                 jsonObject.remove("normal_times");
-            if(jsonObject.has("duplicate_times"))
-                jsonObject.remove("duplicate_times");
-            if(jsonObject.has("update_times"))
+            if (jsonObject.has("update_times"))
                 jsonObject.remove("update_times");
-            if(jsonObject.has("update_times"))
+            if (jsonObject.has("update_times"))
                 jsonObject.remove("recall_times");
 
             jsonObject.put("did", did);
@@ -141,13 +140,20 @@ public class ShuzilmImpl implements ISdkMain {
                     score = 25;
                 }
             }
+            try {
+                if (Integer.parseInt(duplicate_times) > 4) {
+                    score += 75;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
             if (mListener != null) {
-                mListener.result(new TaskResult(false, score, jsonObject.toString(), SdkType.SHUMENG,0));
+                mListener.result(new TaskResult(false, score, jsonObject.toString(), SdkType.SHUMENG, 0));
             }
         } catch (JSONException e) {
             SLog.e(e);
             if (mListener != null) {
-                mListener.result(new TaskResult(true, 0, e.getMessage(),  SdkType.SHUMENG,3));
+                mListener.result(new TaskResult(true, 0, e.getMessage(), SdkType.SHUMENG, 3));
             }
         }
     }
