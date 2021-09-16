@@ -80,7 +80,7 @@ dependencies {
 
     api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 
-    api project(':socketclient')
+//    api project(':socketclient')
 
 
 //    compileOnly files('libs/GDTSDK.unionNormal.4.391.1261.aar')
