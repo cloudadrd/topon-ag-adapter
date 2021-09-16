@@ -61,6 +61,13 @@
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize|screenLayout"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
 
+        <activity
+            android:name="com.scqdd.mobi.wxapi.WXEntryActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="true"
+            android:launchMode="singleTask">
+        </activity>
     </application>
 
 </manifest>

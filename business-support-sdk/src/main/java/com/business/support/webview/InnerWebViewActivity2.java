@@ -215,6 +215,7 @@ public class InnerWebViewActivity2 extends Activity {
 
     private void consoleClose() {
         if (isBack) return;
+
         if (webView.canGoBack()) {
 //            if (btnClose != null && !is302) btnClose.setVisibility(View.GONE);
         } else {

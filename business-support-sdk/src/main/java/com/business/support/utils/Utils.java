@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -321,6 +322,20 @@ public class Utils {
         }
         return false;
 
+    }
+
+    public static void startDeeplink(Context context, String pkg, String deeplink) {
+        Uri uri = Uri.parse(deeplink);
+        Intent it = new Intent(Intent.ACTION_VIEW, uri);
+        if (!TextUtils.isEmpty(pkg)) {
+            it.setPackage(pkg);
+        }
+        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ComponentName componentName = it.resolveActivity(context.getPackageManager());
+
+        if (componentName != null) {    //已经安装该应用
+            context.startActivity(it);
+        }
     }
 
 

@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
@@ -158,6 +159,23 @@ public class AdVideoInterface {
         });
     }
 
+//    @JavascriptInterface
+//    public void requestProtobuf() {
+//        int[] result = new int[]{8, 1, 16, 3, 26, 32, 50, 48, 50, 49, 48, 54, 48, 50, 49, 49, 52, 53, 49, 52, 53, 53, 57, 57, 49, 52, 48, 49, 54, 48, 49, 57, 49, 55, 55, 52, 55, 50, 34, 30, 49, 54, 51, 49, 49, 55, 53, 48, 51, 49, 50, 57, 54, 49, 51, 51, 48, 49, 55, 49, 48, 54, 56, 56, 50, 51, 48, 55, 49, 55, 40, 128, 244, 238, 204, 188, 47, 48, 0, 56, 1, 64, 111, 72, 1, 82, 32, 50, 48, 50, 49, 48, 51, 48, 57, 49, 53, 49, 51, 53, 49, 53, 50, 57, 49, 54, 51, 53, 52, 54, 49, 52, 49, 50, 49, 54, 55, 54, 56, 88, 0, 96, 0, 106, 2, 67, 78, 114, 2, 90, 72, 128, 1, 128, 244, 238, 204, 188, 47, 146, 1, 127, 10, 43, 66, 101, 97, 114, 101, 114, 32, 51, 48, 55, 56, 57, 55, 49, 100, 45, 99, 54, 57, 99, 45, 52, 53, 53, 102, 45, 97, 99, 99, 49, 45, 55, 99, 51, 57, 102, 53, 55, 51, 99, 102, 101, 101, 16, 3, 26, 3, 49, 46, 48, 56, 1, 64, 1, 74, 2, 67, 78, 82, 46, 10, 2, 104, 53, 18, 2, 104, 53, 26, 2, 104, 53, 34, 32, 50, 48, 50, 49, 48, 54, 48, 50, 49, 49, 52, 53, 49, 52, 53, 53, 57, 57, 49, 52, 48, 49, 54, 48, 49, 57, 49, 55, 55, 52, 55, 50, 90, 17, 8, 0, 18, 10, 49, 50, 55, 46, 48, 46, 48, 46, 53, 51, 24, 144, 63};
+//        byte[] bytes = new byte[result.length];
+//        for (int i = 0; i < bytes.length; i++) {
+//            if (!((result[i] & 0xFF) == result[i])) {
+//                throw new RuntimeException("convert error...");
+//            }
+//            bytes[i] = (byte) result[i];
+//        }
+//        String hexStr = com.vilyever.socketclient.util.Utils.byte2HexStr(bytes);
+//        String loadStr = String.format(Locale.getDefault(), "javascript:protobufResult('%s')", hexStr);
+//        Log.d(TAG, "wxBoundResult loaStr=" + loadStr);
+//        webView.loadUrl(loadStr);
+//        System.out.println(result);
+//    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @MainThread
@@ -244,8 +262,37 @@ public class AdVideoInterface {
                         Log.d(TAG, "setting statusBar error, Activity is destroyed.");
                     }
                 }
+            case 8://绑定微信
+                WxApi.send(params);
+                WxApi.registerWxResult(new WxApi.ResultListener() {
+                    @Override
+                    public void result(String json) {
+                        wxBoundResult(json);
+                    }
+                });
                 break;
 
+            case 9://deeplink启动app
+                try {
+                    JSONObject jsonObject = new JSONObject(params);
+                    String pkg = jsonObject.optString("pkg");
+                    String deeplink = jsonObject.optString("deeplink");
+                    Utils.startDeeplink(webView.getContext().getApplicationContext(), pkg, deeplink);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+
+    public void wxBoundResult(String json) {
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s')", "wxBoundResult", jsonObject.toString());
+            Log.d(TAG, "wxBoundResult loaStr=" + loadStr);
+            webView.loadUrl(loadStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
