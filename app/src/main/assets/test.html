@@ -15,6 +15,10 @@
 
 
 
+
+
+
+
     </style>
     <script type="text/javascript">
 
@@ -197,6 +201,33 @@
         window.location.reload="forumweb/task/index.html";
     }
 
+    function wxBoundResult(params){
+        document.querySelector("#desc").innerHTML=params;
+    }
+
+
+    function protobufResult(bytes){
+        var arrayUint8=hexStr2Bytes(bytes);
+        document.querySelector("#desc").innerHTML=arrayUint8.toString();
+    }
+
+
+    function hexStr2Bytes(hexString) {
+        hexString = hexString.toUpperCase();
+        var length = hexString.length / 2;
+        var buff = new Uint8Array(length);
+        for (i = 0; i < length; i++) {
+            var pos = i * 2;
+            buff[i] = charToByte(hexString.charAt(pos)) << 4 | charToByte(hexString.charAt(pos+1));
+        }
+        return buff;
+    }
+
+    function charToByte(c) {
+        return "0123456789ABCDEF".charAt(c);
+    }
+
+
 
     </script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -242,6 +273,14 @@
 <br>
 <div>
     <button onclick="validateApk()">检测apk状态</button>
+</div>
+
+<div>
+    <button onclick="android.customCall(8,'')">绑定微信</button>
+</div>
+
+<div>
+    <button onclick="android.requestProtobuf()">请求ProtoBuf数据</button>
 </div>
 
 <br><br>

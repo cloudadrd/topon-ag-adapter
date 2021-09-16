@@ -28,7 +28,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.scqdd.mobi"//" com.tc.fm.ppx2048数盟、数美测试包名"//com.hbasc.mobi京东测试
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0.0"
@@ -135,6 +135,7 @@ dependencies {
         exclude module: 'support-v4'
     }
 
+    implementation "androidx.multidex:multidex:2.0.1"
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
 

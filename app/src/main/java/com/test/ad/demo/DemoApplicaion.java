@@ -1,11 +1,8 @@
 package com.test.ad.demo;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
-import androidx.multidex.MultiDexApplication;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +11,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.multidex.MultiDexApplication;
 
 import com.anythink.core.api.ATSDK;
 import com.anythink.custom.adapter.OAIDHandler;
+import com.business.support.utils.ContextHolder;
 import com.business.support.utils.Utils;
+import com.business.support.webview.WxApi;
 import com.facebook.stetho.Stetho;
+import com.scqdd.mobi.wxapi.Constants;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -144,208 +146,16 @@ public class DemoApplicaion extends MultiDexApplication {
 
         OAIDHandler.init(this);
 
-        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
 
+        WxApi.registerWxSend(new WxApi.SendListener() {
             @Override
-            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-                Log.e("DemoApplicaion", "onActivityCreated activity=" + activity.getComponentName());
+            public void send(String json) {
+                IWXAPI api = WXAPIFactory.createWXAPI(ContextHolder.getGlobalAppContext(), Constants.APP_ID, true);
+                final SendAuth.Req req = new SendAuth.Req();
+                req.scope = "snsapi_userinfo,snsapi_friend,snsapi_message,snsapi_contact";
+                req.state = "none";
+                api.sendReq(req);
             }
-
-
-            public void onActivityPreCreated(@NonNull Activity activity,
-                                             @Nullable Bundle savedInstanceState) {
-//                if (activity instanceof TTRewardVideoActivity) {
-//
-////                    Intent intent = activity.getIntent();
-////                    StringBuilder sb = new StringBuilder();
-////                    if (intent != null) {
-////                        String aP = intent.getStringExtra("reward_name");
-////                        int aQ = intent.getIntExtra("reward_amount", 0);
-////                        String aR = intent.getStringExtra("media_extra");
-////                        String aS = intent.getStringExtra("user_id");
-////                        boolean v = intent.getBooleanExtra("show_download_bar", true);
-////                        String x = intent.getStringExtra("video_cache_url");
-////                        int y = intent.getIntExtra("orientation", 2);
-////                        String ab = intent.getStringExtra("rit_scene");
-////
-////                        String stringExtra = intent.getStringExtra(TTAdConstant.MULTI_PROCESS_MATERIALMETA);
-////
-////                        sb.append("reward_name=").append(aP).append(",");
-////                        sb.append("reward_amount=").append(aQ).append(",");
-////                        sb.append("media_extra=").append(aR).append(",");
-////                        sb.append("user_id=").append(aS).append(",");
-////                        sb.append("show_download_bar=").append(v).append(",");
-////                        sb.append("video_cache_url=").append(x).append(",");
-////                        sb.append("orientation=").append(y).append(",");
-////                        sb.append("rit_scene=").append(ab).append(",");
-////                        sb.append("stringExtra=").append(stringExtra);
-////                    }
-//                    Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
-//                    String materialMeta = "";
-//                    JSONObject jsonObj = null;
-//                    if (c1 != null) {
-//                        jsonObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
-//                    }
-//                    if (savedInstanceState != null) {
-//                        materialMeta = savedInstanceState.getString("material_meta");
-//                        if (!TextUtils.isEmpty(materialMeta)) {
-//                            try {
-//                                JSONObject tempObj = com.bytedance.sdk.openadsdk.core.b.a(new JSONObject(materialMeta)).aO();
-//                                jsonObj = tempObj;
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//
-//                    if (jsonObj != null) {
-//                        String title = jsonObj.optString("title");
-//                        String iconUrl = null;
-//                        String appName = null;
-//                        String packageName = null;
-//                        String adId = null;
-//                        String videoUrl = null;
-//
-//                        JSONObject iconObj = jsonObj.optJSONObject("icon");
-//                        if (iconObj != null) {
-//                            iconUrl = iconObj.optString("url");
-//                        }
-//
-//                        JSONObject appObj = jsonObj.optJSONObject("app");
-//                        if (appObj != null) {
-//                            appName = appObj.optString("app_name");
-//                            packageName = appObj.optString("package_name");
-//                        }
-//
-//                        JSONObject extObj = jsonObj.optJSONObject("ext");
-//
-//                        if (extObj != null) {
-//                            adId = extObj.optString("ad_id");
-//                        }
-//
-//
-//                        JSONObject videoObj = jsonObj.optJSONObject("video");
-//
-//                        if (videoObj != null) {
-//                            videoUrl = videoObj.optString("video_url");
-//                        }
-//
-//
-//                    }
-//                    Log.e("DemoApplicaion", "onActivityPreCreated  is TTRewardVideoActivity stringExtra" + bundleStr + "\n bundleStr=" + sb.toString() + "\n str1=" + str1);
-//                }
-            }
-
-
-            @Override
-            public void onActivityStarted(@NonNull Activity activity) {
-                Log.e("DemoApplicaion", "onActivityStarted ");
-            }
-
-            @Override
-            public void onActivityResumed(@NonNull Activity activity) {
-                Log.e("DemoApplicaion", "onActivityResumed ");
-
-//                int type = 0;
-//                if (activity instanceof TTRewardVideoActivity) {
-//                    type = 1;
-//                }
-//
-//                if (activity instanceof PortraitADActivity
-//                        || activity instanceof RewardvideoPortraitADActivity
-//                        || activity instanceof RewardvideoLandscapeADActivity) {
-//                    type = 2;
-//                }
-//
-//                if (activity instanceof KsRewardVideoActivity
-//                        || activity instanceof KSRewardLandScapeVideoActivity) {
-//                    type = 3;
-//                }
-//
-//
-//                if (type == 0) return;
-//
-//                View view = activity.getWindow().getDecorView().findViewById(55542);
-//                if (view != null) return;
-//                final RelativeLayout relativeLayout = new RelativeLayout(activity);
-//                relativeLayout.setId(55542);
-//                ViewGroup adContainer = activity.getWindow().getDecorView().findViewById(android.R.id.content);
-//                relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//                        ViewGroup.LayoutParams.MATCH_PARENT));
-//                final View closeView = getCloseImg(activity);
-//                relativeLayout.addView(closeView);
-//                adContainer.addView(relativeLayout);
-//
-//
-//                int finalType = type;
-//                closeView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        View view = null;
-//                        if (finalType == 1) {
-//                            view = activity.findViewById(R.id.tt_reward_ad_download_backup);
-//                            if (view != null) {
-//                                view.callOnClick();
-//
-//                            }
-//                        } else if (finalType == 2) {
-//
-//                            view = findViewByText(adContainer, "下载", "打开", "安装", "点击下载");
-//
-//                            if (view != null) {
-//                                view.callOnClick();
-//                                View clickVIew = (View) view.getParent();
-//                                while (clickVIew != null) {
-//                                    if (!(clickVIew.getParent() instanceof View)) {
-//                                        break;
-//                                    }
-//                                    clickVIew.callOnClick();
-//                                    clickVIew = (View) clickVIew.getParent();
-//                                }
-//                            }
-//                        } else if (finalType == 3) {
-//                            float x = 200;//transparentLayer.getWidth() / 2;
-//                            float y = adContainer.getBottom()-80;//transparentLayer.getHeight() / 2;
-//
-//                            long downTime = SystemClock.uptimeMillis();
-//                            long eventTime = SystemClock.uptimeMillis() + 100;
-//                            int metaState = 0;
-//
-//                            MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime,
-//                                    MotionEvent.ACTION_DOWN, x, y, (int) metaState);
-//                            adContainer.dispatchTouchEvent(motionEvent);
-//                            MotionEvent upEvent = MotionEvent.obtain(downTime + 300, eventTime + 300,
-//                                    MotionEvent.ACTION_UP, x, y, metaState);
-//                            adContainer.dispatchTouchEvent(upEvent);
-//                        }
-//
-//
-//                        relativeLayout.removeView(closeView);
-//
-//                    }
-//                });
-            }
-
-            @Override
-            public void onActivityPaused(@NonNull Activity activity) {
-                Log.e("DemoApplicaion", "onActivityPaused ");
-            }
-
-            @Override
-            public void onActivityStopped(@NonNull Activity activity) {
-                Log.e("DemoApplicaion", "onActivityStopped ");
-            }
-
-            @Override
-            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
-                Log.e("DemoApplicaion", "onActivitySaveInstanceState ");
-            }
-
-            @Override
-            public void onActivityDestroyed(@NonNull Activity activity) {
-                Log.e("DemoApplicaion", "onActivityDestroyed ");
-            }
-
         });
         Log.e("tjt852", "external-files-path=" + this.getExternalFilesDir(null).getAbsolutePath());
 

@@ -1,2 +1,3 @@
 include ':business-support-sdk'
 include ':app'
+include ':socketclient'

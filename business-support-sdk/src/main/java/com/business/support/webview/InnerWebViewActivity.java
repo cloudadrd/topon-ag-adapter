@@ -344,6 +344,7 @@ public class InnerWebViewActivity extends Activity {
     public View generateLayout(Context context) {
         //最外层
         RelativeLayout relativeLayout = new RelativeLayout(context);
+        relativeLayout.setFitsSystemWindows(true);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
