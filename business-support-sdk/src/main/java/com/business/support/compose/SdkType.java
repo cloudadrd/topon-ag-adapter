@@ -12,5 +12,7 @@ public enum SdkType {
      */
     SHUMEI,
 
+    ALI_YUN,
+
     OTHER
 }

@@ -15,3 +15,6 @@
 -keep class com.tencent.mm.sdk.** {
     *;
 }
+
+-keep class net.security.device.api.** {*;}
+-dontwarn net.security.device.api.**

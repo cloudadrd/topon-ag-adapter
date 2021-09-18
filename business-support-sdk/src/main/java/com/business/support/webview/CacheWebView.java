@@ -215,6 +215,9 @@ public class CacheWebView extends WebView {
     @Override
     public void destroy() {
         super.destroy();
+        if (adVideoInterface != null) {
+            adVideoInterface.clear();
+        }
         mediationHelper.removeAdVideoInterface(adVideoInterface);
         mediationInterstitialHelper.removeAdVideoInterface(adVideoInterface);
         setContext(null);

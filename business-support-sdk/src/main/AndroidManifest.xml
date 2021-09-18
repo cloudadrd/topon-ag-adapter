@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.business.support">
+    package="com.business.support"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- 必选权限 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -69,6 +70,16 @@
                 android:resource="@xml/take_photo_file_paths" />
         </provider>
 
+        <!-- 为了使用 "通用跳转 SDK" 的能力，需要在您的 App 的 AndroidManifest.xml 中添加这一项 -->
+        <!-- 并合理设置 android:scheme 的值 -->
+        <activity android:name="com.alipay.sdk.app.AlipayResultActivity" tools:node="merge">
+            <intent-filter tools:node="replace">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="${applicationId}_alipaysdk"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

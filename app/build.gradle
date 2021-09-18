@@ -35,24 +35,31 @@ android {
         multiDexEnabled = true
     }
     signingConfigs {
-        demo {
+        scqdd {
             keyAlias 'scqdd'
             keyPassword 'scqdd123'
             storeFile file('scqdd.jks')
             storePassword 'scqdd123'
+        }
+
+        wzadt {
+            keyAlias 'wzadt'
+            keyPassword 'wzadt123'
+            storeFile file('wzadt.jks')
+            storePassword 'wzadt123'
         }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.demo
+            signingConfig signingConfigs.wzadt
         }
 
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.demo
+            signingConfig signingConfigs.wzadt
 
         }
     }

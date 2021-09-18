@@ -49,7 +49,8 @@ import com.business.support.reallycheck.ResultData;
 import com.business.support.reallycheck.RootCheck;
 import com.business.support.reallycheck.VirtualAppCheck;
 import com.business.support.reallycheck.WireSharkCheck;
-import com.business.support.shuzilm.ShuzilmImpl;
+import com.business.support.sxe.AliYunImpl;
+import com.business.support.sxe.ShuzilmImpl;
 import com.business.support.utils.BSInterstitialListener;
 import com.business.support.utils.ContextHolder;
 import com.business.support.utils.SLog;
@@ -117,12 +118,13 @@ public class YMBusinessService {
     private static final int PERMISSION_REQUEST = 1;
     private static boolean rvClickStop = false;
 
-    public static void init(final Context context, ThinkingAnalyticsSDK instance, String shuMengApiKey, final SIDListener listener) {
+    public static void init(final Context context, ThinkingAnalyticsSDK instance, String shuMengApiKey, String aliYunAppKey, final SIDListener listener) {
         ContextHolder.init(context);
         mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
                 .add(new ShuzilmImpl(), 100, 20000, shuMengApiKey)
+                .add(new AliYunImpl(), 1000, 20000, aliYunAppKey)
 //                .add(new SmeiImpl(), 2000, 3000, "JVjHfrQd0LwfAFnND60C", "OfJKRbsUQIunw1xzb2SU", "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd")
                 .zip(localContext, new ZipSidListener() {
                     @Override
@@ -310,7 +312,7 @@ public class YMBusinessService {
         }
 
         boolean hasSim = Utils.hasSimCard(context);
-        if (hasSim) {
+        if (!hasSim) {
             score += 15;
         }
 
@@ -368,6 +370,10 @@ public class YMBusinessService {
 
             if (jsonObject.has("shuMeiDid"))
                 properties.put("shuMeiDid", jsonObject.get("shuMeiDid"));
+
+            //阿里
+            if (jsonObject.has("ali_did"))
+                properties.put("ali_did", jsonObject.get("ali_did"));
 
             mInstance.track("Phonecheck", properties);
             mInstance.flush();
@@ -1466,10 +1472,10 @@ public class YMBusinessService {
                     }
 
                     String channel = acObj.optString("channel");
-                    channel = null == channel? "" : channel;
+                    channel = null == channel ? "" : channel;
                     gacListener.adChannel(channel);
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     SLog.i(TAG + e.getMessage());
                 }
 

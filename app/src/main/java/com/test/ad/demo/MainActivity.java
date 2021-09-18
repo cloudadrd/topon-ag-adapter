@@ -30,6 +30,14 @@ import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
 
+import net.security.device.api.SecurityCode;
+import net.security.device.api.SecurityDevice;
+import net.security.device.api.SecuritySession;
+
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
@@ -271,6 +279,7 @@ public class MainActivity extends Activity {
 
         YMBusinessService.init(this, biInstance,
                 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ==",
+                "39ee4d74c93c967def52dbec1e592d20",
                 new SIDListener() {
                     @Override
                     public void onSuccess(int score, String data) {
@@ -346,6 +355,16 @@ public class MainActivity extends Activity {
             }
 
         });
+
+
+        //支付宝登录
+//        Const.HANDLER.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                AliPayApi.openAuthScheme(MainActivity.this, "2021002176610585");
+//            }
+//        }, 8000);
+
 
     }
 
