@@ -289,7 +289,7 @@ public class AdVideoInterface {
                         AliPayApi.registerAliPayResult(new AliPayApi.ResultListener() {
                             @Override
                             public void result(String authCode) {
-
+                                aliPayBoundResult(authCode);
                             }
                         });
                         AliPayApi.openAuthScheme((Activity) webView.getCustomContext(), appId);
