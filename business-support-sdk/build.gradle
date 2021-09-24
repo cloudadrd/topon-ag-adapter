@@ -80,7 +80,7 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'org.jetbrains:annotations-java5:15.0'
+//    implementation 'org.jetbrains:annotations-java5:15.0'
 
     compileOnly fileTree(dir: "libs", include: ["*.aar"])
 //    implementation fileTree(dir: "libs", include: ["open_ad_sdk_3.6.1.4.aar"])

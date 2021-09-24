@@ -292,10 +292,12 @@ public class AdInfoTarToHW {
         long currentTime  = System.currentTimeMillis();
         if (0 == sendTime) {
             editor.putLong(SEND_TIME,currentTime);
+            editor.apply();
             return false;
         }
         if (!isSend && (currentTime - sendTime) >= 24*60*60*1000) {
             editor.putBoolean(ALREADY_SEND,true);
+            editor.apply();
             return true;
         }
         return false;
