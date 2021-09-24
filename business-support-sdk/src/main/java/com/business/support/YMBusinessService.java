@@ -26,7 +26,6 @@ import androidx.core.content.ContextCompat;
 
 import com.business.support.adinfo.BSAdType;
 import com.business.support.adinfo.TKCreator;
-import com.business.support.adinfo.adInfoToHW;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.ascribe.NativeDataManager;
@@ -1433,16 +1432,16 @@ public class YMBusinessService {
             public void adChannel(String channel) {
                 if (null != channel && !channel.isEmpty() && !channel.equals("-1")) {
                     try {
-                        if (!adInfoToHW.adInfo2TarAndUpload2Obs(context)) {
-                            return;
-                        }
+//                        if (!AdInfoToHW.adInfo2TarAndUpload2Obs(context)) {
+//                            return;
+//                        }
 
                     } catch (Exception e) {
                         SLog.d(TAG, e.getMessage());
                         return;
                     }
 
-                    tarPath = adInfoToHW.getHWTarPath();
+//                    tarPath = AdInfoToHW.getHWTarPath();
                     TKCreator.setTarPath(tarPath);
                     TKCreator.send(context, appid);
                 }
