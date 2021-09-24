@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -66,7 +66,8 @@ import com.business.support.webview.WebViewToNativeListener;
 import com.business.support.widget.ContinueFrameLayout;
 import com.business.support.widget.FingerFrameLayout;
 import com.business.support.widget.HairFrameParentLayout;
-import com.bytedance.sdk.openadsdk.activity.base.TTRewardVideoActivity;
+import com.bytedance.pangle.activity.GeneratePluginActivity;
+import com.bytedance.pangle.activity.GenerateProxyActivity;
 import com.kwad.sdk.api.proxy.app.KSRewardLandScapeVideoActivity;
 import com.kwad.sdk.api.proxy.app.KsRewardVideoActivity;
 import com.mbridge.msdk.reward.player.MBRewardVideoActivity;
@@ -82,6 +83,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -124,7 +126,7 @@ public class YMBusinessService {
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
                 .add(new ShuzilmImpl(), 100, 20000, shuMengApiKey)
-                .add(new AliYunImpl(), 1000, 20000, aliYunAppKey)
+                .add(new AliYunImpl(), 3000, 20000, aliYunAppKey)
 //                .add(new SmeiImpl(), 2000, 3000, "JVjHfrQd0LwfAFnND60C", "OfJKRbsUQIunw1xzb2SU", "MIIDLzCCAhegAwIBAgIBMDANBgkqhkiG9w0BAQUFADAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wHhcNMjEwNTA2MDMzMDEwWhcNNDEwNTAxMDMzMDEwWjAyMQswCQYDVQQGEwJDTjELMAkGA1UECwwCU00xFjAUBgNVBAMMDWUuaXNodW1laS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCETlLQHou1ywPznJ9VeLwals2/FwyDzqrlr34h9kIc/O3C1pkXsICHE7z+DoLvI59FLUxFLDwaf2ywSylfv5m4arUxku/YBQoq85c4iucJonhv7mlg/KIdl94Kd4ajlsB0ZYFRUiIu/A1yePJmAvaGX9Z3AMw3ZoAV71RY5tVIH8KuzH/J6lnagIknN8OB5OglUEzDRhGtQEZD54SCz/it4AJ6M/vKSUdjALMpw4zKyBe3qR9gftOYI6J2S6wHT8Nc6u59X2G8nvTL0f+s9TyXdvy0jvrP3961eAebUGxwthr3ny+WrJASHymMG70rvK2wvS2TfxdtctP8KCFIEBmBAgMBAAGjUDBOMB0GA1UdDgQWBBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAfBgNVHSMEGDAWgBQ3fMAEBSTHQflJgXBVqrC4JZXWSjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQAJPorB5hV1JTo4WzTD0/5iLenV+VWF4j2HXp9OzEryDlJ19ax94QCxvCL2XSEqkNKviKvZksTz221q32V1xdTJPC3AqNd15Gn2msyu3VK8/efLxItmjvxH69//Obh3GZu5XHcLPwlt3/UHd3vBvCNXmZgyo0EHTeSXpr3P4utZVx6IBFM1gifcYTK8p3fVWbNf4RngMKmKleOzLhJwrussv+VZSudebMxclvNAgO1rRLXPKrwSoih2F4SUlHjahSopeMfyDTStdZ5oezOzb+y2ibmtCgf5SF9Dxqbyi8Kyx/ZS63ey63b2CchiK2iJCyDSWOVHysKsOhpI1TrbExKd")
                 .zip(localContext, new ZipSidListener() {
                     @Override
@@ -524,16 +526,25 @@ public class YMBusinessService {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 SLog.d(TAG, "onActivityCreated activity=" + activity.getComponentName());
-                pangelDataHandler(activity, savedInstanceState);
-                gdtDataHandler(activity, savedInstanceState);
-                ksDataHandler(activity, savedInstanceState);
-                mvDataHandler(activity, savedInstanceState);
+
+                try {
+                    gdtDataHandler(activity, savedInstanceState);
+                    ksDataHandler(activity, savedInstanceState);
+                    mvDataHandler(activity, savedInstanceState);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
 
 
             @Override
             public void onActivityStarted(Activity activity) {
                 SLog.d(TAG, "onActivityStarted activity=" + activity.getComponentName());
+                try {
+                    pangelDataHandler(activity);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
 
 
@@ -595,7 +606,7 @@ public class YMBusinessService {
 
         int type = 0;
 
-        if (activity instanceof TTRewardVideoActivity) {
+        if (isPangleActivity(activity)) {
             type = 1;
         }
 
@@ -766,103 +777,110 @@ public class YMBusinessService {
         return close;
     }
 
-    private static void pangelDataHandler(Activity activity, Bundle savedInstanceState) {
-        if (!(activity instanceof TTRewardVideoActivity)) {
-            return;
+    private static boolean isPangleActivity(Activity activity) {
+        if (!(activity instanceof GenerateProxyActivity)) {
+            return false;
         }
-        String materialMeta = "";
+        Intent intent = activity.getIntent();
+
+        if (intent == null) return false;
+        Bundle extras = intent.getExtras();
+        if (extras == null) return false;
+        String targetPlugin = extras.getString("targetPlugin");
+        return "com.bytedance.sdk.openadsdk.core.activity.base.TTRewardExpressVideoActivity".equals(targetPlugin);
+    }
+
+    private static void pangelDataHandler(Activity activity) {
+        if (!isPangleActivity(activity)) return;
         JSONObject tempObj = null;
         try {
-            Object c1 = com.bytedance.sdk.openadsdk.core.t.a().c();
-            if (c1 != null) {
-                tempObj = com.bytedance.sdk.openadsdk.core.t.a().c().aO();
+            GeneratePluginActivity pluginActivity = ((GenerateProxyActivity) activity).mTargetActivity;
+            ClassLoader classLoader = pluginActivity.getClassLoader();
+            Class<?> classz = pluginActivity.getClassLoader().loadClass("com.bytedance.sdk.openadsdk.core.activity.base.TTBaseVideoActivity");
+            Field field = classz.getDeclaredField("c");
+            field.setAccessible(true);
+            Object q = field.get(pluginActivity);
+            Class<?> classq = classLoader.loadClass("com.bytedance.sdk.openadsdk.core.o.q");
+            Method btMethod = classq.getDeclaredMethod("bt");
+            Object jsonObject = btMethod.invoke(q);
+            if (jsonObject instanceof JSONObject) {
+                tempObj = (JSONObject) jsonObject;
+            } else {
+                return;
             }
         } catch (Throwable e) {
             e.printStackTrace();
             return;
         }
-        if (savedInstanceState != null) {
-            materialMeta = savedInstanceState.getString("material_meta");
-            if (!TextUtils.isEmpty(materialMeta)) {
-                try {
-                    tempObj = com.bytedance.sdk.openadsdk.core.b.a(new JSONObject(materialMeta)).aO();
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
+
+        String iconUrl = null;
+        String appName = null;
+        String packageName = null;
+        String downloadUrl = null;
+        String adId = null;
+        String videoUrl = null;
+
+        String targetUrl = tempObj.optString("target_url");
+
+        JSONObject iconObj = tempObj.optJSONObject("icon");
+        if (iconObj != null) {
+            iconUrl = iconObj.optString("url");
+        }
+
+        JSONObject appObj = tempObj.optJSONObject("app");
+        if (appObj != null) {
+            appName = appObj.optString("app_name");
+            packageName = appObj.optString("package_name");
+            downloadUrl = appObj.optString("download_url");
+        }
+
+        String extStr = tempObj.optString("ext");
+        if (!TextUtils.isEmpty(extStr)) {
+            try {
+                adId = new JSONObject(extStr).optString("ad_id");
+            } catch (JSONException ignored) {
             }
         }
 
-        if (tempObj != null) {
-//            SLog.i(TAG, "pangelDataHandler resultStr=" + tempObj.toString());
-            String iconUrl = null;
-            String appName = null;
-            String packageName = null;
-            String downloadUrl = null;
-            String adId = null;
-            String videoUrl = null;
+        JSONObject videoObj = tempObj.optJSONObject("video");
+        if (videoObj != null) {
+            videoUrl = videoObj.optString("video_url");
+        }
 
-            String targetUrl = tempObj.optString("target_url");
+        try {
+            jsonPangleObj = new JSONObject();
 
-            JSONObject iconObj = tempObj.optJSONObject("icon");
-            if (iconObj != null) {
-                iconUrl = iconObj.optString("url");
+            if (targetUrl != null) {
+                jsonPangleObj.put("target_url", targetUrl);
             }
 
-            JSONObject appObj = tempObj.optJSONObject("app");
-            if (appObj != null) {
-                appName = appObj.optString("app_name");
-                packageName = appObj.optString("package_name");
-                downloadUrl = appObj.optString("download_url");
+            if (adId != null) {
+                jsonPangleObj.put("ad_id", adId);
             }
 
-            String extStr = tempObj.optString("ext");
-            if (!TextUtils.isEmpty(extStr)) {
-                try {
-                    adId = new JSONObject(extStr).optString("ad_id");
-                } catch (JSONException ignored) {
-                }
+            if (appName != null) {
+                jsonPangleObj.put("app_name", appName);
             }
 
-            JSONObject videoObj = tempObj.optJSONObject("video");
-            if (videoObj != null) {
-                videoUrl = videoObj.optString("video_url");
+            if (iconUrl != null) {
+                jsonPangleObj.put("icon_url", iconUrl);
             }
 
-            try {
-                jsonPangleObj = new JSONObject();
-
-                if (targetUrl != null) {
-                    jsonPangleObj.put("target_url", targetUrl);
-                }
-
-                if (adId != null) {
-                    jsonPangleObj.put("ad_id", adId);
-                }
-
-                if (appName != null) {
-                    jsonPangleObj.put("app_name", appName);
-                }
-
-                if (iconUrl != null) {
-                    jsonPangleObj.put("icon_url", iconUrl);
-                }
-
-                if (videoUrl != null) {
-                    jsonPangleObj.put("video_url", videoUrl);
-                }
-
-                if (packageName != null) {
-                    jsonPangleObj.put("pkg_name", packageName);
-                }
-
-                if (downloadUrl != null) {
-                    jsonPangleObj.put("download_url", downloadUrl);
-                }
-                SLog.i(TAG, "pangelDataHandler jsonStr=" + jsonPangleObj.toString());
-            } catch (JSONException e) {
-                SLog.e(TAG, "pangelDataHandler 2 error=" + e.getMessage());
-                e.printStackTrace();
+            if (videoUrl != null) {
+                jsonPangleObj.put("video_url", videoUrl);
             }
+
+            if (packageName != null) {
+                jsonPangleObj.put("pkg_name", packageName);
+            }
+
+            if (downloadUrl != null) {
+                jsonPangleObj.put("download_url", downloadUrl);
+            }
+            SLog.i(TAG, "pangelDataHandler jsonStr=" + jsonPangleObj.toString());
+        } catch (JSONException e) {
+            SLog.e(TAG, "pangelDataHandler 2 error=" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -871,9 +889,9 @@ public class YMBusinessService {
             POFactory pOFactory = null;
             try {
                 pOFactory = GDTADManager.getInstance().getPM().getPOFactory();
-            } catch (com.qq.e.comm.managers.plugin.c c) {
+            } catch (com.qq.e.comm.managers.plugin.d d) {
 //                SLog.e(TAG, "gdtDataHandler getPOFactory error=" + c.getMessage());
-                c.printStackTrace();
+                d.printStackTrace();
                 return;
             }
             Intent intent = activity.getIntent();
@@ -900,7 +918,7 @@ public class YMBusinessService {
                 Object parcelable = extras.getParcelable("admodel");
                 ClassLoader classLoader = pOFactory.getClass().getClassLoader();
                 Class<?> classData = classLoader.loadClass("com.qq.e.comm.plugin.model.BaseAdInfo");
-                Field fieldJson = classData.getDeclaredField("aM");
+                Field fieldJson = classData.getDeclaredField("M");
                 fieldJson.setAccessible(true);
                 String jsonStr = fieldJson.get(parcelable).toString();
                 JSONObject jsonObject = new JSONObject(jsonStr);
@@ -1021,7 +1039,7 @@ public class YMBusinessService {
 
         try {
             String unitId = activity.getIntent().getStringExtra("unitId");
-            List<com.mbridge.msdk.videocommon.download.a> list = com.mbridge.msdk.videocommon.download.c.getInstance().b(unitId);
+            List<com.mbridge.msdk.videocommon.download.a> list = com.mbridge.msdk.videocommon.download.b.getInstance().b(unitId);
             if (list.size() <= 0) {
                 return;
             }

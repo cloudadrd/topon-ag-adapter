@@ -1,17 +1,12 @@
 package com.business.support.sxe;
 
 import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.business.support.compose.ISdkMain;
 import com.business.support.compose.SdkType;
 import com.business.support.compose.TaskResult;
 import com.business.support.compose.TaskResultListener;
-import com.business.support.config.Const;
-import com.business.support.http.HttpRequester;
 import com.business.support.utils.SLog;
-import com.business.support.utils.Utils;
 
 import net.security.device.api.SecurityCode;
 import net.security.device.api.SecurityDevice;
@@ -19,12 +14,6 @@ import net.security.device.api.SecuritySession;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import cn.shuzilm.core.Listener;
-import cn.shuzilm.core.Main;
 
 public class AliYunImpl implements ISdkMain {
 

@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.androidquery.AQuery;
 import com.anythink.banner.unitgroup.api.CustomBannerAdapter;
 import com.anythink.network.baidu.BaiduATConst;
 import com.baidu.mobads.sdk.api.BaiduNativeManager;
@@ -185,7 +184,6 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);//CENTER_CROP
         imageViewLayout.setMargins(dip2px(context, 1.0f), dip2px(context, 0.5f), dip2px(context, 243.0f), dip2px(context, 0.5f));
         mNBView.addView(imageView, imageViewLayout);
-        AQuery aq = new AQuery(imageView);
         if (null == nativeAd.getIconUrl()) {
             Glide.with(context).load(nativeAd.getImageUrl()).into(imageView);
 //            aq.id(ID_ADICON_IMAGE).image(nativeAd.getImageUrl(), false, true);

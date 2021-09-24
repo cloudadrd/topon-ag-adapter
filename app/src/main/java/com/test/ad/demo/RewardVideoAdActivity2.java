@@ -8,6 +8,7 @@
 package com.test.ad.demo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,81 +17,61 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anythink.china.api.ATAppDownloadListener;
 import com.anythink.core.api.ATAdConst;
 import com.anythink.core.api.ATAdInfo;
 import com.anythink.core.api.ATAdStatusInfo;
+import com.anythink.core.api.ATNetworkConfirmInfo;
 import com.anythink.core.api.AdError;
+import com.anythink.network.gdt.GDTDownloadFirmInfo;
 import com.anythink.rewardvideo.api.ATRewardVideoAd;
 import com.anythink.rewardvideo.api.ATRewardVideoExListener;
 import com.business.support.YMBusinessService;
+import com.test.ad.demo.gdt.DownloadApkConfirmDialogWebView;
+import com.test.ad.demo.util.PlacementIdUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 
 public class RewardVideoAdActivity2 extends Activity {
 
     private static final String TAG = RewardVideoAdActivity2.class.getSimpleName();
 
-    String placementIds[] = new String[]{
-            DemoApplicaion.mPlacementId_rewardvideo_all
-            , DemoApplicaion.mPlacementId_rewardvideo_mintegral
-            , DemoApplicaion.mPlacementId_rewardvideo_GDT
-            , DemoApplicaion.mPlacementId_rewardvideo_toutiao
-            , DemoApplicaion.mPlacementId_rewardvideo_baidu
-            , DemoApplicaion.mPlacementId_rewardvideo_ks
-            , DemoApplicaion.mPlacementId_rewardvideo_sigmob
-            , DemoApplicaion.mPlacementId_rewardvideo_myoffer
-    };
-
-    String unitGroupName[] = new String[]{
-            "All network",
-            "Mintegral",
-            "GDT",
-            "Toutiao",
-            "Baidu",
-            "Kuaishou",
-            "Sigmob",
-            "Myoffer"
-    };
-
-    RadioGroup mRadioGroup;
-
-
-    int mCurrentSelectIndex;
-
-
     ATRewardVideoAd mRewardVideoAd;
-
-    ThinkingAnalyticsSDK biInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         ((TextView) findViewById(R.id.scene_txt)).setText("scene2");
-        mRadioGroup = (RadioGroup) findViewById(R.id.placement_select_group);
+        Map<String, String> placementIdMap = PlacementIdUtil.getRewardedVideoPlacements(this);
+        List<String> placementNameList = new ArrayList<>(placementIdMap.keySet());
 
-        for (int i = 0; i < placementIds.length; i++) {
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.placement_select_group);
+
+        for (int i = 0; i < placementNameList.size(); i++) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setPadding(20, 20, 20, 20);
-            radioButton.setText(unitGroupName[i]);
+            radioButton.setText(placementNameList.get(i));
             radioButton.setId(i);
-            mRadioGroup.addView(radioButton);
+            radioGroup.addView(radioButton);
         }
 
-        mRadioGroup.check(0);
+        radioGroup.check(0);
 
-        mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                mCurrentSelectIndex = i;
-                init();
+                String placementName = placementNameList.get(i);
+                init(placementIdMap.get(placementName));
             }
         });
 
-        init();
+        String placementName = placementNameList.get(0);
+        init(placementIdMap.get(placementName));
+
 
         findViewById(R.id.is_ad_ready_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +79,15 @@ public class RewardVideoAdActivity2 extends Activity {
 //                boolean isReady = mRewardVideoAd.isAdReady();
                 ATAdStatusInfo atAdStatusInfo = mRewardVideoAd.checkAdStatus();
                 Toast.makeText(RewardVideoAdActivity2.this, "video ad ready status:" + atAdStatusInfo.isReady(), Toast.LENGTH_SHORT).show();
+                List<ATAdInfo> atAdInfoList = mRewardVideoAd.checkValidAdCaches();
+                Log.i(TAG, "Valid Cahce size:" + (atAdInfoList != null ? atAdInfoList.size() : 0));
+                if (atAdInfoList != null) {
+                    for (ATAdInfo adInfo : atAdInfoList) {
+                        Log.i(TAG, "\nCahce detail:" + adInfo.toString());
+                    }
+                }
+
+
             }
         });
 
@@ -119,19 +109,42 @@ public class RewardVideoAdActivity2 extends Activity {
     }
 
 
-    private void init() {
-        mRewardVideoAd = new ATRewardVideoAd(this, placementIds[mCurrentSelectIndex]);
+    private void init(String placementId) {
+        mRewardVideoAd = new ATRewardVideoAd(this, placementId);
         String userid = "test_userid_001";
         String userdata = "test_userdata_001";
         Map<String, Object> localMap = new HashMap<>();
         localMap.put(ATAdConst.KEY.USER_ID, userid);
         localMap.put(ATAdConst.KEY.USER_CUSTOM_DATA, userdata);
+
+        // Only for GDT (true: open download dialog, false: download directly)
+        localMap.put(ATAdConst.KEY.AD_CLICK_CONFIRM_STATUS, true);
+
         mRewardVideoAd.setLocalExtra(localMap);
         mRewardVideoAd.setAdListener(new ATRewardVideoExListener() {
 
             @Override
             public void onDeeplinkCallback(ATAdInfo adInfo, boolean isSuccess) {
                 Log.i(TAG, "onDeeplinkCallback:" + adInfo.toString() + "--status:" + isSuccess);
+            }
+
+            @Override
+            public void onDownloadConfirm(Context context, ATAdInfo adInfo, ATNetworkConfirmInfo networkConfirmInfo) {
+                /**
+                 * Only for GDT
+                 */
+                if (networkConfirmInfo instanceof GDTDownloadFirmInfo) {
+                    //Open Dialog view
+                    //Open Dialog view
+                    try {
+                        new DownloadApkConfirmDialogWebView(context, ((GDTDownloadFirmInfo) networkConfirmInfo).appInfoUrl, ((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack).show();
+                        Log.i(TAG, "nonDownloadConfirm open confirm dialog");
+                    } catch (Throwable e) {
+                        if (((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack != null) {
+                            ((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack.onConfirm();
+                        }
+                    }
+                }
             }
 
             @Override
@@ -168,8 +181,6 @@ public class RewardVideoAdActivity2 extends Activity {
                 }
 
                 //曝光日志code end
-
-
             }
 
             @Override
@@ -214,6 +225,56 @@ public class RewardVideoAdActivity2 extends Activity {
                 Toast.makeText(RewardVideoAdActivity2.this, "onReward", Toast.LENGTH_SHORT).show();
             }
         });
+
+        mRewardVideoAd.setAdDownloadListener(new ATAppDownloadListener() {
+
+            @Override
+            public void onDownloadStart(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadStart: totalBytes: " + totalBytes
+                        + "\ncurrBytes:" + currBytes
+                        + "\nfileName:" + fileName
+                        + "\nappName:" + appName);
+            }
+
+            @Override
+            public void onDownloadUpdate(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadUpdate: totalBytes: " + totalBytes
+                        + "\ncurrBytes:" + currBytes
+                        + "\nfileName:" + fileName
+                        + "\nappName:" + appName);
+            }
+
+            @Override
+            public void onDownloadPause(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadPause: totalBytes: " + totalBytes
+                        + "\ncurrBytes:" + currBytes
+                        + "\nfileName:" + fileName
+                        + "\nappName:" + appName);
+            }
+
+            @Override
+            public void onDownloadFinish(ATAdInfo adInfo, long totalBytes, String fileName, String appName) {
+                Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadFinish: totalBytes: " + totalBytes
+                        + "\nfileName:" + fileName
+                        + "\nappName:" + appName);
+            }
+
+            @Override
+            public void onDownloadFail(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadFail: totalBytes: " + totalBytes
+                        + "\ncurrBytes:" + currBytes
+                        + "\nfileName:" + fileName
+                        + "\nappName:" + appName);
+            }
+
+            @Override
+            public void onInstalled(ATAdInfo adInfo, String fileName, String appName) {
+                Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onInstalled:"
+                        + "\nfileName:" + fileName
+                        + "\nappName:" + appName);
+            }
+        });
+
     }
 
 }

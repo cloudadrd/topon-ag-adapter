@@ -30,14 +30,6 @@ import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
 
-import net.security.device.api.SecurityCode;
-import net.security.device.api.SecurityDevice;
-import net.security.device.api.SecuritySession;
-
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
 

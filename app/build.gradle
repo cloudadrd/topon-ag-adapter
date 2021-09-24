@@ -2,9 +2,8 @@ apply plugin: 'com.android.application'
 
 import com.android.annotations.NonNull
 import com.android.manifmerger.ManifestMerger2
-
-//import com.android.manifmerger.ManifestMerger2.Invoker
-//import com.android.manifmerger.ManifestMerger2.MergeType
+import com.android.manifmerger.ManifestMerger2.Invoker
+import com.android.manifmerger.ManifestMerger2.MergeType
 import com.android.manifmerger.MergingReport
 import com.android.manifmerger.XmlDocument
 import com.android.utils.ILogger
@@ -27,7 +26,7 @@ networkLibsPath.add("jingdong");
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "com.scqdd.mobi"//" com.tc.fm.ppx2048数盟、数美测试包名"//com.hbasc.mobi京东测试
+        applicationId "com.scqdd.mobi"//" com.wzadt.mobi com.tc.fm.ppx2048数盟、数美测试包名"//com.hbasc.mobi京东测试
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
@@ -53,13 +52,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.wzadt
+            signingConfig signingConfigs.scqdd
         }
 
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.wzadt
+            signingConfig signingConfigs.scqdd
 
         }
     }
@@ -138,7 +137,7 @@ dependencies {
     }
     batchImportPackage()
 
-    implementation('com.facebook.stetho:stetho:1.3.1') {
+    implementation ('com.facebook.stetho:stetho:1.3.1') {
         exclude module: 'support-v4'
     }
 
@@ -147,6 +146,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
 
     implementation project(':business-support-sdk')
+
+    //aliyun_device
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.squareup.okio:okio:1.14.0'
 
     //chrome custom tabs
     implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.2.2'
@@ -175,7 +178,7 @@ task mergeAllNetworkManifest {
             from projectDir.absolutePath + '/src/main/AndroidManifest_base.xml'
             into projectDir.absolutePath + '/src/main/'
             rename { String fileName ->
-                fileName.replace('_base', '')
+                fileName.replace('_base','')
             }
         }
 
@@ -184,6 +187,7 @@ task mergeAllNetworkManifest {
 
     }
 }
+
 
 
 //合并manifest
@@ -203,7 +207,7 @@ private void mergeManifest(List<File> libraryManifests, File originMaifestFile) 
 
 
     try {
-        ManifestMerger2.Invoker manifestMergerInvoker = ManifestMerger2.newMerger(originMaifestFile, mLogger, ManifestMerger2.MergeType.APPLICATION)
+        Invoker manifestMergerInvoker = ManifestMerger2.newMerger(originMaifestFile, mLogger, MergeType.APPLICATION)
 
         manifestMergerInvoker.addLibraryManifests(libraryManifests.toArray(new File[libraryManifests.size()]))
 
@@ -317,11 +321,11 @@ def fileReader(path) {
     def readerString = "";
     new File(path).withReader('UTF-8') { reader ->
         reader.eachLine {
-//            if (it.find("minSdkVersion")
-//                    || it.find("uses-sdk")
-//                    || it.find("overrideLibrary")) {
-//                it = ""
-//            }
+            if (it.find("minSdkVersion")
+                    || it.find("uses-sdk")
+                    || it.find("overrideLibrary")) {
+                it = ""
+            }
 
             readerString <<= it
             readerString << '\n'
@@ -335,10 +339,10 @@ def recoverAuthorities(path) {
     def readerString = "";
     new File(path).withReader('UTF-8') { reader ->
         reader.eachLine {
-            if (it.find('authorities="com.test.ad.demo')) {
+            if(it.find('authorities="com.test.ad.demo')) {
                 it = it.replace('authorities="com.test.ad.demo', 'authorities="${applicationId}')
             }
-            if (it.find('name="com.test.ad.demo')) {
+            if(it.find('name="com.test.ad.demo')) {
                 it = it.replace('name="com.test.ad.demo.fileprovider', 'name="${applicationId}.fileprovider')
             }
             readerString <<= it
@@ -347,6 +351,7 @@ def recoverAuthorities(path) {
         return readerString
     }
 }
+
 
 
 //写文件
