@@ -82,8 +82,13 @@ public class TKCreator {
 
     private static String userAgent = null;
     private static String mAppid = null;
+    private static String tarPath = "";
 
     private static SensorNumbers sensorNumbers = new SensorNumbers();
+
+    public static void setTarPath(String tar) {
+        tarPath = tar;
+    }
 
     public static void send(final Context context, String appid) {
         mAppid = appid;
@@ -843,6 +848,12 @@ public class TKCreator {
             datas.put(keyVal);
         }
 
+        if (!TextUtils.isEmpty(tarPath)) {
+            keyVal = new JSONObject();
+            keyVal.put("key", "tar");
+            keyVal.put("value", tarPath);
+            datas.put(keyVal);
+        }
 
         String imei = Utils.getIMEI(context);
         if (!TextUtils.isEmpty(imei)) {

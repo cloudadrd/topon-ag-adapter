@@ -65,6 +65,14 @@ android.libraryVariants.all { variant ->
 }
 
 repositories {
+    maven {
+        url 'http://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/'
+    }
+    maven {
+        url 'http://mirrors.huaweicloud.com/repository/maven/'
+    }
+    mavenCentral()
+
     flatDir {
         dirs '../app/libs'
     }
@@ -80,8 +88,9 @@ dependencies {
 
     api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 
-//    api project(':socketclient')
+    implementation 'com.huaweicloud:esdk-obs-android:3.21.4'
 
+//    api project(':socketclient')
 
 //    compileOnly files('libs/GDTSDK.unionNormal.4.391.1261.aar')
 //    compileOnly files('libs/smsdk-3.0.6-release.aar')

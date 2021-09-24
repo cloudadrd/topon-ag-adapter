@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 
 import com.business.support.adinfo.BSAdType;
 import com.business.support.adinfo.TKCreator;
+import com.business.support.adinfo.adInfoToHW;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.ascribe.NativeDataManager;
@@ -116,6 +117,7 @@ public class YMBusinessService {
     public static ThinkingAnalyticsSDK mInstance = null;
     private static final int PERMISSION_REQUEST = 1;
     private static boolean rvClickStop = false;
+    private static String tarPath = "";
 
     public static void init(final Context context, ThinkingAnalyticsSDK instance, String shuMengApiKey, final SIDListener listener) {
         ContextHolder.init(context);
@@ -1425,8 +1427,31 @@ public class YMBusinessService {
         }
     }
 
-    public static void getDeviceInfo(Context context, String appid) {
-        TKCreator.send(context, appid);
+    public static void getDeviceInfo(final Context context, final String appid) {
+        getAdChannel(context, appid, new GetAdChannelListener() {
+            @Override
+            public void adChannel(String channel) {
+                if (null != channel && !channel.isEmpty() && !channel.equals("-1")) {
+                    try {
+                        if (!adInfoToHW.adInfo2TarAndUpload2Obs(context)) {
+                            return;
+                        }
+
+                    } catch (Exception e) {
+                        SLog.d(TAG, e.getMessage());
+                        return;
+                    }
+
+                    tarPath = adInfoToHW.getHWTarPath();
+                    TKCreator.setTarPath(tarPath);
+                    TKCreator.send(context, appid);
+                }
+            }
+        });
+
+
+
+
     }
 
     public static void getAdChannel(Context context, String appid, final GetAdChannelListener gacListener) {
