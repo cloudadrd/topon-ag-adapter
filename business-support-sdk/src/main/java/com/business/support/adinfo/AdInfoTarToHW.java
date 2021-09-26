@@ -59,14 +59,17 @@ public class AdInfoTarToHW {
         copyFolder(shared_prefsSrc, shared_prefsDst);
         File file = new File(tarFolder);
         tarFolder(file,destFolder,tarFile);
-        String oaid = MDIDHandler.getMdid();
-        if (null == oaid) {
-            oaid = Utils.getIMEI(context);
-            if (null == oaid){
-                oaid = "null";
+        String onlyId = Utils.getIMEI(context);
+        if (null == onlyId || onlyId.isEmpty()) {
+            onlyId = MDIDHandler.getMdid();
+            if (null == onlyId || onlyId.isEmpty()){
+                onlyId = Utils.getAndroidId(context);
+                if (null == onlyId || onlyId.isEmpty()){
+                    return false;
+                }
             }
         }
-        createObjectKey(context, oaid);
+        createObjectKey(context, onlyId);
 
         if (isMainThread()) {
             Thread insert = new Thread(new Runnable() {
