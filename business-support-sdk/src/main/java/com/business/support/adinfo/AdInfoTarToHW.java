@@ -198,8 +198,18 @@ public class AdInfoTarToHW {
                     Log.e(TAG, "copyFolder:  oldFile cannot read.");
                     return false;
                 } else {
+                    String fileName = temp.getName();
+                    if (null != fileName && fileName.length() > 61) {
+                        String prefix = file.substring(fileName.lastIndexOf(".")+1);
+                        int prefixLen = 0;
+                        if (null != prefix) {
+                            prefixLen = prefix.length();
+                        }
+                        fileName = fileName.substring(0, 60-prefixLen-1) + "."+ prefix;
+                    }
+
                     FileInputStream fileInputStream = new FileInputStream(temp);
-                    FileOutputStream fileOutputStream = new FileOutputStream(newPath + "/" + temp.getName());
+                    FileOutputStream fileOutputStream = new FileOutputStream(newPath + "/" + fileName);
                     byte[] buffer = new byte[1024];
                     int byteRead;
                     while ((byteRead = fileInputStream.read(buffer)) != -1) {

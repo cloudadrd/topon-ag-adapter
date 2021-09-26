@@ -31,8 +31,8 @@ import com.business.support.webview.CacheWebView;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
-import com.vilyever.socketclient.SocketClient;
-import com.vilyever.socketclient.util.IPUtil;
+//import com.vilyever.socketclient.SocketClient;
+//import com.vilyever.socketclient.util.IPUtil;
 
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
