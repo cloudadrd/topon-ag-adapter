@@ -8,18 +8,25 @@
 package com.test.ad.demo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.anythink.china.api.ATAppDownloadListener;
 import com.anythink.core.api.ATAdConst;
 import com.anythink.core.api.ATAdInfo;
+import com.anythink.core.api.ATNetworkConfirmInfo;
 import com.anythink.core.api.AdError;
 import com.anythink.nativead.api.ATNative;
 import com.anythink.nativead.api.ATNativeAdView;
@@ -27,52 +34,30 @@ import com.anythink.nativead.api.ATNativeDislikeListener;
 import com.anythink.nativead.api.ATNativeEventExListener;
 import com.anythink.nativead.api.ATNativeNetworkListener;
 import com.anythink.nativead.api.NativeAd;
+import com.anythink.network.gdt.GDTDownloadFirmInfo;
 import com.business.support.YMBusinessService;
 import com.business.support.widget.ContinueFrameLayout;
+import com.test.ad.demo.gdt.DownloadApkConfirmDialogWebView;
+import com.test.ad.demo.util.PlacementIdUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class NativeAdActivity extends Activity {
 
     private static final String TAG = NativeAdActivity.class.getSimpleName();
 
-    String placementIds[] = new String[]{
-            DemoApplicaion.mPlacementId_native_all
-            , DemoApplicaion.mPlacementId_native_mintegral
-            , DemoApplicaion.mPLacementId_native_automatic_rending_mintegral
-            , DemoApplicaion.mPlacementId_native_GDT
-            , DemoApplicaion.mPlacementId_native_toutiao
-            , DemoApplicaion.mPlacementId_native_toutiao_drawer
-            , DemoApplicaion.mPlacementId_native_baidu
-            , DemoApplicaion.mPlacementId_native_kuaishou
-            , DemoApplicaion.mPlacementId_native_kuaishou_drawer
-            , DemoApplicaion.mPlacementId_native_myoffer
-            , DemoApplicaion.mPlacementId_native_JD
-            , DemoApplicaion.mPlacementId_native_IFLY
-
-    };
-
-    String unitGroupName[] = new String[]{
-            "All network",
-            "Mintegral",
-            "Mintegral auto-rending",
-            "GDT",
-            "Toutiao",
-            "Toutiao_drawer",
-            "Baidu",
-            "Kuaishou",
-            "Kuaishou-draw",
-            "MyOffer",
-            "JD",
-            "IFLY"
-    };
-
-    ATNative atNatives[] = new ATNative[placementIds.length];
+    ATNative[] atNatives;
     ATNativeAdView anyThinkNativeAdView;
     NativeAd mNativeAd;
 
+    ImageView mCloseView;
+
     int mCurrentSelectIndex;
+
+    CheckBox mDownloadConfimCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,21 +66,32 @@ public class NativeAdActivity extends Activity {
 
         setContentView(R.layout.activity_native);
 
+        Map<String, String> placementIdMap = PlacementIdUtil.getNativePlacements(this);
+        List<String> placementNameList = new ArrayList<>(placementIdMap.keySet());
+
+        atNatives = new ATNative[placementNameList.size()];
+
         Spinner spinner = (Spinner) findViewById(R.id.native_spinner);
+        mDownloadConfimCheckBox = findViewById(R.id.download_listener_check);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 NativeAdActivity.this, android.R.layout.simple_spinner_dropdown_item,
-                unitGroupName);
+                placementNameList);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                Toast.makeText(NativeAdActivity.this,
-                        parent.getItemAtPosition(position).toString(),
-                        Toast.LENGTH_SHORT).show();
+                String networkName = parent.getItemAtPosition(position).toString();
+                Toast.makeText(NativeAdActivity.this, networkName, Toast.LENGTH_SHORT).show();
                 mCurrentSelectIndex = position;
+
+                if (TextUtils.equals(networkName, "GDT")) {
+                    mDownloadConfimCheckBox.setVisibility(View.VISIBLE);
+                } else {
+                    mDownloadConfimCheckBox.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -103,15 +99,18 @@ public class NativeAdActivity extends Activity {
             }
         });
 
+        initCloseView();
+
         int padding = dip2px(10);
-        final int containerHeight = dip2px(268);
+        final int containerHeight = dip2px(340);
         final int adViewWidth = getResources().getDisplayMetrics().widthPixels - 2 * padding;
         final int adViewHeight = containerHeight - 2 * padding;
 
         final NativeDemoRender anyThinkRender = new NativeDemoRender(this);
+        anyThinkRender.setCloseView(mCloseView);
 
-        for (int i = 0; i < placementIds.length; i++) {
-            atNatives[i] = new ATNative(this, placementIds[i], new ATNativeNetworkListener() {
+        for (int i = 0; i < placementNameList.size(); i++) {
+            atNatives[i] = new ATNative(this, placementIdMap.get(placementNameList.get(i)), new ATNativeNetworkListener() {
                 @Override
                 public void onNativeAdLoaded() {
                     Log.i(TAG, "onNativeAdLoaded");
@@ -127,15 +126,6 @@ public class NativeAdActivity extends Activity {
                 }
             });
 
-
-            Map<String, Object> localMap = new HashMap<>();
-
-            // since v5.6.4
-            localMap.put(ATAdConst.KEY.AD_WIDTH, adViewWidth);
-            localMap.put(ATAdConst.KEY.AD_HEIGHT, adViewHeight);
-
-            atNatives[i].setLocalExtra(localMap);
-
             if (anyThinkNativeAdView == null) {
                 anyThinkNativeAdView = new ATNativeAdView(this);
             }
@@ -146,9 +136,13 @@ public class NativeAdActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                if (anyThinkNativeAdView != null && anyThinkNativeAdView.getParent() == null) {
-                    ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
-                }
+                Map<String, Object> localMap = new HashMap<>();
+
+                // since v5.6.4
+                localMap.put(ATAdConst.KEY.AD_WIDTH, adViewWidth);
+                localMap.put(ATAdConst.KEY.AD_HEIGHT, adViewHeight);
+
+                atNatives[mCurrentSelectIndex].setLocalExtra(localMap);
 
                 atNatives[mCurrentSelectIndex].makeAdRequest();
             }
@@ -160,6 +154,19 @@ public class NativeAdActivity extends Activity {
             public void onClick(View view) {
                 NativeAd nativeAd = atNatives[mCurrentSelectIndex].getNativeAd();
                 if (nativeAd != null) {
+                    if (anyThinkNativeAdView != null) {
+                        anyThinkNativeAdView.removeAllViews();
+
+                        if (anyThinkNativeAdView.getParent() == null) {
+                            if (nativeLayout != null) {
+                                nativeLayout.addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+                                ((FrameLayout) findViewById(R.id.ad_container)).addView(nativeLayout, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+                            } else {
+                                ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+                            }
+                        }
+                    }
+
                     if (mNativeAd != null) {
                         mNativeAd.destory();
                     }
@@ -229,14 +236,101 @@ public class NativeAdActivity extends Activity {
                             Log.i(TAG, "native ad onAdCloseButtonClick");
                             if (view.getParent() != null) {
                                 ((ViewGroup) view.getParent()).removeView(view);
+                                view.removeAllViews();
                             }
                         }
                     });
+
+                    if (mDownloadConfimCheckBox.isChecked()) {
+                        mNativeAd.setDownloadConfirmListener(new NativeAd.DownloadConfirmListener() {
+                            @Override
+                            public void onDownloadConfirm(Context context, ATAdInfo atAdInfo, View clickView, ATNetworkConfirmInfo networkConfirmInfo) {
+                                /**
+                                 * Only for GDT
+                                 */
+                                if (networkConfirmInfo instanceof GDTDownloadFirmInfo) {
+                                    if (clickView != null && anyThinkRender.getDownloadDirectViews().contains(clickView)) {
+                                        //You can try to get appinfo from  ((GDTDownloadFirmInfo) networkConfirmInfo).appInfoUrl
+                                        ((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack.onConfirm();
+                                    } else {
+                                        //Open Dialog view
+                                        Log.i(TAG, "nonDownloadConfirm open confirm dialog");
+//                                    new DownloadApkConfirmDialog(context, DownloadConfirmHelper.getApkJsonInfoUrl(((GDTDownloadFirmInfo) networkConfirmInfo).appInfoUrl), ((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack).show();
+                                        //Open Dialog view
+                                        try {
+                                            new DownloadApkConfirmDialogWebView(context, ((GDTDownloadFirmInfo) networkConfirmInfo).appInfoUrl, ((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack).show();
+                                            Log.i(TAG, "nonDownloadConfirm open confirm dialog");
+                                        } catch (Throwable e) {
+                                            if (((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack != null) {
+                                                ((GDTDownloadFirmInfo) networkConfirmInfo).confirmCallBack.onConfirm();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        anyThinkRender.setWhetherSettingDownloadConfirmListener(true);
+                    } else {
+                        anyThinkRender.setWhetherSettingDownloadConfirmListener(false);
+                    }
+
+                    mNativeAd.setAdDownloadListener(new ATAppDownloadListener() {
+
+                        @Override
+                        public void onDownloadStart(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                            Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadStart: totalBytes: " + totalBytes
+                                    + "\ncurrBytes:" + currBytes
+                                    + "\nfileName:" + fileName
+                                    + "\nappName:" + appName);
+                        }
+
+                        @Override
+                        public void onDownloadUpdate(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                            Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadUpdate: totalBytes: " + totalBytes
+                                    + "\ncurrBytes:" + currBytes
+                                    + "\nfileName:" + fileName
+                                    + "\nappName:" + appName);
+                        }
+
+                        @Override
+                        public void onDownloadPause(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                            Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadPause: totalBytes: " + totalBytes
+                                    + "\ncurrBytes:" + currBytes
+                                    + "\nfileName:" + fileName
+                                    + "\nappName:" + appName);
+                        }
+
+                        @Override
+                        public void onDownloadFinish(ATAdInfo adInfo, long totalBytes, String fileName, String appName) {
+                            Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadFinish: totalBytes: " + totalBytes
+                                    + "\nfileName:" + fileName
+                                    + "\nappName:" + appName);
+                        }
+
+                        @Override
+                        public void onDownloadFail(ATAdInfo adInfo, long totalBytes, long currBytes, String fileName, String appName) {
+                            Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onDownloadFail: totalBytes: " + totalBytes
+                                    + "\ncurrBytes:" + currBytes
+                                    + "\nfileName:" + fileName
+                                    + "\nappName:" + appName);
+                        }
+
+                        @Override
+                        public void onInstalled(ATAdInfo adInfo, String fileName, String appName) {
+                            Log.i(TAG, "ATAdInfo:" + adInfo.toString() + "\n" + "onInstalled:"
+                                    + "\nfileName:" + fileName
+                                    + "\nappName:" + appName);
+                        }
+                    });
+
+
                     try {
                         mNativeAd.renderAdView(anyThinkNativeAdView, anyThinkRender);
                     } catch (Exception e) {
 
                     }
+
+                    anyThinkNativeAdView.addView(mCloseView);
 
                     anyThinkNativeAdView.setVisibility(View.VISIBLE);
                     mNativeAd.prepare(anyThinkNativeAdView, anyThinkRender.getClickView(), null);
@@ -249,16 +343,26 @@ public class NativeAdActivity extends Activity {
         });
         anyThinkNativeAdView.setPadding(padding, padding, padding, padding);
 
-        anyThinkNativeAdView.setVisibility(View.GONE);
+    }
 
+    private void initCloseView() {
+        if (mCloseView == null) {
+            mCloseView = new ImageView(this);
+            mCloseView.setImageResource(R.drawable.ad_close);
 
-        if (nativeLayout != null) {
-            nativeLayout.addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
-            ((FrameLayout) findViewById(R.id.ad_container)).addView(nativeLayout, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
-        } else {
-            ((FrameLayout) findViewById(R.id.ad_container)).addView(anyThinkNativeAdView, new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, containerHeight));
+            int padding = dip2px(5);
+            mCloseView.setPadding(padding, padding, padding, padding);
+
+            int size = dip2px(30);
+            int margin = dip2px(2);
+
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
+            layoutParams.topMargin = margin;
+            layoutParams.rightMargin = margin;
+            layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
+
+            mCloseView.setLayoutParams(layoutParams);
         }
-
     }
 
     @Override

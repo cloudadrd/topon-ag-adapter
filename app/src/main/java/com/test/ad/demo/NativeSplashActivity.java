@@ -13,10 +13,11 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.anythink.core.api.ATAdConst;
 import com.anythink.core.api.ATAdInfo;
 import com.anythink.nativead.splash.api.ATNativeSplash;
 import com.anythink.nativead.splash.api.ATNativeSplashListener;
-import com.anythink.network.toutiao.TTATConst;
+import com.test.ad.demo.util.PlacementIdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +31,10 @@ public class NativeSplashActivity extends Activity {
         FrameLayout splashView = findViewById(R.id.native_splash_view);
         Map<String, Object> localMap = new HashMap<>();
         //For Pangle
-//        localMap.put(TTATConst.NATIVE_AD_IMAGE_WIDTH, getResources().getDisplayMetrics().widthPixels - dip2px(20));
-        localMap.put(TTATConst.NATIVE_AD_IMAGE_HEIGHT, dip2px(200));
-
-        ATNativeSplash splash = new ATNativeSplash(this, splashView, null, DemoApplicaion.mPlacementId_native_all, localMap, new ATNativeSplashListener() {
+        localMap.put(ATAdConst.KEY.AD_WIDTH, getResources().getDisplayMetrics().widthPixels - dip2px(20));
+        localMap.put(ATAdConst.KEY.AD_HEIGHT, dip2px(200));
+        String placementId = PlacementIdUtil.getNativePlacements(this).get("All");
+        ATNativeSplash splash = new ATNativeSplash(this, splashView, null, placementId, localMap, new ATNativeSplashListener() {
             @Override
             public void onAdLoaded() {
                 Log.i("SplashActivity", "Develop callback loaded");

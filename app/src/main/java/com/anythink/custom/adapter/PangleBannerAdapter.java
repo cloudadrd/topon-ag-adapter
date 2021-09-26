@@ -299,11 +299,21 @@ public class PangleBannerAdapter extends CustomBannerAdapter {
                 }
             }
 
+            @Deprecated
+            public void onSelected(int position, String value) {
+                if (mImpressionEventListener != null) {
+                    mImpressionEventListener.onBannerAdClose();
+                }
+            }
 
             @Override
             public void onCancel() {
             }
 
+            @Deprecated
+            public void onRefuse() {
+
+            }
         });
     }
 
@@ -350,8 +360,15 @@ public class PangleBannerAdapter extends CustomBannerAdapter {
 
         PangleInitManager.getInstance().initSDK(context, serverExtra, new PangleInitManager.InitCallback() {
             @Override
-            public void onFinish() {
+            public void onSuccess() {
                 startLoadBanner(context, serverExtra);
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMsg) {
+                if (mLoadListener != null) {
+                    mLoadListener.onAdLoadError(errorCode, errorMsg);
+                }
             }
         });
     }

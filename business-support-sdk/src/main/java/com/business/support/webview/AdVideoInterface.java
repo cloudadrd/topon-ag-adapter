@@ -281,8 +281,32 @@ public class AdVideoInterface {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            case 10:
+                try {
+                    if (webView.getCustomContext() instanceof Activity) {
+                        JSONObject jsonObject = new JSONObject(params);
+                        String appId = jsonObject.optString("appId");
+                        AliPayApi.registerAliPayResult(new AliPayApi.ResultListener() {
+                            @Override
+                            public void result(String authCode) {
+                                aliPayBoundResult(authCode);
+                            }
+                        });
+                        AliPayApi.openAuthScheme((Activity) webView.getCustomContext(), appId);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 break;
         }
+    }
+
+    public void aliPayBoundResult(String authCode) {
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s')", "aliPayBoundResult", authCode);
+        Log.d(TAG, "aliPayBoundResult loaStr=" + loadStr);
+        webView.loadUrl(loadStr);
     }
 
     public void wxBoundResult(String json) {
@@ -480,6 +504,7 @@ public class AdVideoInterface {
         webView.loadUrl(loadStr);
     }
 
+
     @JavascriptInterface
     public String androidUserId() {
         String oaid = MDIDHandler.getMdid();
@@ -498,6 +523,12 @@ public class AdVideoInterface {
             id = androidId;
         }
         return id;
+    }
+
+    public void clear() {
+        AliPayApi.registerAliPayResult(null);
+        WxApi.registerWxResult(null);
+        nativeListener = null;
     }
 
 

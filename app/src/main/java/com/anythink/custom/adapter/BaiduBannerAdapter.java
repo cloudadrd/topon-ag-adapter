@@ -19,12 +19,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.androidquery.AQuery;
 import com.anythink.banner.unitgroup.api.CustomBannerAdapter;
 import com.anythink.network.baidu.BaiduATConst;
 import com.baidu.mobads.sdk.api.BaiduNativeManager;
 import com.baidu.mobads.sdk.api.NativeResponse;
 import com.baidu.mobads.sdk.api.RequestParameters;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 import java.util.Map;
@@ -52,11 +52,11 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         slotId = (String) serverExtra.get("slot_id");
         String w = (String) serverExtra.get("width");
         String h = (String) serverExtra.get("height");
-        int width = 0, height= 0;
-        if (null != w){
+        int width = 0, height = 0;
+        if (null != w) {
             width = Integer.parseInt(w);
         }
-        if (null != h){
+        if (null != h) {
             height = Integer.parseInt(h);
         }
 
@@ -159,8 +159,8 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         String title = nativeAd.getTitle();
         String desc = nativeAd.getDesc();
         if (null == title) title = desc;
-        if (null == desc ) desc = title;
-        if ((null != title && null != desc) && (title.length() > desc.length())){
+        if (null == desc) desc = title;
+        if ((null != title && null != desc) && (title.length() > desc.length())) {
             String temp = desc;
             desc = title;
             title = desc;
@@ -184,11 +184,12 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);//CENTER_CROP
         imageViewLayout.setMargins(dip2px(context, 1.0f), dip2px(context, 0.5f), dip2px(context, 243.0f), dip2px(context, 0.5f));
         mNBView.addView(imageView, imageViewLayout);
-        AQuery aq = new AQuery(imageView);
-        if (null == nativeAd.getIconUrl()){
-            aq.id(ID_ADICON_IMAGE).image(nativeAd.getImageUrl(), false, true);
-        }else{
-            aq.id(ID_ADICON_IMAGE).image(nativeAd.getIconUrl(), false, true);
+        if (null == nativeAd.getIconUrl()) {
+            Glide.with(context).load(nativeAd.getImageUrl()).into(imageView);
+//            aq.id(ID_ADICON_IMAGE).image(nativeAd.getImageUrl(), false, true);
+        } else {
+            Glide.with(context).load(nativeAd.getIconUrl()).into(imageView);
+//            aq.id(ID_ADICON_IMAGE).image(nativeAd.getIconUrl(), false, true);
         }
 
         TextView textView = new TextView(context);
@@ -237,12 +238,12 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
         });
 
 
-
     }
+
     private void renderAd(Context context) {
         if (is320_50) {
             createAd32050(context);
-        }else{
+        } else {
             mNBView = new RelativeLayout(context);
             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(dip2px(context, 300.0f), dip2px(context, 250.0f));
             lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -261,8 +262,10 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);//CENTER_CROP
             imageViewLayout.setMargins(dip2px(context, 1.0f), dip2px(context, 1.0f), dip2px(context, 1.0f), dip2px(context, 1.0f));
             mNBView.addView(imageView, imageViewLayout);
-            AQuery aq = new AQuery(imageView);
-            aq.id(ID_LARGE_IMAGE).image(nativeAd.getImageUrl(), false, true);
+//            AQuery aq = new AQuery(imageView);
+//            aq.id(ID_LARGE_IMAGE).image(nativeAd.getImageUrl(), false, true);
+            Glide.with(context).load(nativeAd.getImageUrl()).into(imageView);
+
 
             TextView textView = new TextView(context);
             textView.setTextSize(16);
@@ -287,8 +290,10 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
             logoViewLayout.addRule(RelativeLayout.BELOW, ID_LARGE_IMAGE);
             logoViewLayout.setMargins(dip2px(context, 283.5f), dip2px(context, 34.0f), dip2px(context, 0.5f), dip2px(context, 0.0f));
             mNBView.addView(adLogo, logoViewLayout);
-            AQuery aqLogo = new AQuery(adLogo);
-            aqLogo.id(ID_ADLOGO_IMAGE).image(nativeAd.getBaiduLogoUrl(), false, true);
+//            AQuery aqLogo = new AQuery(adLogo);
+//            aqLogo.id(ID_ADLOGO_IMAGE).image(nativeAd.getBaiduLogoUrl(), false, true);
+
+            Glide.with(context).load(nativeAd.getBaiduLogoUrl()).into(adLogo);
         }
 
         mNBView.setOnClickListener(new View.OnClickListener() {
@@ -387,17 +392,17 @@ public class BaiduBannerAdapter extends CustomBannerAdapter {
 
     @Override
     public void destory() {
-       if (null != mBaiduNativeManager) {
-           mBaiduNativeManager = null;
-       }
+        if (null != mBaiduNativeManager) {
+            mBaiduNativeManager = null;
+        }
 
-       if (null != nativeAd){
-           nativeAd = null;
-       }
+        if (null != nativeAd) {
+            nativeAd = null;
+        }
 
-       if (null != mNBView){
-           mNBView = null;
-       }
+        if (null != mNBView) {
+            mNBView = null;
+        }
 
     }
 

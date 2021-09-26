@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2018-2020 TopOn. All rights reserved.
+  ~ https://www.toponad.com
+  ~ Licensed under the TopOn SDK License Agreement
+  ~ https://github.com/toponteam/TopOn-Android-SDK/blob/master/LICENSE
+  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -10,11 +17,22 @@
         android:layout_alignParentTop="true"
         android:spinnerMode="dropdown" />
 
+    <CheckBox
+        android:id="@+id/splash_is_custom_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/splash_spinner"
+        android:padding="2dp"
+        android:text="Custom Skip View"
+        android:checked="false"
+        android:textColor="#000000" />
+
     <Button
         android:id="@+id/show_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/splash_spinner"
-        android:text="Show Splash Ad" />
+        android:layout_below="@id/splash_is_custom_skip"
+        android:text="Show Splash Ad In Other Activity" />
+
 
 </RelativeLayout>

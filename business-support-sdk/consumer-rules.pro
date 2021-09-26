@@ -30,3 +30,5 @@
 
 #java-xmlbuilder
 -keep class com.jamesmurty.utils.**{*;}
+-keep class net.security.device.api.** {*;}
+-dontwarn net.security.device.api.**

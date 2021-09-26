@@ -426,4 +426,23 @@ public class Utils {
                 Context.TELEPHONY_SERVICE);
         return telephonyManager.getNetworkOperatorName();
     }
+
+    /**
+     * 判断是否包含SIM卡
+     *
+     * @return 状态
+     */
+    public static boolean hasSimCard(Context context) {
+        TelephonyManager telMgr = (TelephonyManager)
+                context.getSystemService(Context.TELEPHONY_SERVICE);
+        int simState = telMgr.getSimState();
+        boolean result = true;
+        switch (simState) {
+            case TelephonyManager.SIM_STATE_ABSENT:
+            case TelephonyManager.SIM_STATE_UNKNOWN:
+                result = false; // 没有SIM卡
+                break;
+        }
+        return result;
+    }
 }
