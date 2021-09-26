@@ -92,7 +92,6 @@ public class TKCreator {
 
     public static void send(final Context context, String appid) {
         mAppid = appid;
-        MDIDHandler.init(context);
         if (TextUtils.isEmpty(userAgent)) {
             userAgent = Utils.getUserAgentStr(context, false);
         }

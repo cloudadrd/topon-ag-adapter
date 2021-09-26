@@ -53,6 +53,7 @@ import com.business.support.reallycheck.WireSharkCheck;
 import com.business.support.shuzilm.ShuzilmImpl;
 import com.business.support.utils.BSInterstitialListener;
 import com.business.support.utils.ContextHolder;
+import com.business.support.utils.MDIDHandler;
 import com.business.support.utils.SLog;
 import com.business.support.utils.Utils;
 import com.business.support.webview.AdInterstitialMediation;
@@ -121,6 +122,7 @@ public class YMBusinessService {
 
     public static void init(final Context context, ThinkingAnalyticsSDK instance, String shuMengApiKey, final SIDListener listener) {
         ContextHolder.init(context);
+        MDIDHandler.init(context);
         mInstance = instance;
         final Context localContext = ContextHolder.getGlobalAppContext();
         SdkTaskManager.getInstance()
