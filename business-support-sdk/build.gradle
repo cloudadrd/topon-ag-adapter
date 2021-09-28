@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def version = "1.9.7"
+def version = "1.9.8"
 android {
     compileSdkVersion 29
 
@@ -65,14 +65,6 @@ android.libraryVariants.all { variant ->
 }
 
 repositories {
-    maven {
-        url 'http://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/'
-    }
-    maven {
-        url 'http://mirrors.huaweicloud.com/repository/maven/'
-    }
-    mavenCentral()
-
     flatDir {
         dirs '../app/libs'
     }
@@ -80,8 +72,6 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-//    implementation 'org.jetbrains:annotations-java5:15.0'
-
     compileOnly fileTree(dir: "../app/libs", include: ["*.aar"])
     compileOnly fileTree(dir: "../app/network/gdt/libs", include: ["*.aar"])
     compileOnly fileTree(dir: "../app/network/mintegral/libs", include: ["*.aar"])
@@ -96,8 +86,6 @@ dependencies {
     // 三方网络库依赖
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okio:okio:1.14.0'
-//    api project(':socketclient')
-
 //    api project(':socketclient')
 
 //    compileOnly files('libs/GDTSDK.unionNormal.4.391.1261.aar')

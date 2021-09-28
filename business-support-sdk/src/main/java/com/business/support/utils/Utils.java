@@ -2,6 +2,8 @@ package com.business.support.utils;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +23,7 @@ import android.util.TypedValue;
 import android.webkit.WebSettings;
 
 import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,6 +87,28 @@ public class Utils {
             }
         }
         return sb.toString();
+    }
+
+
+    /**
+     * 获取剪切板上的内容
+     */
+    @Nullable
+    public static String getClipboardContent(Context context) {
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm != null) {
+            ClipData data = cm.getPrimaryClip();
+            if (data != null && data.getItemCount() > 0) {
+                ClipData.Item item = data.getItemAt(0);
+                if (item != null) {
+                    CharSequence sequence = item.coerceToText(context);
+                    if (sequence != null) {
+                        return sequence.toString();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public static void appendUrlParameter(StringBuilder stringBuilder, Map<String, String> params, boolean isFirstParams) {

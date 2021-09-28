@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi;
 
 import com.anythink.core.api.ATAdInfo;
 import com.business.support.YMBusinessService;
+import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.MDIDHandler;
 import com.business.support.utils.Utils;
 import com.zcoup.multidownload.entitis.FileInfo;
@@ -197,6 +198,7 @@ public class AdVideoInterface {
                     }
                 }
                 break;
+
             case 2://
                 if (webView.getCustomContext() instanceof InnerWebViewActivity2) {
                     Log.d(TAG, "call customCallForMain, type is 2, webView.getCustomContext() is InnerWebViewActivity2.");
@@ -212,6 +214,7 @@ public class AdVideoInterface {
                     }
                 }
                 break;
+
             case 3://下载apk
                 try {
                     JSONObject jsonObject = new JSONObject(params);
@@ -231,6 +234,8 @@ public class AdVideoInterface {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                break;
+
             case 5://验证apk状态
                 try {
                     JSONObject jsonObject = new JSONObject(params);
@@ -240,6 +245,7 @@ public class AdVideoInterface {
                     e.printStackTrace();
                 }
                 break;
+
             case 6://调起app
                 try {
                     JSONObject jsonObject = new JSONObject(params);
@@ -262,6 +268,8 @@ public class AdVideoInterface {
                         Log.d(TAG, "setting statusBar error, Activity is destroyed.");
                     }
                 }
+                break;
+
             case 8://绑定微信
                 WxApi.send(params);
                 WxApi.registerWxResult(new WxApi.ResultListener() {
@@ -281,7 +289,9 @@ public class AdVideoInterface {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            case 10:
+                break;
+
+            case 10://支付宝登录
                 try {
                     if (webView.getCustomContext() instanceof Activity) {
                         JSONObject jsonObject = new JSONObject(params);
@@ -294,14 +304,75 @@ public class AdVideoInterface {
                         });
                         AliPayApi.openAuthScheme((Activity) webView.getCustomContext(), appId);
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                break;
 
+            case 11://下载图片保存系统相册
+                try {
+                    JSONObject jsonObject = new JSONObject(params);
+                    String imgUrl = jsonObject.optString("imgUrl");
+                    ImagePreserve.downloadToSysPicture(imgUrl, new ImageResultListener() {
+                        @Override
+                        public void onSuccess() {
+                            saveImgResult(1, true, "");
+                        }
+
+                        @Override
+                        public void onFailure(String message) {
+                            saveImgResult(1, false, message);
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case 12://base64保存图片到系统相册
+                try {
+                    JSONObject jsonObject = new JSONObject(params);
+                    String base64 = jsonObject.optString("base64");
+                    ImagePreserve.base64ToSysPicture(base64, new ImageResultListener() {
+                        @Override
+                        public void onSuccess() {
+                            saveImgResult(2, true, "");
+                        }
+
+                        @Override
+                        public void onFailure(String message) {
+                            saveImgResult(2, false, message);
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case 13://获取剪切板
+                String clipboard = Utils.getClipboardContent(webView.getContext().getApplicationContext());
+                getClipboard(clipboard);
                 break;
         }
     }
+
+    public void getClipboard(String clipboard) {
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s')", "getClipboard", clipboard);
+        Log.d(TAG, "saveImgResult loaStr=" + loadStr);
+        webView.loadUrl(loadStr);
+    }
+
+    /**
+     * @param type      1为下载，2为base64
+     * @param isSuccess
+     * @param message
+     */
+    public void saveImgResult(int type, boolean isSuccess, String message) {
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s(%d,%b,'%s')", "saveImgResult", type, isSuccess, message);
+        Log.d(TAG, "saveImgResult loaStr=" + loadStr);
+        webView.loadUrl(loadStr);
+    }
+
 
     public void aliPayBoundResult(String authCode) {
         String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s')", "aliPayBoundResult", authCode);

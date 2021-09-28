@@ -24,8 +24,10 @@ import com.business.support.ascribe.InstallListener;
 import com.business.support.captcha.CaptchaListener;
 import com.business.support.compose.SIDListener;
 import com.business.support.config.Const;
+import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
+import com.business.support.webview.ImagePreserve;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
@@ -356,6 +358,30 @@ public class MainActivity extends Activity {
 //                AliPayApi.openAuthScheme(MainActivity.this, "2021002176610585");
 //            }
 //        }, 8000);
+
+//        ImagePreserve.downloadToSysPicture("https://pic2.zhimg.com/80/v2-fca32e14dea7f716d425d337a4f201f5_720w.jpg", new ImageResultListener() {
+//            @Override
+//            public void onSuccess() {
+//                Log.e("tjt852", "downloadToSysPicture onSuccess");
+//            }
+//
+//            @Override
+//            public void onFailure(String message) {
+//                Log.e("tjt852", "downloadToSysPicture onFailure message=" + message);
+//            }
+//        });
+
+//        ImagePreserve.base64ToSysPicture("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAnCAYAAACSamGGAAAAAXNSR0IArs4c6QAABRlJREFUWAm1WGtsFFUUPq3Usi3QLhSUWqCAQCtFI8hDrDEBBapYjCSgCYlGIkREovJD1B/y+EWCqFGDQUNIjIn4ShCNiQSpIRLEpgYCETBKK+9njaClVlq/b2buvTOT2Z3Zme1Jvj3n3Oc35763oGf7eMmjlKKtz4D1QBMQLo2HQsv0CS2RW4EtKD4HmAhUAteBxFKYuAXTQC3MBY47BPpJx06s8knydR+b53x+bDdfJFNg0OBjcQf8+3xpsdx8keRCsWXw3cqiftvtxLXzQXIkOjdDW/2YSFE/xWcCjMXKiavzQfIN3XnVwyJDZ4rUrdJJMDyOOyOqnZTkzehonu5sJKJIGfaISHGFbYvcCmOKcuLopCSf0Z1WzhJJc604UvWQsqgTzc0kJBnFVzST6oXatAz6hUUqjZGcq5xcdRKSnIv2icUIVkz19l06XKRmuTvtfbeTi53LsZhGw7XAYKAacCYgrNoV+AkQRrP1E5F/TjGTkV8NHAbOAceAs0CoFARcMIaiVg3ArYWaxEYDI4ASwCtjl6BUBpIsefJrkZaXvHVsrwvqBPAbcBQ4ApD4r8ApaTzEfEtIchGsScBtwBigCtCTCXZmqZgmMv2DzPkqp/lFkdPfKi+KZoQV6RaS7IlSyypThu9IYdRKKkUG4qLDFR1VLu4TudQicgWB6zgj0n4wak0hyWUo/a6nRvp2kf4Y4X6joIGSYTaxG/p6iiVyuv8TuYaA/Y0Rv3rcQSv8P9QcVs1vVHPyXqR8DxRYOcUDRSa/aUdLFe1t3dMtsvcpRLvZ3dNSzM3NhU7KHmhzcnReRoWn8XWt7gq9Z5Ng03w/wZUkyE4VSdo7gJnAn3Sku9P+Ms6l3pTOSyL7lmKuclFreRYENypPDbfyqe8CfnInSP2HGPo7PUl5cUiw6VERaiOPg+DHxvVGUqVzUswBuOHasn+FyIW9ysuP7jgt0rzST/AFP0F2FhRJRYKbd6tyLD1tk8gQrrGEwsWxH0dm11V3Q/eD4C53grLdc1KlKd0GYwZgxuLAOpWXTB9c6ye4PBNBdpSNJPN3AzXACTrCIWr71DJj/7QfwCL5XVVnAOpB0LtPq1xHh5FksYvAq055+9TQTgyDp46RLSD4g3GDrSgkWZPnuS08FpNIH/7JoWWAtrIYUUnW6zaSbkUlvGRpwaUzXKKSvEU3lbpJm7GM/nzyaBmvrSxGVJI4zB0pKlNWPJ1CJM2UGS5f1uH2kl2i3MwHoQkTvmK6AdL1F3bVbfbCGjQR9/d7RMp5RQ2QAeOwU5xVGXh7OLuHSvHpKCTrUOdGq156gvtxZTd1vcMmd3iDafr8HpFf3sJdfj6u0UtwzTOzxSpUhsv+OV66LOF5+5VjB6qoJO3K5eTryL/tNjm+Ya6dV6le3fY59tUv8Ph4Aq+ihSKlzsjmOC+jzMlJumfezCknd4jsnIUL/jt+gnwjPAggjEp68IrZKrKrAS+Y90T4ceWIpBHMjewShaRpsRCjvnseHlYv4+9RDLOR4zDxt4XMBr4BngemA96Nmh/1XSMuKz8iS8soLB6zMHWyMbJdMFiKO+8FIEUnQH5G2ipgJ4CQBcpUpL4GNHhz+QjQVTJeLlgnLJJjUSaI4GWk46Zq/e3MIda9wfYLw8YpwCgfNZmeKln3yzCSM0yjlnUMv8uAMcBmKyX6Dz+mFlgEeKeByAPZmgkjmUblK8AZYA3ATjYBjGQcYfg+AnjMLgaOAGy/L5BR/gdh3B5llTJohgAAAABJRU5ErkJggg==", new ImageResultListener() {
+//            @Override
+//            public void onSuccess() {
+//                Log.e("tjt852", "base64ToSysPicture onSuccess");
+//            }
+//
+//            @Override
+//            public void onFailure(String message) {
+//                Log.e("tjt852", "base64ToSysPicture onFailure message=" + message);
+//            }
+//        });
 
 
     }

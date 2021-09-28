@@ -38,7 +38,7 @@ public class AssetsFileManager {
         }
         out.close();
         is.close();
-        Runtime.getRuntime().exec("chmod " + mode + " " + absPath).waitFor();
+//        Runtime.getRuntime().exec("chmod " + mode + " " + absPath).waitFor();
     }
 
     /**
