@@ -10,6 +10,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.multidex.MultiDexApplication;
 
@@ -19,10 +20,14 @@ import com.business.support.utils.ContextHolder;
 import com.business.support.utils.Utils;
 import com.business.support.webview.WxApi;
 import com.facebook.stetho.Stetho;
-import com.scqdd.mobi.wxapi.Constants;
+import com.tencent.mm.opensdk.modelpay.PayReq;
+import com.zz365.mobi.wxapi.Constants;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +38,7 @@ import java.util.Map;
  */
 
 public class DemoApplicaion extends MultiDexApplication {
-    public static final String appid = "a6018fd6ba9165";//"";a5ff2b9464c121
+    public static final String appid = "a6086931f7149b";//"";a5ff2b9464c121
     public static final String appKey = "be9b2e39d03dd60ed17870594123d7f4";
     public static final String mPlacementId_native_all = "b6018fdc99f11e";
     public static final String mPlacementId_native_mintegral = "b5aa1fa85b86d5";
@@ -146,15 +151,36 @@ public class DemoApplicaion extends MultiDexApplication {
 
         OAIDHandler.init(this);
 
-
+        IWXAPI api = WXAPIFactory.createWXAPI(ContextHolder.getGlobalAppContext(), Constants.APP_ID, true);
+        api.registerApp(Constants.APP_ID);
         WxApi.registerWxSend(new WxApi.SendListener() {
             @Override
             public void send(String json) {
-                IWXAPI api = WXAPIFactory.createWXAPI(ContextHolder.getGlobalAppContext(), Constants.APP_ID, true);
                 final SendAuth.Req req = new SendAuth.Req();
                 req.scope = "snsapi_userinfo,snsapi_friend,snsapi_message,snsapi_contact";
                 req.state = "none";
                 api.sendReq(req);
+            }
+        });
+        WxApi.registerPay(new WxApi.PayListener() {
+            @Override
+            public void payStart(String json) throws JSONException {
+                JSONObject jsonObj = new JSONObject(json);
+                PayReq req = new PayReq();
+                //req.appId = "wxf8b4f85f3a794e77";  // 测试用appId
+                req.appId = jsonObj.getString("appid");
+                req.partnerId = jsonObj.getString("partnerid");
+                req.prepayId = jsonObj.getString("prepayid");
+                req.nonceStr = jsonObj.getString("noncestr");
+                req.timeStamp = jsonObj.getString("timestamp");
+                req.packageValue = jsonObj.getString("package");
+                req.sign = jsonObj.getString("sign");
+                req.extData = "app data"; // optional
+//                Toast.makeText(getApplicationContext(), "正常调起支付", Toast.LENGTH_SHORT).show();
+                Log.d("jim", "check args " + req.checkArgs());
+                // 在支付之前，如果应用没有注册到微信，应该先调用IWXMsg.registerApp将应用注册到微信
+                Log.d("jim", "send return :" + api.sendReq(req));
+
             }
         });
         Log.e("tjt852", "external-files-path=" + this.getExternalFilesDir(null).getAbsolutePath());

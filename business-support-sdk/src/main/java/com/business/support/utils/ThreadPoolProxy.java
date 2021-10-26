@@ -1,6 +1,7 @@
 package com.business.support.utils;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,6 +15,11 @@ public class ThreadPoolProxy {
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 10;
+
+    public ThreadPoolExecutor getThreadPoolExecutor() {
+        return mThreadPoolExecutor;
+    }
+
     private ThreadPoolExecutor mThreadPoolExecutor;// 只需要初始化一次
 
 
@@ -24,20 +30,20 @@ public class ThreadPoolProxy {
 
     private void initThreadPoolExecutor() {
         if (mThreadPoolExecutor == null || mThreadPoolExecutor.isShutdown() ||
-            mThreadPoolExecutor.isTerminated()) {
+                mThreadPoolExecutor.isTerminated()) {
             synchronized (ThreadPoolProxy.class) {
                 if (mThreadPoolExecutor == null || mThreadPoolExecutor.isShutdown()
-                    || mThreadPoolExecutor.isTerminated()) {
+                        || mThreadPoolExecutor.isTerminated()) {
                     TimeUnit unit = TimeUnit.SECONDS;
                     BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>(128);
                     ThreadFactory threadFactory = Executors.defaultThreadFactory();
                     mThreadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, // 核心池的大小
-                        MAXIMUM_POOL_SIZE, // 最大线程数
-                        KEEP_ALIVE, // 保持时间
-                        unit, // 保持时间的单位
-                        workQueue, // 工作队列
-                        threadFactory, // 线程工厂
-                        new ThreadPoolExecutor.DiscardOldestPolicy()
+                            MAXIMUM_POOL_SIZE, // 最大线程数
+                            KEEP_ALIVE, // 保持时间
+                            unit, // 保持时间的单位
+                            workQueue, // 工作队列
+                            threadFactory, // 线程工厂
+                            new ThreadPoolExecutor.DiscardOldestPolicy()
                     );
                 }
             }
@@ -60,6 +66,13 @@ public class ThreadPoolProxy {
     public void execute(Runnable task) {
         initThreadPoolExecutor();
         mThreadPoolExecutor.execute(task);
+        Future<String> future = mThreadPoolExecutor.submit(new Callable<String>() {
+
+            @Override
+            public String call() throws Exception {
+                return "nihao";
+            }
+        });
     }
 
 
@@ -71,7 +84,7 @@ public class ThreadPoolProxy {
         mThreadPoolExecutor.remove(task);
     }
 
-    public void stopAll(){
+    public void stopAll() {
         if (mThreadPoolExecutor != null && !mThreadPoolExecutor.isShutdown()) {
             mThreadPoolExecutor.shutdownNow();
         }
@@ -93,13 +106,13 @@ public class ThreadPoolProxy {
         return mNormalThreadPoolProxy;
     }
 
-    public static void clean(){
-        synchronized (ThreadPoolProxy.class){
-            if(mNormalThreadPoolProxy!=null){
+    public static void clean() {
+        synchronized (ThreadPoolProxy.class) {
+            if (mNormalThreadPoolProxy != null) {
                 mNormalThreadPoolProxy.stopAll();
-                mNormalThreadPoolProxy.mThreadPoolExecutor=null;
+                mNormalThreadPoolProxy.mThreadPoolExecutor = null;
             }
-            mNormalThreadPoolProxy=null;
+            mNormalThreadPoolProxy = null;
         }
     }
 

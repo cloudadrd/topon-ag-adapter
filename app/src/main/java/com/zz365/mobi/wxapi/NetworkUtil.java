@@ -1,4 +1,4 @@
-package com.scqdd.mobi.wxapi;
+package com.zz365.mobi.wxapi;
 
 import android.os.Bundle;
 import android.os.Handler;

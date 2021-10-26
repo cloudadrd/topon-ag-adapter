@@ -1,4 +1,4 @@
-package com.scqdd.mobi.wxapi;
+package com.zz365.mobi.wxapi;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.business.support.utils.ContextHolder;
 import com.business.support.webview.WxApi;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -37,6 +36,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
             if (tag == NetworkUtil.GET_TOKEN) {
                 Bundle data = msg.getData();
                 WxApi.result(data.getString("result"));
+                WxApi.registerWxResult(null);
             }
         }
     }

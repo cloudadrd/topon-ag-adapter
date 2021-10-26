@@ -8,7 +8,9 @@ public enum BSAdType {
 
     KS("ks"),
 
-    MV("mv");
+    MV("mv"),
+
+    OTHER("other");
 
     public String getName() {
         return name;
@@ -27,9 +29,10 @@ public enum BSAdType {
             return GDT;
         } else if (value.equals(KS.name)) {
             return KS;
-        }
-        else if (value.equals(MV.name)) {
+        } else if (value.equals(MV.name)) {
             return MV;
+        } else if (value.equals(OTHER.name)) {
+            return OTHER;
         }
         return null;
     }

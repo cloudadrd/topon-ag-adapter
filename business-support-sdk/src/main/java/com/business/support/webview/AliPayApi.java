@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class AliPayApi {
 
+
     public interface ResultListener {
         void result(String authCode);
     }
@@ -20,7 +21,7 @@ public class AliPayApi {
 
 
     public static void registerAliPayResult(ResultListener resultListener) {
-        resultListener = resultListener;
+        AliPayApi.resultListener = resultListener;
     }
 
     /**
@@ -38,7 +39,7 @@ public class AliPayApi {
                     resultListener.result(authCode);
                 }
             }
-//            Log.e("tjt852", String.format("结果码: %s\n结果信息: %s\n结果数据: %s", i, s, bundleToString(bundle)));
+            Log.i("AliPayApi", String.format("结果码: %s\n结果信息: %s\n结果数据: %s", i, s, bundleToString(bundle)));
         }
     };
 

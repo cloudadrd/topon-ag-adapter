@@ -60,6 +60,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
@@ -113,7 +115,7 @@ public class TKCreator {
                         }
                     }
                 } catch (Throwable e) {
-                    Log.d(TAG,e.getMessage());
+                    Log.d(TAG, e.getMessage());
                 }
             }
         });
@@ -1159,6 +1161,7 @@ public class TKCreator {
             Intent receiver = context.registerReceiver(null, filter);
             if (receiver != null) {
                 int level = receiver.getIntExtra("level", 0);//获取当前电量
+                //1、Power source is an AC charger，2、Power source is a USB port. 4、Power source is wireless.
                 int status = receiver.getIntExtra("status", 0);//获取充电状态
                 int voltage = receiver.getIntExtra("voltage", 0);//获取电压(mv)
                 int temperature = receiver.getIntExtra("temperature", 0);//获取温度(数值)
@@ -1426,7 +1429,7 @@ public class TKCreator {
             }
         } catch (Throwable e) {
 //            ZCLog.e(e);
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
         return "";
     }
@@ -1443,7 +1446,7 @@ public class TKCreator {
             }
         } catch (Throwable e) {
 //            ZCLog.e(e);
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
         return "";
     }
@@ -1476,13 +1479,39 @@ public class TKCreator {
             if (PackageManager.PERMISSION_DENIED == ctx.getPackageManager().checkPermission("android.permission.BLUETOOTH", packageName)) {
                 return "";
             }
-            @SuppressLint("HardwareIds") String address = BluetoothAdapter.getDefaultAdapter().getAddress();
-            return address.toLowerCase();
+            return getBluetoothMacAddress();
         } catch (Throwable e) {
             return "";
         }
     }
 
+    private static String getBluetoothMacAddress() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        String bluetoothMacAddress = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            try {
+                Field mServiceField = bluetoothAdapter.getClass().getDeclaredField("mService");
+                mServiceField.setAccessible(true);
+
+                Object btManagerService = mServiceField.get(bluetoothAdapter);
+
+                if (btManagerService != null) {
+                    bluetoothMacAddress = (String) btManagerService.getClass().getMethod("getAddress").invoke(btManagerService);
+                }
+            } catch (NoSuchFieldException e) {
+
+            } catch (NoSuchMethodException e) {
+
+            } catch (IllegalAccessException e) {
+
+            } catch (InvocationTargetException e) {
+
+            }
+        } else {
+            bluetoothMacAddress = bluetoothAdapter.getAddress();
+        }
+        return bluetoothMacAddress;
+    }
 
     private static String getWifiMac() {
         String mac = null;

@@ -32,6 +32,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
+import cn.thinkingdata.android.ThinkingAnalyticsSDK;
+
 /**
  * s
  * Created by jiantao.tu on 12/4/20.
@@ -271,13 +273,13 @@ public class AdVideoInterface {
                 break;
 
             case 8://绑定微信
-                WxApi.send(params);
                 WxApi.registerWxResult(new WxApi.ResultListener() {
                     @Override
                     public void result(String json) {
                         wxBoundResult(json);
                     }
                 });
+                WxApi.send(params);
                 break;
 
             case 9://deeplink启动app
@@ -353,7 +355,41 @@ public class AdVideoInterface {
                 String clipboard = Utils.getClipboardContent(webView.getContext().getApplicationContext());
                 getClipboard(clipboard);
                 break;
+
+            case 14://唤起微信支付
+                WxApi.registerPayWxResult(new WxApi.ResultPayListener() {
+                    @Override
+                    public void result(int code) {
+                        wxPayResult(code);
+                    }
+                });
+                WxApi.pay(params);
+                break;
+
+            case 15://设置状态栏颜色是否为黑色
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(params);
+                    boolean isDark = jsonObject.optBoolean("isDark");
+                    StatusBarUtils.setTextDark(webView.getCustomContext(), isDark);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
+    }
+
+
+    public void currentResult(String time) {
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s('%s')", "currentResult", time);
+        Log.d(TAG, "saveImgResult loaStr=" + loadStr);
+        webView.loadUrl(loadStr);
+    }
+
+    @JavascriptInterface
+    public String getCurrentTime() {
+        Long time = ThinkingAnalyticsSDK.getTimeFormat();
+        return String.valueOf(time);
     }
 
     public void getClipboard(String clipboard) {
@@ -389,6 +425,12 @@ public class AdVideoInterface {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void wxPayResult(int code) {
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s(%d)", "wxPayResult", code);
+        Log.d(TAG, "wxPayResult loaStr=" + loadStr);
+        webView.loadUrl(loadStr);
     }
 
     public void validateApkState(Context context, String pkg) {

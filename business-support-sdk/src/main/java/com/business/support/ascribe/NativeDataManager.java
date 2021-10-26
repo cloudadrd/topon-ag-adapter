@@ -108,7 +108,7 @@ public class NativeDataManager {
         String data = PreferenceTools.getString(context, PREF_REWARD_TASK_FILE_NAME, sceneId, "");
         if (TextUtils.isEmpty(data)) return null;
         String[] splits = data.split("\\$");
-        if (splits.length != 5) return null;
+        if (splits.length != 6) return null;
         return new RewardTaskInfo(splits[0], BSAdType.get(splits[1]), splits[2], splits[3], Integer.parseInt(splits[4]), Long.parseLong(splits[5]));
     }
 

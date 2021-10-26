@@ -20,10 +20,12 @@ import com.business.support.TaskMonitorListener;
 import com.business.support.WhiteService;
 import com.business.support.YMBusinessService;
 import com.business.support.adinfo.BSAdType;
+import com.business.support.adinfo.TKCreator;
 import com.business.support.ascribe.InstallListener;
 import com.business.support.captcha.CaptchaListener;
 import com.business.support.compose.SIDListener;
 import com.business.support.config.Const;
+import com.business.support.deferred.DefaultAndroidDeferredManager;
 import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
@@ -31,6 +33,8 @@ import com.business.support.webview.ImagePreserve;
 import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
+import com.business.support.webview.WxApi;
+
 
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
@@ -216,7 +220,17 @@ public class MainActivity extends Activity {
         findViewById(R.id.customBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopService(new Intent(MainActivity.this, WhiteService.class));
+//                stopService(new Intent(MainActivity.this, WhiteService.class));
+//                WxApi.pay("{\n" +
+//                        "    \"appid\": \"wxe420bdf1b73df10f\" ,\n" +
+//                        "    \"noncestr\": \"20211013114434608111433865363456\" , \n" +
+//                        "    \"package\": \"Sign=WXPay\" ,\n" +
+//                        "    \"partnerid\": \"1598042261\" ,\n" +
+//                        "    \"prepayid\": \"wx131144346840937d6439b9a9a368910000\" ,\n" +
+//                        "    \"sign\": \"OWT4y4JFgrugF+KA5UAF9qTUvNX/9y7qMkX9Y8XkE5nyyMjUQVrpkK/QC7t9F0Tt88OTo+Z3JyCVnNN0tYbiCoRWIvy+y6XLQ7G+sy0Vzud4/ijDmVA1lOUGOv5hMxdeddDDe0JBaH8LbpD/dy7Ky+dvsc5Ndvb5pYtDrhbBpkG4IlLLk3VjfOL2/uEsYOivfWnunu4V4AWRzcwOLqSkCuDK0pSTfMQsPj8qDahNtjon888X2urL1Gv0s8wkvqw94lasTyUJR9JS7JvDLgZdlZIUJhJQCf+qzD1GABbkkunvNyr0YaFzDU+V0y1mUq/duh/lEDue+yj0okJHEGXFQA==\" ,\n" +
+//                        "    \"timestamp\": \"1634096674\" \n" +
+//                        "}");
+                YMBusinessService.startCurrentAdApp("123", 10000);
             }
         });
 
@@ -266,11 +280,10 @@ public class MainActivity extends Activity {
 //        Log.i("check", "isHook=" + hookResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
 //
 //        Log.i("check", "isWireShark=" + wireSharkResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
-
         TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
         biConfig.setMode(TDConfig.ModeEnum.DEBUG);
         ThinkingAnalyticsSDK biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
-
+        ThinkingAnalyticsSDK.calibrateTimeWithNtp("time.windows.com");
         YMBusinessService.init(this, biInstance,
                 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ==",
                 "39ee4d74c93c967def52dbec1e592d20",
@@ -384,7 +397,37 @@ public class MainActivity extends Activity {
 //        });
 
 
+        TKCreator.send(this, "12321");
+
+//        YMBusinessService.traceInstall2("com.tencent.mm.openapi", "123");
+
+        gDM.when(() -> {
+            Log.i("tjt852", "thread-when=" + Thread.currentThread().getName());
+//            throw new RuntimeException("nihaoya when error");
+            return "sss";
+        }).progress(f -> {
+
+        }).then(v -> {
+            Log.i("tjt852", "thread-then=" + Thread.currentThread().getName() + ",v=" + v);
+//            throw new RuntimeException("nihaoya then error");
+
+        }).fail(f -> {
+            Log.i("tjt852", "thread-fail=" + Thread.currentThread().getName() + ",f=" + f.getMessage());
+        }).done(d -> {
+            Log.i("tjt852", "thread-done=" + Thread.currentThread().getName() + ",f=" + d.toString());
+        });
+
+
+//        Const.HANDLER.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(getBaseContext(), String.valueOf(ThinkingAnalyticsSDK.getTimeFormat()), Toast.LENGTH_LONG).show();
+//                Const.HANDLER.postDelayed(this, 2000);
+//            }
+//        }, 2000);
     }
+
+    private static final DefaultAndroidDeferredManager gDM = new DefaultAndroidDeferredManager();
 
 
     @Override

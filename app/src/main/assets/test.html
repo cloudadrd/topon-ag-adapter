@@ -227,7 +227,24 @@
         return "0123456789ABCDEF".charAt(c);
     }
 
+    function wxPay(){
+        var str={
+            "appid": "wxe420bdf1b73df10f" ,
+            "noncestr": "20211013114434608111433865363456" ,
+            "package": "Sign=WXPay" ,
+            "partnerid": "1598042261" ,
+            "prepayid": "wx131144346840937d6439b9a9a368910000" ,
+            "sign": "OWT4y4JFgrugF+KA5UAF9qTUvNX/9y7qMkX9Y8XkE5nyyMjUQVrpkK/QC7t9F0Tt88OTo+Z3JyCVnNN0tYbiCoRWIvy+y6XLQ7G+sy0Vzud4/ijDmVA1lOUGOv5hMxdeddDDe0JBaH8LbpD/dy7Ky+dvsc5Ndvb5pYtDrhbBpkG4IlLLk3VjfOL2/uEsYOivfWnunu4V4AWRzcwOLqSkCuDK0pSTfMQsPj8qDahNtjon888X2urL1Gv0s8wkvqw94lasTyUJR9JS7JvDLgZdlZIUJhJQCf+qzD1GABbkkunvNyr0YaFzDU+V0y1mUq/duh/lEDue+yj0okJHEGXFQA==" ,
+            "timestamp": "1634096674"
+        };
 
+        android.customCall(14,JSON.stringify(str));
+    }
+
+    function wxPayResult(code){
+        document.querySelector("#desc").innerHTML="wx result code="+code;
+
+    }
 
     </script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -279,6 +296,9 @@
     <button onclick="android.customCall(8,'')">绑定微信</button>
 </div>
 
+<div>
+    <button onclick="wxPay()">微信支付</button>
+</div>
 <div>
     <button onclick="android.requestProtobuf()">请求ProtoBuf数据</button>
 </div>

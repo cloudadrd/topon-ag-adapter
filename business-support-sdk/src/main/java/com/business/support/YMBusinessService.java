@@ -1167,6 +1167,13 @@ public class YMBusinessService {
             RewardTaskInfo.putRevelPackage(sceneId, pkgName, appName, adType);
     }
 
+    public static void traceInstall2(String pkgName, String sceneId) {
+        BSAdType adType = BSAdType.OTHER;
+        RewardTaskInfo.adPackages.put(pkgName, new RewardTaskInfo(pkgName, adType, ""));
+        if (!TextUtils.isEmpty(pkgName))
+            RewardTaskInfo.putRevelPackage(sceneId, pkgName, "", adType);
+    }
+
 
     public static FrameLayout getBannerViewByStyle() {
         int sumChance = 0;
@@ -1286,7 +1293,12 @@ public class YMBusinessService {
 
     static boolean isStartAdApp = false;
 
+
     public static boolean startCurrentAdApp(String sceneId) {
+        return startCurrentAdApp(sceneId, 30000);
+    }
+
+    public static boolean startCurrentAdApp(String sceneId, long millis) {
         RewardTaskInfo taskInfo = NativeDataManager.getTaskInfoForSceneId(sceneId);
         if (taskInfo == null) return false;
         if (TextUtils.isEmpty(taskInfo.currentInstallPkg)) return false;
@@ -1298,7 +1310,7 @@ public class YMBusinessService {
                 Const.HANDLER.removeCallbacks(taskMonitorRunnable);
             }
             taskMonitorRunnable = new TaskMonitorRunnable(taskInfo);
-            Const.HANDLER.postDelayed(taskMonitorRunnable, 30000);
+            Const.HANDLER.postDelayed(taskMonitorRunnable, millis);
             taskInfo.infoState = 1;
             taskInfo.startTaskAppTime = System.currentTimeMillis();
             NativeDataManager.writeFileForTaskInfo2(taskInfo);
@@ -1482,8 +1494,6 @@ public class YMBusinessService {
                 }
             }
         });
-
-
 
 
     }

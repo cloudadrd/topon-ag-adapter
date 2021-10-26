@@ -24,16 +24,19 @@ networkLibsPath.add("jingdong");
 
 
 android {
-    compileSdkVersion 29
-    defaultConfig {
-        applicationId "com.scqdd.mobi"//" com.wzadt.mobi com.tc.fm.ppx2048数盟、数美测试包名"//com.hbasc.mobi京东测试
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0.0"
-        multiDexEnabled = true
-    }
     signingConfigs {
+        debug {
+            storeFile file('zhzh365.jks')
+            storePassword 'zhzh365111'
+            keyAlias 'zhzh365'
+            keyPassword 'zhzh365123'
+        }
+        release {
+            storeFile file('zhzh365.jks')
+            storePassword 'zhzh365111'
+            keyAlias 'zhzh365'
+            keyPassword 'zhzh365123'
+        }
         scqdd {
             keyAlias 'scqdd'
             keyPassword 'scqdd123'
@@ -47,18 +50,36 @@ android {
             storeFile file('wzadt.jks')
             storePassword 'wzadt123'
         }
+
+        zhzh365 {
+            keyAlias 'zhzh365'
+            keyPassword 'zhzh365123'
+            storeFile file('zhzh365.jks')
+            storePassword 'zhzh365111'
+        }
     }
+    compileSdkVersion 29
+    defaultConfig {
+        applicationId "com.wzadt.mobi"//"com.zz365.mobi com.wzadt.mobi com.tc.fm.ppx2048数盟、数美测试包名"//com.hbasc.mobi京东测试
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0.0"
+        multiDexEnabled = true
+//        signingConfig signingConfigs.wzadt
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.scqdd
+            signingConfig signingConfigs.wzadt
         }
 
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.scqdd
+            signingConfig signingConfigs.wzadt
 
         }
     }
