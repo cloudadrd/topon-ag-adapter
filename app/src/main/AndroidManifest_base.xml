@@ -81,6 +81,18 @@
                 <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP" />
             </intent-filter>
         </receiver>
+
+
+        <activity
+            android:name=".PermissionActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Translucent.notAnimation">
+            <intent-filter>
+                <action android:name="com.xing.floatbar.PermissionActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

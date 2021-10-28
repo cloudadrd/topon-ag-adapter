@@ -2,11 +2,13 @@ package com.test.ad.demo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -309,66 +311,66 @@ public class MainActivity extends Activity {
                 SLog.i(TAG, "installedHit pkg=" + pkg + ",sceneId=" + sceneId + ",appName=" + appName);
             }
         });
-//        ResUpdateManager.getH5ResPathAndUpdate("95", "forumweb", "95", 101, new ResH5Listener() {
-//
-//            /**
-//             * 资源获取回调函数
-//             * @param isSuccess 是否成功返回
-//             * @param path 返回的H5主页面地址
-//             */
-//            @Override
-//            public void result(boolean isSuccess, String path) {
-//                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
-//                if (!isSuccess) return;
-//                YMBusinessService.startWebViewPage(
-//                        MainActivity.this,
-//                        path + "?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5"
-//                        , new WebViewToNativeListener() {
-//
-//                            @Override
-//                            public void event1(InnerWebViewActivity activity) {
-//
-//                            }
-//
-//                            @Override
-//                            public void event2(InnerWebViewActivity2 activity) {
-//
-//                            }
-//
-//                            @Override
-//                            public void event3(Activity activity, String params) {
-//
-//                            }
-//                        });
-//            }
-//        });
+        ResUpdateManager.getH5ResPathAndUpdate("95", "forumweb", "95", 101, new ResH5Listener() {
+
+            /**
+             * 资源获取回调函数
+             * @param isSuccess 是否成功返回
+             * @param path 返回的H5主页面地址
+             */
+            @Override
+            public void result(boolean isSuccess, String path) {
+                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
+                if (!isSuccess) return;
+                YMBusinessService.startWebViewPage(
+                        MainActivity.this,
+                        path + "?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5"
+                        , new WebViewToNativeListener() {
+
+                            @Override
+                            public void event1(InnerWebViewActivity activity) {
+
+                            }
+
+                            @Override
+                            public void event2(InnerWebViewActivity2 activity) {
+
+                            }
+
+                            @Override
+                            public void event3(Activity activity, String params) {
+
+                            }
+                        });
+            }
+        });
 
         YMBusinessService.setH5RewardPlacementId("广告位ID");
         YMBusinessService.setH5InterstitialPlacementId("b603f37c4ebe4e");
 
-        YMBusinessService.startCaptcha(new CaptchaListener() {
-            @Override
-            public String onAccess(long time) {
-                Log.i(TAG, "onAccess time=" + time);
-                return "验证通过,耗时" + time + "毫秒";
-            }
-
-            @Override
-            public String onFailed(int failCount) {
-                Log.i(TAG, "onFailed failCount=" + failCount);
-                if (failCount > 4) {
-                    Const.HANDLER.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            System.exit(1);
-                        }
-                    }, 1500);
-                    return "验证失败,帐号已封锁";
-                }
-                return "验证失败,已失败" + failCount + "次";
-            }
-
-        });
+//        YMBusinessService.startCaptcha(new CaptchaListener() {
+//            @Override
+//            public String onAccess(long time) {
+//                Log.i(TAG, "onAccess time=" + time);
+//                return "验证通过,耗时" + time + "毫秒";
+//            }
+//
+//            @Override
+//            public String onFailed(int failCount) {
+//                Log.i(TAG, "onFailed failCount=" + failCount);
+//                if (failCount > 4) {
+//                    Const.HANDLER.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            System.exit(1);
+//                        }
+//                    }, 1500);
+//                    return "验证失败,帐号已封锁";
+//                }
+//                return "验证失败,已失败" + failCount + "次";
+//            }
+//
+//        });
 
 
         //支付宝登录
@@ -432,15 +434,57 @@ public class MainActivity extends Activity {
 //                Const.HANDLER.postDelayed(this, 2000);
 //            }
 //        }, 2000);
+        sp = getSharedPreferences("setting", Context.MODE_PRIVATE);
     }
+
 
     private static final DefaultAndroidDeferredManager gDM = new DefaultAndroidDeferredManager();
 
+    private boolean isFirstRun = true;
+    private SharedPreferences sp;
+    public static final String FIRST_ALLOW = "FIRST_ALLOW";
+
+    void firstRunRemind() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle("欢迎使用xxx");
+        builder.setMessage("1、为了向您提供个性化内容推送和安全风控，我们会申请您的设备信息（部分机型称之为”电话权限“）\n" +
+                "2、当您需要图片保存、文件下载、分享功能时我们会向您请求“外部储存”权限\n" +
+                "3、使用本App服务需要接入数据网络或者WLAN网络，可能产生流量费用，具体详情请您咨询当地运营商");
+        builder.setPositiveButton("同意", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean(FIRST_ALLOW, true);
+                isFirstRun = false;
+                editor.apply();
+                dialog.dismiss();
+                PermissionActivity.launch(getApplicationContext(), PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
+                PermissionActivity.launch(getApplicationContext(), PermissionUtils.CODE_READ_PHONE_STATE);
+            }
+        });
+//        builder.setNegativeButton("退出应用", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//                isFirstRun = false;
+//                finish();
+//            }
+//        });
+        Dialog dialog = builder.create();
+        dialog.show();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         YMBusinessService.stopTaskMonitor();
+
+        boolean firstAllow = sp.getBoolean(FIRST_ALLOW, false);
+        if (!firstAllow && isFirstRun) {
+            firstRunRemind();
+            return;
+        }
     }
 
     /**

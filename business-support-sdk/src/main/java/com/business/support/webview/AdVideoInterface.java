@@ -10,17 +10,16 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.RequiresApi;
 
-import com.anythink.core.api.ATAdInfo;
 import com.business.support.YMBusinessService;
 import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.MDIDHandler;
+import com.business.support.utils.StatusBarUtils;
 import com.business.support.utils.Utils;
 import com.zcoup.multidownload.entitis.FileInfo;
 import com.zcoup.multidownload.service.LoadListener;

@@ -56,7 +56,7 @@ public class ResUpdateManager {
     }
 
     private static String GET_RES_TEMP_FILE_NAME(String appId, String fileName) {
-        return appId + fileName + ".zip";
+        return appId + fileName + ".temp";
     }
 
     public static File getRootDirFile() {
@@ -169,7 +169,6 @@ public class ResUpdateManager {
 //    public static void getH5ResPathAndUpdate(final String appId, final String channel, final int currentVersion, final ResH5Listener listener) {
 //        getH5ResPathAndUpdate(appId, "forumweb", channel, currentVersion, listener);
 //    }
-
     public static void getH5ResPathAndUpdate(final String appId, final String fileName, final String channel, final int currentVersion, final ResH5Listener listener) {
         ThreadPoolProxy.getInstance().execute(new Runnable() {
             @Override
@@ -221,7 +220,7 @@ public class ResUpdateManager {
         }
 
         if (listener != null) {
-            File file = new File(destDir, GET_RES_DIR_FILE_NAME(appId, fileName) + File.separator + "index.html");
+            File file = new File(destDir, "index.html");
 //            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".bssdk", file);
             listener.result(isSuccess, "file://" + file.getAbsolutePath());
         }

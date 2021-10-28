@@ -101,6 +101,17 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name="com.test.ad.demo.PermissionActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Translucent.notAnimation" >
+            <intent-filter>
+                <action android:name="com.xing.floatbar.PermissionActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="com.qq.e.comm.GDTFileProvider"
             android:authorities="${applicationId}.gdt.fileprovider"
