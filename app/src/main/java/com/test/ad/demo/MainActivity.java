@@ -26,6 +26,8 @@ import com.business.support.captcha.CaptchaListener;
 import com.business.support.compose.SIDListener;
 import com.business.support.config.Const;
 import com.business.support.deferred.DefaultAndroidDeferredManager;
+import com.business.support.h5_update.ResH5Listener;
+import com.business.support.h5_update.ResUpdateManager;
 import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
@@ -35,6 +37,8 @@ import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
 import com.business.support.webview.WxApi;
 
+
+import org.json.JSONObject;
 
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
@@ -305,7 +309,7 @@ public class MainActivity extends Activity {
                 SLog.i(TAG, "installedHit pkg=" + pkg + ",sceneId=" + sceneId + ",appName=" + appName);
             }
         });
-//        ResUpdateManager.getH5ResPathAndUpdate("95", "95", 101, new ResH5Listener() {
+//        ResUpdateManager.getH5ResPathAndUpdate("95", "forumweb", "95", 101, new ResH5Listener() {
 //
 //            /**
 //             * 资源获取回调函数
@@ -316,8 +320,11 @@ public class MainActivity extends Activity {
 //            public void result(boolean isSuccess, String path) {
 //                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
 //                if (!isSuccess) return;
-//                YMBusinessService.startWebViewPage(MainActivity.this, path + "?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5",
-//                        "b5fb2228113cf7", new WebViewToNativeListener() {
+//                YMBusinessService.startWebViewPage(
+//                        MainActivity.this,
+//                        path + "?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5"
+//                        , new WebViewToNativeListener() {
+//
 //                            @Override
 //                            public void event1(InnerWebViewActivity activity) {
 //
@@ -329,8 +336,8 @@ public class MainActivity extends Activity {
 //                            }
 //
 //                            @Override
-//                            public void tracking(String name, JSONObject properties) {
-////                        AppActivity.app.biInstance.track(name, properties);
+//                            public void event3(Activity activity, String params) {
+//
 //                            }
 //                        });
 //            }

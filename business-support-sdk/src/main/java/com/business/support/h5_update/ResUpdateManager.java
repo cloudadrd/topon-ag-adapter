@@ -34,50 +34,65 @@ public class ResUpdateManager {
 
     private static final String TAG = "ResUpdateManager";
 
-    private static final String ZIP_FILE_NAME = "forumweb.zip";
+//    private static final String ZIP_FILE_NAME = "forumweb.zip";
+//
+//    private static final String RES_DIR_FILE_NAME = "forumweb";
+//    private static final String RES_DIR_TEMP_FILE_NAME = "forumweb_temp";
+//
+//    private static final String RES_TEMP_FILE_NAME = "forumweb.temp";
+//
+//    private static final int CURRENT_VERSION = 101;
 
-    private static final String RES_DIR_FILE_NAME = "forumweb";
-    private static final String RES_DIR_TEMP_FILE_NAME = "forumweb_temp";
+    private static String GET_ZIP_FILE_NAME(String appId, String fileName) {
+        return appId + fileName + ".zip";
+    }
 
-    private static final String RES_TEMP_FILE_NAME = "forumweb.temp";
+    private static String GET_RES_DIR_FILE_NAME(String appId, String fileName) {
+        return appId + fileName;
+    }
 
-    private static final int CURRENT_VERSION = 101;
+    private static String GET_RES_DIR_TEMP_FILE_NAME(String appId, String fileName) {
+        return appId + fileName + "_temp";
+    }
 
+    private static String GET_RES_TEMP_FILE_NAME(String appId, String fileName) {
+        return appId + fileName + ".zip";
+    }
 
     public static File getRootDirFile() {
         return new File(ContextHolder.getGlobalAppContext().getFilesDir(), "res_h5");
     }
 
-    public static File getResDirFile() {
-        return new File(getRootDirFile(), RES_DIR_FILE_NAME);
+    public static File getResDirFile(String appId, String fileName) {
+        return new File(getRootDirFile(), GET_RES_DIR_FILE_NAME(appId, fileName));
     }
 
-    public static File getResZip() {
-        return new File(getRootDirFile(), ZIP_FILE_NAME);
+    public static File getResZip(String appId, String fileName) {
+        return new File(getRootDirFile(), GET_ZIP_FILE_NAME(appId, fileName));
     }
 
-    public static File getResDirTemp() {
-        return new File(getRootDirFile(), RES_DIR_TEMP_FILE_NAME);
+    public static File getResDirTemp(String appId, String fileName) {
+        return new File(getRootDirFile(), GET_RES_DIR_TEMP_FILE_NAME(appId, fileName));
     }
 
-    public static File getResVersionFile() {
-        return new File(getResDirFile(), VERSION_FILE_NAME);
+    public static File getResVersionFile(String appId, String fileName) {
+        return new File(getResDirFile(appId, fileName), VERSION_FILE_NAME);
     }
 
-    public static File getResTempVersionFile() {
-        return new File(getResDirTemp(), VERSION_FILE_NAME);
+    public static File getResTempVersionFile(String appId, String fileName) {
+        return new File(getResDirTemp(appId, fileName), VERSION_FILE_NAME);
     }
 
 
-    public static boolean createVersionFile(boolean isTemp, int version) {
+    public static boolean createVersionFile(boolean isTemp, int version, String appId, String fileName) {
         File forumweb = null;
         File versionFile = null;
         if (isTemp) {
-            forumweb = getResDirTemp();
-            versionFile = getResTempVersionFile();
+            forumweb = getResDirTemp(appId, fileName);
+            versionFile = getResTempVersionFile(appId, fileName);
         } else {
-            forumweb = getResDirFile();
-            versionFile = getResVersionFile();
+            forumweb = getResDirFile(appId, fileName);
+            versionFile = getResVersionFile(appId, fileName);
         }
 
         if (!forumweb.exists() || !forumweb.isDirectory()) {
@@ -112,12 +127,12 @@ public class ResUpdateManager {
 
     }
 
-    public static int getVersion() {
-        File forumweb = getResDirFile();
+    public static int getVersion(String appId, String fileName) {
+        File forumweb = getResDirFile(appId, fileName);
         if (!forumweb.exists() || !forumweb.isDirectory()) {
             return -1;
         }
-        File versionFile = getResVersionFile();
+        File versionFile = getResVersionFile(appId, fileName);
         if (!versionFile.exists() || !versionFile.isFile()) {
             return -1;
         }
@@ -151,43 +166,49 @@ public class ResUpdateManager {
      * @param currentVersion
      * @param listener
      */
-    public static void getH5ResPathAndUpdate(final String appId, final String channel, final int currentVersion, final ResH5Listener listener) {
+//    public static void getH5ResPathAndUpdate(final String appId, final String channel, final int currentVersion, final ResH5Listener listener) {
+//        getH5ResPathAndUpdate(appId, "forumweb", channel, currentVersion, listener);
+//    }
+
+    public static void getH5ResPathAndUpdate(final String appId, final String fileName, final String channel, final int currentVersion, final ResH5Listener listener) {
         ThreadPoolProxy.getInstance().execute(new Runnable() {
             @Override
             public void run() {
-                execute(appId, channel, currentVersion, listener);
+                execute(appId, fileName, channel, currentVersion, listener);
             }
         });
     }
 
-    public static void execute(String appId, String channel, final int currentVersion, ResH5Listener listener) {
+
+    private static void execute(String appId, final String fileName, String channel, final int currentVersion, ResH5Listener listener) {
         Context context = ContextHolder.getGlobalAppContext();
-        File destDir = getResDirFile();
-        File resDirTemp = getResDirTemp();
+        File destDir = getResDirFile(appId, fileName);
+        File resDirTemp = getResDirTemp(appId, fileName);
         if (resDirTemp.exists() && resDirTemp.isDirectory()) {
             FileUtils.delete(destDir);
             resDirTemp.renameTo(destDir);
         }
 
-        final int version = getVersion();
+        final int version = getVersion(appId, fileName);
         boolean isUnzip = version == -1;
         boolean isSuccess = true;
         if (isUnzip) {
             File subFile = null;
             try {
-                subFile = getResZip();
+                subFile = getResZip(appId, fileName);
                 if (!subFile.exists()) {
-                    if (!AssetsFileManager.isFileExists(context, ZIP_FILE_NAME)) {
-                        throw new FileNotFoundException(ZIP_FILE_NAME + " no exist");
+                    final String zipFileName = GET_ZIP_FILE_NAME(appId, fileName);
+                    if (!AssetsFileManager.isFileExists(context, zipFileName)) {
+                        throw new FileNotFoundException(zipFileName + " no exist");
                     }
-                    AssetsFileManager.copyAssets(context, ZIP_FILE_NAME, subFile, "700");
+                    AssetsFileManager.copyAssets(context, zipFileName, subFile, "700");
                 }
                 FileUtils.delete(destDir);
                 List<File> fileList = ZipUtils.unzipFile(subFile, destDir);
                 if (fileList == null || fileList.size() == 0) {
                     isSuccess = false;
                 } else {
-                    if (!createVersionFile(false, currentVersion)) {
+                    if (!createVersionFile(false, currentVersion, appId, fileName)) {
                         isSuccess = false;
                     }
                 }
@@ -200,7 +221,7 @@ public class ResUpdateManager {
         }
 
         if (listener != null) {
-            File file = new File(destDir, RES_DIR_FILE_NAME + File.separator + "index.html");
+            File file = new File(destDir, GET_RES_DIR_FILE_NAME(appId, fileName) + File.separator + "index.html");
 //            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".bssdk", file);
             listener.result(isSuccess, "file://" + file.getAbsolutePath());
         }
@@ -231,7 +252,7 @@ public class ResUpdateManager {
                     if (newVersion > tempVersion) {
                         String downloadUrl = dataObj.optString("downloadFile");
                         if (newVersion > 0 && !TextUtils.isEmpty(downloadUrl)) {
-                            downZipAndUnZip(downloadUrl, getRootDirFile().getAbsolutePath(), newVersion);
+                            downZipAndUnZip(appId, fileName, downloadUrl, getRootDirFile().getAbsolutePath(), newVersion);
                         }
                     }
 
@@ -249,8 +270,8 @@ public class ResUpdateManager {
     }
 
 
-    public static void downZipAndUnZip(String url, final String saveDir, final int version) {
-        FileInfo fileInfo = new FileInfo(url, RES_TEMP_FILE_NAME, saveDir, 3, 80,
+    public static void downZipAndUnZip(String appId, String fileName, String url, final String saveDir, final int version) {
+        FileInfo fileInfo = new FileInfo(url, GET_RES_TEMP_FILE_NAME(appId, fileName), saveDir, 3, 80,
                 true, new LoadListener() {
             @Override
             public void onStart(FileInfo fileInfo) {
@@ -269,20 +290,20 @@ public class ResUpdateManager {
                     @Override
                     public void run() {
                         try {
-                            String filePath = saveDir + File.separator + RES_TEMP_FILE_NAME;
+                            String filePath = saveDir + File.separator + GET_RES_TEMP_FILE_NAME(appId, fileName);
                             File file = new File(filePath);
-                            File zipFile = getResZip();
+                            File zipFile = getResZip(appId, fileName);
                             if (file.exists() && file.isFile()) {
                                 FileUtils.delete(zipFile);
                                 file.renameTo(zipFile);
                             }
                             FileUtils.delete(file);
                             //解压
-                            File destDir = new File(saveDir, RES_DIR_TEMP_FILE_NAME);
+                            File destDir = new File(saveDir, GET_RES_DIR_TEMP_FILE_NAME(appId, fileName));
                             FileUtils.delete(destDir);
 
                             ZipUtils.unzipFile(zipFile, destDir);
-                            createVersionFile(true, version);
+                            createVersionFile(true, version, appId, fileName);
                             FileUtils.delete(zipFile);
                             FileUtils.delete(file);
                         } catch (Exception e) {
