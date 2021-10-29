@@ -246,6 +246,19 @@
 
     }
 
+    function requestPermission(){
+
+        var jsonObj={
+            "permissions":[
+                   "android.permission.READ_PHONE_STATE",
+                   "android.permission.WRITE_EXTERNAL_STORAGE"
+            ],
+            "explain":"为了向您提供个性化内容推送和安全风控，我们会申请您的设备信息（部分机型称之为”电话权限“）\n当您需要图片保存、文件下载、分享功能时我们会向您请求“外部储存”权限\n"
+
+        }
+        android.customCall(16,JSON.stringify(jsonObj));
+    }
+
     </script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
@@ -298,6 +311,10 @@
 
 <div>
     <button onclick="wxPay()">微信支付</button>
+</div>
+
+<div>
+    <button onclick="requestPermission()">申请权限</button>
 </div>
 <div>
     <button onclick="android.requestProtobuf()">请求ProtoBuf数据</button>

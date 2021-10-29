@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.business.support.R;
@@ -40,12 +41,14 @@ import com.business.support.config.Assets;
 import com.business.support.config.Const;
 import com.business.support.utils.BeanUtils;
 import com.business.support.utils.ContextHolder;
+import com.business.support.utils.PermissionUtils;
 import com.business.support.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class InnerWebViewActivity2 extends Activity {
@@ -55,6 +58,7 @@ public class InnerWebViewActivity2 extends Activity {
     public static final String KEY_URL = "link";
     public static final String KEY_IS_LOAD_BAR_HIDE = "isLoadBarHide";
     public static final String KEY_CLOSE_LINEAR = "closeLinear";
+    private static final String TAG = "InnerWebViewActivity2";
 
     private ProgressBar progressBar;
 //    private WebView webView;
@@ -86,6 +90,64 @@ public class InnerWebViewActivity2 extends Activity {
         context.startActivity(intent);
         ((Activity) context).overridePendingTransition(0, 0);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        PermissionUtils.requestPermissionsResult(this, requestCode, permissions, grantResults, mPermissionGrant, permissionOver, true, permissionExplain);
+        Log.i(TAG, "PermissionUtils:onRequestPermissionsResult");
+    }
+
+    PermissionUtils.PermissionOver permissionOver = overCode -> {
+        String loadStr = String.format(Locale.getDefault(), "javascript:%s(%d)", "permissionResult", overCode);
+        Log.d(AdVideoInterface.class.getName(), "permissionResult loaStr=" + loadStr);
+        webView.loadUrl(loadStr);
+    };
+
+    private String permissionExplain = null;
+
+    public void requestPermissions(String[] permissions, String explain) {
+        permissionExplain = explain;
+        PermissionUtils.requestMultiPermissions((Activity) webView.getCustomContext(), permissions, mPermissionGrant, permissionOver, explain);
+    }
+
+    public PermissionUtils.PermissionGrant mPermissionGrant = requestCode -> {
+        switch (requestCode) {
+            case PermissionUtils.CODE_RECORD_AUDIO:
+                Log.w(TAG, "Result Permission Grant CODE_RECORD_AUDIO");
+                break;
+            case PermissionUtils.CODE_GET_ACCOUNTS:
+                Log.w(TAG, "Result Permission Grant CODE_GET_ACCOUNTS");
+                break;
+            case PermissionUtils.CODE_READ_PHONE_STATE:
+                Log.w(TAG, "Result Permission Grant CODE_READ_PHONE_STATE");
+                break;
+            case PermissionUtils.CODE_CALL_PHONE:
+                Log.w(TAG, "Result Permission Grant CODE_CALL_PHONE");
+                break;
+            case PermissionUtils.CODE_CAMERA:
+                Log.w(TAG, "Result Permission Grant CODE_CAMERA");
+                break;
+            case PermissionUtils.CODE_ACCESS_FINE_LOCATION:
+                Log.w(TAG, "Result Permission Grant CODE_ACCESS_FINE_LOCATION");
+                break;
+            case PermissionUtils.CODE_ACCESS_COARSE_LOCATION:
+                Log.w(TAG, "Result Permission Grant CODE_ACCESS_COARSE_LOCATION");
+                break;
+            case PermissionUtils.CODE_READ_EXTERNAL_STORAGE:
+                Log.w(TAG, "Result Permission Grant CODE_READ_EXTERNAL_STORAGE");
+                break;
+            case PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE:
+                Log.w(TAG, "Result Permission Grant CODE_WRITE_EXTERNAL_STORAGE");
+
+//                    overridePendingTransition(0, 0);
+                break;
+            case PermissionUtils.CODE_PERMISSION_WRITE_SECURE_SETTINGS:
+                Log.w(TAG, "Result Permission Grant CODE_PERMISSION_WRITE_SECURE_SETTINGS");
+                break;
+            default:
+                break;
+        }
+    };
 
     @Override
     protected void onPause() {
