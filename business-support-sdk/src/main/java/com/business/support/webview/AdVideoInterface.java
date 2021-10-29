@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
@@ -20,10 +21,12 @@ import com.business.support.YMBusinessService;
 import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.MDIDHandler;
 import com.business.support.utils.StatusBarUtils;
+import com.business.support.utils.PermissionUtils;
 import com.business.support.utils.Utils;
 import com.zcoup.multidownload.entitis.FileInfo;
 import com.zcoup.multidownload.service.LoadListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -371,6 +374,26 @@ public class AdVideoInterface {
                     jsonObject = new JSONObject(params);
                     boolean isDark = jsonObject.optBoolean("isDark");
                     StatusBarUtils.setTextDark(webView.getCustomContext(), isDark);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 16://调用权限
+                try {
+                    jsonObject = new JSONObject(params);
+                    JSONArray jsonArray = jsonObject.optJSONArray("permissions");
+                    String explain = jsonObject.optString("explain");
+                    String[] permissions = new String[0];
+                    if (jsonArray != null) {
+                        permissions = new String[jsonArray.length()];
+                    }
+                    for (int i = 0; i < permissions.length; i++) {
+                        permissions[i] = jsonArray.optString(i);
+                    }
+                    if (webView.getCustomContext() instanceof InnerWebViewActivity2) {
+                        InnerWebViewActivity2 activity = (InnerWebViewActivity2) webView.getCustomContext();
+                        activity.requestPermissions(permissions, explain);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

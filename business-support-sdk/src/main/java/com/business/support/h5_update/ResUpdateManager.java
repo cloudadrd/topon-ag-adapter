@@ -1,9 +1,7 @@
 package com.business.support.h5_update;
 
 import android.content.Context;
-import android.net.Uri;
 import android.text.TextUtils;
-
 
 import com.business.support.config.Const;
 import com.business.support.http.HttpRequester;
@@ -160,15 +158,14 @@ public class ResUpdateManager {
     /**
      * 获取H5资源地址并且检测服务端是否有可用更新
      * 有则下载覆盖，下次app启动时生效
+     * 本地放在assets文件夹下的资源压缩包文件格式按照：appId+fileName+".zip"所构成
      *
-     * @param appId
-     * @param channel
-     * @param currentVersion
-     * @param listener
+     * @param appId          不同appId分别管理资源文件的更新和下载
+     * @param fileName       本地默认资源压缩包的名称
+     * @param channel        渠道
+     * @param currentVersion 本地默认资源包版本
+     * @param listener       资源回调地址接口
      */
-//    public static void getH5ResPathAndUpdate(final String appId, final String channel, final int currentVersion, final ResH5Listener listener) {
-//        getH5ResPathAndUpdate(appId, "forumweb", channel, currentVersion, listener);
-//    }
     public static void getH5ResPathAndUpdate(final String appId, final String fileName, final String channel, final int currentVersion, final ResH5Listener listener) {
         ThreadPoolProxy.getInstance().execute(new Runnable() {
             @Override
@@ -203,7 +200,7 @@ public class ResUpdateManager {
                     AssetsFileManager.copyAssets(context, zipFileName, subFile, "700");
                 }
                 FileUtils.delete(destDir);
-                List<File> fileList = ZipUtils.unzipFile(subFile, destDir);
+                List<File> fileList = ZipUtils.unzipFile(subFile, destDir, true);
                 if (fileList == null || fileList.size() == 0) {
                     isSuccess = false;
                 } else {
@@ -301,7 +298,7 @@ public class ResUpdateManager {
                             File destDir = new File(saveDir, GET_RES_DIR_TEMP_FILE_NAME(appId, fileName));
                             FileUtils.delete(destDir);
 
-                            ZipUtils.unzipFile(zipFile, destDir);
+                            ZipUtils.unzipFile(zipFile, destDir, true);
                             createVersionFile(true, version, appId, fileName);
                             FileUtils.delete(zipFile);
                             FileUtils.delete(file);

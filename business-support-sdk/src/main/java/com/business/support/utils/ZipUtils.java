@@ -1,5 +1,6 @@
 package com.business.support.utils;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -228,9 +229,10 @@ public final class ZipUtils {
      * @throws IOException if unzip unsuccessfully
      */
     public static List<File> unzipFile(final String zipFilePath,
-                                       final String destDirPath)
+                                       final String destDirPath,
+                                       final boolean isRootPass)
             throws IOException {
-        return unzipFileByKeyword(zipFilePath, destDirPath, null);
+        return unzipFileByKeyword(zipFilePath, destDirPath, null, isRootPass);
     }
 
     /**
@@ -242,9 +244,10 @@ public final class ZipUtils {
      * @throws IOException if unzip unsuccessfully
      */
     public static List<File> unzipFile(final File zipFile,
-                                       final File destDir)
+                                       final File destDir,
+                                       final boolean isRootPass)
             throws IOException {
-        return unzipFileByKeyword(zipFile, destDir, null);
+        return unzipFileByKeyword(zipFile, destDir, null, isRootPass);
     }
 
     /**
@@ -258,9 +261,10 @@ public final class ZipUtils {
      */
     public static List<File> unzipFileByKeyword(final String zipFilePath,
                                                 final String destDirPath,
-                                                final String keyword)
+                                                final String keyword,
+                                                final boolean isRootPass)
             throws IOException {
-        return unzipFileByKeyword(FileUtils.getFileByPath(zipFilePath), FileUtils.getFileByPath(destDirPath), keyword);
+        return unzipFileByKeyword(FileUtils.getFileByPath(zipFilePath), FileUtils.getFileByPath(destDirPath), keyword, isRootPass);
     }
 
     /**
@@ -274,7 +278,8 @@ public final class ZipUtils {
      */
     public static List<File> unzipFileByKeyword(final File zipFile,
                                                 final File destDir,
-                                                final String keyword)
+                                                final String keyword,
+                                                final boolean isRootPass)
             throws IOException {
         if (zipFile == null || destDir == null) return null;
         List<File> files = new ArrayList<>();
@@ -284,8 +289,16 @@ public final class ZipUtils {
             if (FileUtils.isSpace(keyword)) {
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = ((ZipEntry) entries.nextElement());
-                    String entryName = entry.getName().replace("\\", "/");
-                    if (entryName.contains("../")) {
+                    String entryName;
+                    if (isRootPass) {
+                        int idx = entry.getName().indexOf(File.separator);
+                        if (idx < 0) return null;
+                        entryName = entry.getName().substring(idx + 1);
+                    } else {
+                        entryName = entry.getName().replace("\\", "/");
+                    }
+
+                    if (entryName.contains("../") || TextUtils.isEmpty(entryName)) {
                         Log.e("ZipUtils", "entryName: " + entryName + " is dangerous!");
                         continue;
                     }
