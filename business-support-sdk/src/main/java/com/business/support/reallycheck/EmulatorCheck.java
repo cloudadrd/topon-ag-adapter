@@ -35,115 +35,119 @@ public class EmulatorCheck {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (notHasBlueTooth(context)) {
-//            Log.e(TAG, "notHasBlueTooth");
-            stringBuilder.append("1");
-        }
+        try {
+            if (notHasBlueTooth(context)) {
+    //            Log.e(TAG, "notHasBlueTooth");
+                stringBuilder.append("1");
+            }
 
-        if (buildCheck()) {
-//            Log.e(TAG, "buildCheck");
-            stringBuilder.append(",3");
-        }
+            if (buildCheck()) {
+    //            Log.e(TAG, "buildCheck");
+                stringBuilder.append(",3");
+            }
 
-        if (checkIsNotRealPhone()) {
-//            Log.e(TAG, "checkIsNotRealPhone");
-            stringBuilder.append(",4");
-        }
+            if (checkIsNotRealPhone()) {
+    //            Log.e(TAG, "checkIsNotRealPhone");
+                stringBuilder.append(",4");
+            }
 
-        if (checkPipes()) {
-//            Log.e(TAG, "checkPipes");
-            stringBuilder.append(",5");
-        }
+            if (checkPipes()) {
+    //            Log.e(TAG, "checkPipes");
+                stringBuilder.append(",5");
+            }
 
-        if (isEmulatorFromAbi()) {
-//            Log.e(TAG, "isEmulatorFromAbi");
-            stringBuilder.append(",7");
-        }
+            if (isEmulatorFromAbi()) {
+    //            Log.e(TAG, "isEmulatorFromAbi");
+                stringBuilder.append(",7");
+            }
 
-        if (checkDeviceIDS5(context)) {
-//            Log.e(TAG, "checkDeviceIDS5");
-            stringBuilder.append(",8");
-        }
+            if (checkDeviceIDS5(context)) {
+    //            Log.e(TAG, "checkDeviceIDS5");
+                stringBuilder.append(",8");
+            }
 
-        if (checkQEmuDriverFile2()) {
-//            Log.e(TAG, "checkQEmuDriverFile2");
-            stringBuilder.append(",9");
-        }
+            if (checkQEmuDriverFile2()) {
+    //            Log.e(TAG, "checkQEmuDriverFile2");
+                stringBuilder.append(",9");
+            }
 
-        if (checkEmulatorFiles3()) {
-//            Log.e(TAG, "checkEmulatorFiles3");
-            stringBuilder.append(",10");
-        }
+            if (checkEmulatorFiles3()) {
+    //            Log.e(TAG, "checkEmulatorFiles3");
+                stringBuilder.append(",10");
+            }
 
-        if (checkOperatorNameAndroid8(context)) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",11");
-        }
+            if (checkOperatorNameAndroid8(context)) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",11");
+            }
 
-        //////////START///
-        if (qemuCheck(context)) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",12");
-        }
+            //////////START///
+            if (qemuCheck(context)) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",12");
+            }
 
-        if (getUserAppNumber()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",13");
-        }
+            if (getUserAppNumber()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",13");
+            }
 
-        if (!supportCamera(context)) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",14");
-        }
+            if (!supportCamera(context)) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",14");
+            }
 
-        if (checkFeaturesByCgroup()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",15");
-        }
+            if (checkFeaturesByCgroup()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",15");
+            }
 
-        if (checkFeaturesByHardware()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",16");
-        }
+            if (checkFeaturesByHardware()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",16");
+            }
 
-        if (checkFeaturesByFlavor()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",17");
-        }
+            if (checkFeaturesByFlavor()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",17");
+            }
 
-        if (checkFeaturesByModel()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",18");
-        }
+            if (checkFeaturesByModel()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",18");
+            }
 
-        if (checkFeaturesByManufacturer()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",19");
-        }
+            if (checkFeaturesByManufacturer()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",19");
+            }
 
-        if (checkFeaturesByBoard()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",20");
-        }
+            if (checkFeaturesByBoard()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",20");
+            }
 
-        if (checkFeaturesByPlatform()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",21");
-        }
+            if (checkFeaturesByPlatform()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",21");
+            }
 
-        if (checkFeaturesByBaseBand()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",22");
-        }
+            if (checkFeaturesByBaseBand()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",22");
+            }
 
-        if (getSensorNumber(context)) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",23");
-        }
+            if (getSensorNumber(context)) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",23");
+            }
 
-        if (checkSystemProperty()) {
-//            Log.e(TAG, "checkOperatorNameAndroid8");
-            stringBuilder.append(",24");
+            if (checkSystemProperty()) {
+    //            Log.e(TAG, "checkOperatorNameAndroid8");
+                stringBuilder.append(",24");
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
 
         return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(), 30);

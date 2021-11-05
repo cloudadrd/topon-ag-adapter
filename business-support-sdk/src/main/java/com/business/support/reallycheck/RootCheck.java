@@ -63,32 +63,36 @@ public class RootCheck {
     public static ResultData validCheck(Context context) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (fileCheck()) {
-//            Log.e(TAG, "fileCheck");
-            stringBuilder.append("1");
+        try {
+            if (fileCheck()) {
+    //            Log.e(TAG, "fileCheck");
+                stringBuilder.append("1");
+            }
+
+            if (rootPackagesCheck(context)) {
+    //            Log.e(TAG, "rootPackagesCheck");
+                stringBuilder.append(",2");
+            }
+
+            if (dangerousPropertiesCheck()) {
+    //            Log.e(TAG, "dangerousPropertiesCheck");
+                stringBuilder.append(",3");
+            }
+
+            if (rwPathsCheck()) {
+    //            Log.e(TAG, "rwPathsCheck");
+                stringBuilder.append(",4");
+            }
+
+            if (isDeviceRooted()) {
+    //            Log.e(TAG, "isDeviceRooted");
+                stringBuilder.append(",5");
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
 
-        if (rootPackagesCheck(context)) {
-//            Log.e(TAG, "rootPackagesCheck");
-            stringBuilder.append(",2");
-        }
-
-        if (dangerousPropertiesCheck()) {
-//            Log.e(TAG, "dangerousPropertiesCheck");
-            stringBuilder.append(",3");
-        }
-
-        if (rwPathsCheck()) {
-//            Log.e(TAG, "rwPathsCheck");
-            stringBuilder.append(",4");
-        }
-
-        if (isDeviceRooted()) {
-//            Log.e(TAG, "isDeviceRooted");
-            stringBuilder.append(",5");
-        }
-
-        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(),25);
+        return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(), 25);
     }
 
     /**
@@ -143,8 +147,8 @@ public class RootCheck {
         DANGEROUS_PROPERTIES.put("[ro.debuggable]", "[1]");
         DANGEROUS_PROPERTIES.put("[ro.secure]", "[0]");
         String[] lines = propertiesReader();
+        if (lines == null) return false;
         List<String> propertiesFound = new ArrayList<>();
-        assert lines != null;
         for (String line : lines) {
             for (String key : DANGEROUS_PROPERTIES.keySet()) {
                 if (line.contains(key) && line.contains(DANGEROUS_PROPERTIES.get(key))) {
