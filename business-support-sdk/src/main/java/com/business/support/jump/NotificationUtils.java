@@ -10,11 +10,13 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.widget.RemoteViews;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.business.support.R;
+
 
 public class NotificationUtils extends ContextWrapper {
     public static final String TAG = NotificationUtils.class.getSimpleName();
@@ -70,12 +72,15 @@ public class NotificationUtils extends ContextWrapper {
         fullScreenIntent.putExtra("type", type);
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
+        view.setOnClickPendingIntent(R.id.notify_btn, fullScreenPendingIntent);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, id)
                         .setSmallIcon(getAppIcon())
                         .setContentTitle(title)
                         .setTicker(content)
                         .setContentText(content)
+                        .setCustomContentView(view)
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setPriority(NotificationCompat.PRIORITY_MAX)

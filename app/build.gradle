@@ -26,7 +26,7 @@ networkLibsPath.add("jingdong");
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.scqdd.mobi"//" com.tc.fm.ppx2048数盟、数美测试包名"//com.hbasc.mobi京东测试
         minSdkVersion 19

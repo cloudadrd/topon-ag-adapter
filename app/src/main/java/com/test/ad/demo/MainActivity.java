@@ -3,49 +3,35 @@ package com.test.ad.demo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
+import android.app.AlarmManager;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.CalendarContract;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
-import com.anythink.custom.adapter.OAIDHandler;
-import com.baidu.mobads.sdk.api.AppActivity;
 import com.business.support.StrategyInfoListener;
 import com.business.support.TaskMonitorListener;
 import com.business.support.WhiteService;
 import com.business.support.YMBusinessService;
 import com.business.support.adinfo.BSAdType;
 import com.business.support.ascribe.InstallListener;
-import com.business.support.ascribe.InstallStateMonitor;
 import com.business.support.compose.SIDListener;
 import com.business.support.config.Const;
-import com.business.support.h5_update.ResH5Listener;
-import com.business.support.h5_update.ResUpdateManager;
-import com.business.support.jump.JumpService;
 import com.business.support.jump.NativeActivity;
 import com.business.support.jump.NativeAdManager;
-import com.business.support.jump.NotificationUtils;
-import com.business.support.jump.ScreenBroadcastReceiver;
 import com.business.support.utils.ImageResultListener;
 import com.business.support.utils.SLog;
 import com.business.support.webview.CacheWebView;
@@ -54,16 +40,11 @@ import com.business.support.webview.InnerWebViewActivity;
 import com.business.support.webview.InnerWebViewActivity2;
 import com.business.support.webview.WebViewToNativeListener;
 
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.thinkingdata.android.TDConfig;
 import cn.thinkingdata.android.ThinkingAnalyticsSDK;
-import me.ele.lancet.base.Origin;
-import me.ele.lancet.base.annotations.ClassOf;
-import me.ele.lancet.base.annotations.Insert;
-import me.ele.lancet.base.annotations.TargetClass;
 
 public class MainActivity extends Activity {
 
@@ -253,24 +234,24 @@ public class MainActivity extends Activity {
 //            }
 //        },10000);
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this).setIcon(R.mipmap.ic_launcher).setTitle("OAID")
-                        .setMessage(OAIDHandler.getOAID()).setPositiveButton("复制", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                putTextIntoClip(MainActivity.this, OAIDHandler.getOAID());
-                            }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-                builder.create().show();
-            }
-        }, 1000);
+//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this).setIcon(R.mipmap.ic_launcher).setTitle("OAID")
+//                        .setMessage(OAIDHandler.getOAID()).setPositiveButton("复制", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                putTextIntoClip(MainActivity.this, OAIDHandler.getOAID());
+//                            }
+//                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                dialogInterface.dismiss();
+//                            }
+//                        });
+//                builder.create().show();
+//            }
+//        }, 1000);
 
 
 //        ResultData emulatorResult = EmulatorCheck.validCheck(this);
@@ -366,9 +347,10 @@ public class MainActivity extends Activity {
             public void run() {
 //                disableSystemLockScreen(MainActivity.this);
 //                Intent intent = new Intent(MainActivity.this, NativeActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(intent);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 //                moveTask();
+//                startActivity(intent);
+
 //                NotificationUtils notificationUtils = new NotificationUtils(MainActivity.this);
 //                String content = "fullscreen intent test";
 //                notificationUtils.clearAllNotifiication();
@@ -387,8 +369,34 @@ public class MainActivity extends Activity {
 //                    Log.e("tjt852", "send error");
 //                    e.printStackTrace();
 //                }
+//                openWithAlarm(getApplicationContext(), null, NativeActivity.class);
             }
-        }, 8000);
+        }, 20000);
+
+//        Const.HANDLER.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                moveTaskToBack(true);
+//            }
+//        }, 3000);
+
+        startService(new Intent(this, WhiteService.class));
+        Const.HANDLER.postDelayed(new Runnable() {
+            @SuppressLint("WrongConstant")
+            @Override
+            public void run() {
+//                Intent intent = new Intent(MainActivity.this, NativeActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+//                startActivity(intent);
+                Intent intent = new Intent(getApplicationContext(), NativeActivity.class);
+//                intent.addFlags(268435456);
+//                intent.addFlags(1082130432);x
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Const.HANDLER.postDelayed(() -> sendPendingIntent(getApplicationContext(), NativeActivity.class), 1000);
+                startActivity(intent);
+
+            }
+        }, 21000);
 //        Const.HANDLER.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
@@ -400,6 +408,53 @@ public class MainActivity extends Activity {
 
     }
 
+    @SuppressLint("WrongConstant")
+    public static void sendPendingIntent(Context context, Class<? extends Activity> cls) {
+        Intent intent = new Intent(context, cls);
+        intent.addFlags(268435456);
+        intent.addFlags(1082130432);
+        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(context, 1722, intent, 134217728);
+        if (pendingIntent != null) {
+            try {
+                pendingIntent.send();
+                Const.HANDLER.postDelayed(() -> openWithAlarm(context, null, NativeActivity.class), 1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Const.HANDLER.postDelayed(() -> openWithAlarm(context, null, NativeActivity.class), 1000);
+                context.startActivity(intent);
+            }
+        }
+    }
+
+    public static final List<PendingIntent> pendingIntents = new ArrayList();
+
+    @SuppressLint({"WrongConstant"})
+    private static void openWithAlarm(Context context, Bundle bundle, Class<? extends Activity> cls) {
+        try {
+            Intent intent = new Intent(context, cls);
+            if (bundle != null) {
+                intent.putExtras(bundle);
+                intent.putExtra("bundle", bundle);
+            }
+            intent.putExtra("open_task", "AlarmManager");
+            PendingIntent activity = PendingIntent.getActivity(context, 1722, intent, 134217728);
+            long currentTimeMillis = System.currentTimeMillis();
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(NotificationCompat.CATEGORY_ALARM);
+            if (Build.VERSION.SDK_INT >= 23) {
+                alarmManager.setExactAndAllowWhileIdle(0, +200, activity);
+            } else {
+                alarmManager.setExact(0, currentTimeMillis + 200, activity);
+            }
+            pendingIntents.add(activity);
+            intent.addFlags(268435456);
+            intent.addFlags(1082130432);
+            context.startActivity(intent);
+            Log.d("Prometheus", "***************************************  openWithAlarm");
+        } catch (Exception unused) {
+            Log.d("Prometheus", "openWithAlarm：Error");
+        }
+    }
+
     public void moveTask() {
         //获取ActivityManager
         ActivityManager mAm = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
@@ -409,13 +464,14 @@ public class MainActivity extends Activity {
             //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
             if (rti.topActivity.getPackageName().equals(getPackageName())) {
                 mAm.moveTaskToFront(rti.id, 0);
+                mAm.moveTaskToFront(rti.id, 0);
                 return;
             }
         }
         //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
-        Intent resultIntent = new Intent(MainActivity.this, NativeActivity.class);
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(resultIntent);
+//        Intent resultIntent = new Intent(MainActivity.this, NativeActivity.class);
+//        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        startActivity(resultIntent);
     }
 
     public static void disableSystemLockScreen(Activity activity) {

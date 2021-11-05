@@ -20,23 +20,27 @@ public class HookCheck {
     public static ResultData validCheck(Context context) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (pkgCheck(context)) {
-//            Log.e(TAG, "检测核心Hook文件存在");
-            stringBuilder.append("1");
-        }
+        try {
+            if (pkgCheck(context)) {
+    //            Log.e(TAG, "检测核心Hook文件存在");
+                stringBuilder.append("1");
+            }
 
-        if (packageCheck(context)) {
-//            Log.e(TAG, "检查HOOK包名存在");
-            stringBuilder.append(",2");
-        }
-        if (exceptionCheck()) {
-//            Log.e(TAG, "检测到调用栈中的可疑方法");
-            stringBuilder.append(",3");
-        }
+            if (packageCheck(context)) {
+    //            Log.e(TAG, "检查HOOK包名存在");
+                stringBuilder.append(",2");
+            }
+            if (exceptionCheck()) {
+    //            Log.e(TAG, "检测到调用栈中的可疑方法");
+                stringBuilder.append(",3");
+            }
 
-        if (classCheck()) {
-//            Log.e(TAG, "尝试加载 Xposed 类成功");
-            stringBuilder.append(",4");
+            if (classCheck()) {
+    //            Log.e(TAG, "尝试加载 Xposed 类成功");
+                stringBuilder.append(",4");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(), 40);

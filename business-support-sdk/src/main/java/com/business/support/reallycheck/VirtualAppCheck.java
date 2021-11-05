@@ -24,34 +24,38 @@ public class VirtualAppCheck {
     public static ResultData validCheck(Context context) {
         StringBuilder stringBuilder = new StringBuilder();
         int score = 0;
-        if (checkByPrivateFilePath(context)) {
-//            Log.e(TAG, "checkByPrivateFilePath");
-            stringBuilder.append("1");
-            score += 30;
-        }
+        try {
+            if (checkByPrivateFilePath(context)) {
+    //            Log.e(TAG, "checkByPrivateFilePath");
+                stringBuilder.append("1");
+                score += 30;
+            }
 
-        if (pathCheck(context)) {
-//            Log.e(TAG, "pathCheck");
-            stringBuilder.append(",2");
-            score += 30;
-        }
+            if (pathCheck(context)) {
+    //            Log.e(TAG, "pathCheck");
+                stringBuilder.append(",2");
+                score += 30;
+            }
 
-        if (packageCheck(context)) {
-//            Log.e(TAG, "packageCheck");
-            stringBuilder.append(",3");
-            score += 10;
-        }
+            if (packageCheck(context)) {
+    //            Log.e(TAG, "packageCheck");
+                stringBuilder.append(",3");
+                score += 10;
+            }
 
-        if (processCheck()) {
-//            Log.e(TAG, "processCheck");
-            stringBuilder.append(",4");
-            score += 10;
-        }
+            if (processCheck()) {
+    //            Log.e(TAG, "processCheck");
+                stringBuilder.append(",4");
+                score += 10;
+            }
 
-        if (mapsCheck()) {
-//            Log.e(TAG, "mapsCheck");
-            stringBuilder.append(",5");
-            score += 10;
+            if (mapsCheck()) {
+    //            Log.e(TAG, "mapsCheck");
+                stringBuilder.append(",5");
+                score += 10;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return new ResultData(!TextUtils.isEmpty(stringBuilder), stringBuilder.toString(), score);

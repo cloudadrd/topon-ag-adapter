@@ -21,7 +21,102 @@ android {
         }
 
         ndk {
-// 选择实际需要的 cpu 架构
+// 选择实际需要的 cpu 架构apply plugin: 'com.android.library'
+//
+//def version = "1.8.4"
+//android {
+//    compileSdkVersion 29
+//
+//    defaultConfig {
+//        minSdkVersion 19
+//        targetSdkVersion 29
+//        versionCode 1
+//        versionName version
+//
+//        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+//        consumerProguardFiles "consumer-rules.pro"
+//
+//        sourceSets {
+//            main {
+//                jni.srcDirs = []
+//                jniLibs.srcDirs = ['libs']
+//            }
+//        }
+//
+//        ndk {
+//// 选择实际需要的 cpu 架构
+//            abiFilters 'armeabi-v7a', 'arm64-v8a'
+//        }
+//    }
+//
+//    buildTypes {
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
+//    }
+//
+//    lintOptions {
+//        abortOnError false
+//    }
+//
+//    // java版本
+//    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_7
+//        targetCompatibility JavaVersion.VERSION_1_7
+//    }
+//
+//    packagingOptions {
+//        doNotStrip "*/arm64-v8a/libdu.so"
+//        doNotStrip "*/armeabi/libdu.so"
+//        doNotStrip "*/armeabi-v7a/libdu.so"
+//        doNotStrip "*/x86/libdu.so"
+//        doNotStrip "*/x86_64/libdu.so"
+//    }
+//    testOptions {
+//        unitTests.returnDefaultValues = true
+//    }
+//
+//}
+//
+//android.libraryVariants.all { variant ->
+//    variant.outputs.all {
+//        if (variant.buildType.name == 'release') {
+//            outputFileName = "business-support-sdk-${version}.aar"
+//        }
+//    }
+//}
+//
+//repositories {
+//    flatDir {
+//        dirs '../app/libs'
+//    }
+//}
+//
+//dependencies {
+//    implementation fileTree(dir: "libs", include: ["*.jar"])
+//    implementation 'org.jetbrains:annotations-java5:15.0'
+//
+//    compileOnly fileTree(dir: "libs", include: ["*.aar"])
+////    implementation fileTree(dir: "libs", include: ["open_ad_sdk_3.6.1.4.aar"])
+//    implementation 'androidx.appcompat:appcompat:1.3.1'
+//
+////    compileOnly files('libs/GDTSDK.unionNormal.4.391.1261.aar')
+////    compileOnly files('libs/smsdk-3.0.6-release.aar')
+////    compileOnly files('libs/thinkingsdk-release.aar')
+////    compileOnly files('libs/anythink_banner.aar')
+////    compileOnly files('libs/anythink_china_core.aar')
+////    compileOnly files('libs/anythink_core.aar')
+////    compileOnly files('libs/anythink_interstitial.aar')
+////    compileOnly files('libs/anythink_native.aar')
+////    compileOnly files('libs/anythink_rewardvideo.aar')
+////    compileOnly files('libs/anythink_splash.aar')
+////    implementation 'com.android.support:appcompat-v7:28.0.0'
+//    testImplementation 'junit:junit:4.13.2'
+//    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+//
+//}
             abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
     }

@@ -73,10 +73,13 @@
             android:name=".jump.NativeActivity"
             android:excludeFromRecents="true"
             android:exported="true"
+            android:launchMode="singleInstance"
             android:noHistory="true"
             android:taskAffinity="net.tg.lock"
             android:theme="@style/MyTransparent">
         </activity>
+
+
     </application>
 
 </manifest>

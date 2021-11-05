@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="#333300">
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:paddingLeft="20dp"
+        android:src="@drawable/armature_dianji_12" />
+
+    <Button
+        android:id="@+id/notify_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:text="点击我" />
+</LinearLayout>
