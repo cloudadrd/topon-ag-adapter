@@ -97,6 +97,8 @@ dependencies {
     implementation files('libs/growstarry_base_4.4.1_gt.jar')
     implementation files('libs/growstarry_imageloader_4.4.1_gt.jar')
     implementation files('libs/growstarry_video_4.4.1_gt.jar')
+    implementation "android.arch.work:work-runtime:1.0.1"
+
 //    api fileTree(dir: "network", include: ["**/libs/*.jar", "**/libs/*.aar"])
 //            .exclude("mintegral_international/libs/*.jar")
 //            .exclude("mintegral_international/libs/*.aar")
