@@ -604,6 +604,26 @@ public class AdVideoInterface {
         }
     }
 
+    @JavascriptInterface
+    public void tracking2(String name, String params) {
+        try {
+            JSONObject properties = new JSONObject();
+            JSONArray paramsJson = new JSONArray(params);
+            for (int i = 0; i < paramsJson.length(); i++) {
+                JSONObject keyVal = paramsJson.optJSONObject(i);
+                String key = keyVal.optString("key");
+                String value = keyVal.optString("value");
+                properties.put(key, value);
+            }
+            if (YMBusinessService.mInstance != null) {
+                YMBusinessService.mInstance.track(name, properties);
+            }
+            Log.d(TAG, "tracking2 name=" + name + ",params=" + params);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @JavascriptInterface
     public void printLog(String str) {
@@ -656,6 +676,43 @@ public class AdVideoInterface {
             id = oaid;
         } else {
             id = androidId;
+        }
+        return id;
+    }
+
+    @JavascriptInterface
+    public String getOaid() {
+        String oaid = MDIDHandler.getMdid();
+        Log.d(TAG, "getOaid---oaid=" + oaid);
+        String id = "";
+        if (!TextUtils.isEmpty(oaid)) {
+            id = oaid;
+        }
+        return id;
+    }
+
+
+    @JavascriptInterface
+    public String getAndroidId() {
+        String androidId = Utils.getAndroidId(webView.getContext());
+        Log.d(TAG, "androidId---androidId=" + androidId);
+
+        String id = "";
+        if (!TextUtils.isEmpty(androidId)) {
+            id = androidId;
+        }
+        return id;
+    }
+
+
+    @JavascriptInterface
+    public String getImei() {
+        String imei = Utils.getIMEI(webView.getContext());
+        Log.d(TAG, "getImei---imei=" + imei);
+
+        String id = "";
+        if (!TextUtils.isEmpty(imei)) {
+            id = imei;
         }
         return id;
     }
