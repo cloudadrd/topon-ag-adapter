@@ -236,7 +236,7 @@ public class MainActivity extends Activity {
 //                        "    \"sign\": \"OWT4y4JFgrugF+KA5UAF9qTUvNX/9y7qMkX9Y8XkE5nyyMjUQVrpkK/QC7t9F0Tt88OTo+Z3JyCVnNN0tYbiCoRWIvy+y6XLQ7G+sy0Vzud4/ijDmVA1lOUGOv5hMxdeddDDe0JBaH8LbpD/dy7Ky+dvsc5Ndvb5pYtDrhbBpkG4IlLLk3VjfOL2/uEsYOivfWnunu4V4AWRzcwOLqSkCuDK0pSTfMQsPj8qDahNtjon888X2urL1Gv0s8wkvqw94lasTyUJR9JS7JvDLgZdlZIUJhJQCf+qzD1GABbkkunvNyr0YaFzDU+V0y1mUq/duh/lEDue+yj0okJHEGXFQA==\" ,\n" +
 //                        "    \"timestamp\": \"1634096674\" \n" +
 //                        "}");
-                YMBusinessService.startCurrentAdApp("123", 10000);
+                YMBusinessService.startCurrentAdApp("1", 10000);
             }
         });
 
@@ -251,24 +251,24 @@ public class MainActivity extends Activity {
 //            }
 //        },10000);
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this).setIcon(R.mipmap.ic_launcher).setTitle("OAID")
-                        .setMessage(OAIDHandler.getOAID()).setPositiveButton("复制", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                putTextIntoClip(MainActivity.this, OAIDHandler.getOAID());
-                            }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-                builder.create().show();
-            }
-        }, 1000);
+//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this).setIcon(R.mipmap.ic_launcher).setTitle("OAID")
+//                        .setMessage(OAIDHandler.getOAID()).setPositiveButton("复制", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                putTextIntoClip(MainActivity.this, OAIDHandler.getOAID());
+//                            }
+//                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                dialogInterface.dismiss();
+//                            }
+//                        });
+//                builder.create().show();
+//            }
+//        }, 1000);
 
 
 //        ResultData emulatorResult = EmulatorCheck.validCheck(this);
@@ -286,64 +286,65 @@ public class MainActivity extends Activity {
 //        Log.i("check", "isHook=" + hookResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
 //
 //        Log.i("check", "isWireShark=" + wireSharkResult.isError() + ",errorMessage=" + emulatorResult.getErrorMessage());
-        TDConfig biConfig = TDConfig.getInstance(this, "a697ed0e5fb34fba839cd1694b69d84a", " https://biapi.adsgreat.cn/logbu");
-        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
-        ThinkingAnalyticsSDK biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
-        ThinkingAnalyticsSDK.calibrateTimeWithNtp("time.windows.com");
-        YMBusinessService.init(this, biInstance,
-                "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ==",
-                "39ee4d74c93c967def52dbec1e592d20",
-                new SIDListener() {
-                    @Override
-                    public void onSuccess(int score, String data) {
-                        Toast.makeText(getBaseContext(), "score=" + score + "\n" + "data=" + data, Toast.LENGTH_LONG).show();
-                        Log.i("check-tjt", "onSuccess score=" + score + ",data=\n" + data);
-                    }
 
-                    @Override
-                    public void onFailure(String msg) {
-                        Log.i("check-tjt", "onFailure msg=\n" + msg);
-                    }
-                });
+//        TDConfig biConfig = TDConfig.getInstance(this, "7fc00dc81026467286025ad227ff61e1", " https://biapi.adsgreat.cn/logbu");
+//        biConfig.setMode(TDConfig.ModeEnum.DEBUG);
+//        ThinkingAnalyticsSDK biInstance = ThinkingAnalyticsSDK.sharedInstance(biConfig);
+//        ThinkingAnalyticsSDK.calibrateTimeWithNtp("time.windows.com");
+//        YMBusinessService.init(this, biInstance,
+//                "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMsZuh7bnTRuNGmu8urpyfvB5NERn6Z1dylHYD2Lgs2nKTUYJDoKsU+ALI21MY0NPif3YgdKgzMRZWg3zTL8fA8CAwEAAQ==",
+//                "39ee4d74c93c967def52dbec1e592d20",
+//                new SIDListener() {
+//                    @Override
+//                    public void onSuccess(int score, String data) {
+//                        Toast.makeText(getBaseContext(), "score=" + score + "\n" + "data=" + data, Toast.LENGTH_LONG).show();
+//                        Log.i("check-tjt", "onSuccess score=" + score + ",data=\n" + data);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(String msg) {
+//                        Log.i("check-tjt", "onFailure msg=\n" + msg);
+//                    }
+//                });
         YMBusinessService.enableAdTrace(new InstallListener() {
             @Override
             public void installedHit(String pkg, String appName, BSAdType bsAdType, String sceneId) {
                 SLog.i(TAG, "installedHit pkg=" + pkg + ",sceneId=" + sceneId + ",appName=" + appName);
             }
         });
-        ResUpdateManager.getH5ResPathAndUpdate("95", "forumweb", "95", 101, new ResH5Listener() {
-
-            /**
-             * 资源获取回调函数
-             * @param isSuccess 是否成功返回
-             * @param path 返回的H5主页面地址
-             */
-            @Override
-            public void result(boolean isSuccess, String path) {
-                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
-                if (!isSuccess) return;
-                YMBusinessService.startWebViewPage(
-                        MainActivity.this,
-                        path + "?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5"
-                        , new WebViewToNativeListener() {
-
-                            @Override
-                            public void event1(InnerWebViewActivity activity) {
-
-                            }
-
-                            @Override
-                            public void event2(InnerWebViewActivity2 activity) {
-
-                            }
-
-                            @Override
-                            public void event3(Activity activity, String params) {
-
-                            }
-                        });
-            }
-        });
+//        ResUpdateManager.getH5ResPathAndUpdate("95", "forumweb", "95", 101, new ResH5Listener() {
+//
+//            /**
+//             * 资源获取回调函数
+//             * @param isSuccess 是否成功返回
+//             * @param path 返回的H5主页面地址
+//             */
+//            @Override
+//            public void result(boolean isSuccess, String path) {
+//                Log.i("check-tjt", "getH5ResPathAndUpdate result isSuccess=" + isSuccess + ",path=\n" + path);
+//                if (!isSuccess) return;
+//                YMBusinessService.startWebViewPage(
+//                        MainActivity.this,
+//                        path + "?appId=111&token=c8f4e78d-f372-43f9-82f6-275de3421cf5"
+//                        , new WebViewToNativeListener() {
+//
+//                            @Override
+//                            public void event1(InnerWebViewActivity activity) {
+//
+//                            }
+//
+//                            @Override
+//                            public void event2(InnerWebViewActivity2 activity) {
+//
+//                            }
+//
+//                            @Override
+//                            public void event3(Activity activity, String params) {
+//
+//                            }
+//                        });
+//            }
+//        });
 
         YMBusinessService.setH5RewardPlacementId("广告位ID");
         YMBusinessService.setH5InterstitialPlacementId("b603f37c4ebe4e");
@@ -406,7 +407,7 @@ public class MainActivity extends Activity {
 //        });
 
 
-        TKCreator.send(this, "12321");
+//        TKCreator.send(this, "12321");
 
 //        YMBusinessService.traceInstall2("com.tencent.mm.openapi", "123");
 

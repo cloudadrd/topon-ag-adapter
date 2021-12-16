@@ -57,7 +57,7 @@ public class DemoApplicaion extends MultiDexApplication {
 
 
     //RewardedVideo
-    public static final String mPlacementId_rewardvideo_all = "b6018fd98a9b7e";//b60f4f02b94602 b5ff41a9f64dec
+    public static final String mPlacementId_rewardvideo_all = "b61af178eb7ca0";//b60f4f02b94602 b5ff41a9f64dec
     public static final String mPlacementId_rewardvideo_mintegral = "b5b449f2f58cd7";
     public static final String mPlacementId_rewardvideo_GDT = "b5c2c880cb9d52";
     public static final String mPlacementId_rewardvideo_toutiao = "b5b728e7a08cd4";
@@ -70,7 +70,7 @@ public class DemoApplicaion extends MultiDexApplication {
     public static final String mPlacementId_rewardvideo_myoffer = "b5db6c3764aea3";
 
     //Banner
-    public static final String mPlacementId_banner_all = "b6018fdda46e4c";
+    public static final String mPlacementId_banner_all = "b60869394d051a";
     public static final String mPlacementId_banner_mintegral = "b5dd388839bf5e";
     public static final String mPlacementId_banner_GDT = "b5baca43951901";
     public static final String mPlacementId_banner_toutiao = "b5baca45138428";
@@ -137,7 +137,7 @@ public class DemoApplicaion extends MultiDexApplication {
         subcustommap.put("key1", "initPlacementCustomMap1");
         subcustommap.put("key2", "initPlacementCustomMap2");
 
-        ATSDK.initPlacementCustomMap("b5aa1fa4165ea3", subcustommap);//native  facebook
+        ATSDK.initPlacementCustomMap("b61af178eb7ca0", subcustommap);//native  facebook
 
         ATSDK.setChannel("testChannle");
         ATSDK.setSubChannel("testSubChannle");
