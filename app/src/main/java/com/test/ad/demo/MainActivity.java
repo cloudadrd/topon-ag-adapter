@@ -351,60 +351,49 @@ public class MainActivity extends Activity {
             }
         });
 
+//        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("openapp.jdmobile://virtual?params=%7B%22sourceValue%22:%220_productDetail_97%22,%22des%22:%22productDetail%22,%22skuId%22:%22\"+\"10031895050322\"+\"%22,%22category%22:%22jump%22,%22sourceType%22:%22PCUBE_CHANNEL%22%7D "));
+        final Intent intent = new Intent(this, NativeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
+                Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_CLEAR_TOP);
         NativeAdManager.getInstance().load(this);
         Const.HANDLER.postDelayed(new Runnable() {
             @Override
             public void run() {
-//                disableSystemLockScreen(MainActivity.this);
-//                Intent intent = new Intent(MainActivity.this, NativeActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                moveTask();
-//                startActivity(intent);
-
-//                NotificationUtils notificationUtils = new NotificationUtils(MainActivity.this);
-//                String content = "fullscreen intent test";
-//                notificationUtils.clearAllNotifiication();
-//                notificationUtils.sendNotificationFullScreen("nihao", content, "1");
-
-
-//                Intent fullScreenIntent = new Intent(MainActivity.this, NativeActivity.class);
-//                fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                fullScreenIntent.putExtra("action", "callfromdevice");
-//                fullScreenIntent.putExtra("type", "1");
-//                PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(MainActivity.this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//                try {
-//                    fullScreenPendingIntent.send();
-//                    Log.e("tjt852", "start send");
-//                } catch (PendingIntent.CanceledException e) {
-//                    Log.e("tjt852", "send error");
-//                    e.printStackTrace();
-//                }
-//                openWithAlarm(getApplicationContext(), null, NativeActivity.class);
                 Log.e("tjt852", "sendPendingIntent 0");
-                sendPendingIntent(getApplicationContext(), NativeActivity.class);
-
+                Intent intent1 = getPackageManager().getLaunchIntentForPackage("com.jingdong.app.mall");
+                intent1.setPackage(null);
+                intent.setFlags(0);
+                intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
+                        Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                SceneHelper.openActivity(MainActivity.this, intent1);
+                Const.HANDLER.postDelayed(this, 10000);
             }
         }, 20000);
         Log.e("tjt852", "sendPendingIntent -1");
 
+        startService(new Intent(this, WhiteService.class));
 //        Const.HANDLER.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-//                moveTaskToBack(true);
+//                SceneHelper.openActivity(MainActivity.this, intent);
+//
 //            }
-//        }, 3000);
-
-        startService(new Intent(this, WhiteService.class));
-        Const.HANDLER.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                sendPendingIntent(getApplicationContext(), NativeActivity.class);
-
-            }
-        },35000);
+//        }, 35000);
 //        ScreenBroadcastReceiver.registerListener();
-        disableSystemLockScreen(this);
+//        disableSystemLockScreen(this);
 
+//        Const.HANDLER.postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                Log.i("tjt852", "NativeActivity onCreate startActivity jd..1");
+//                Intent intent1 = getPackageManager().getLaunchIntentForPackage("com.jingdong.app.mall");
+//                startActivity(intent1);
+//                Log.i("tjt852", "NativeActivity onCreate startActivity jd..2");
+//            }
+//        }, 5000);
     }
 
     @SuppressLint("WrongConstant")
@@ -418,9 +407,9 @@ public class MainActivity extends Activity {
         Log.e("tjt852", "sendPendingIntent 4");
 
         Intent intent = new Intent(context, cls);
-//        intent = new Intent(Intent.ACTION_VIEW);
-//        Uri uri = Uri.parse("openapp.jdmobile://virtual?params=%7B%22sourceValue%22:%220_productDetail_97%22,%22des%22:%22productDetail%22,%22skuId%22:%22"+"10031895050322"+"%22,%22category%22:%22jump%22,%22sourceType%22:%22PCUBE_CHANNEL%22%7D ");
-//        intent.setData(uri);
+        intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse("openapp.jdmobile://virtual?params=%7B%22sourceValue%22:%220_productDetail_97%22,%22des%22:%22productDetail%22,%22skuId%22:%22" + "10031895050322" + "%22,%22category%22:%22jump%22,%22sourceType%22:%22PCUBE_CHANNEL%22%7D ");
+        intent.setData(uri);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -430,8 +419,6 @@ public class MainActivity extends Activity {
         bundle.putLong("timestamp", System.currentTimeMillis());
         bundle.putInt("openType", 3);
         intent.putExtras(bundle);
-
-
 
 
         android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(context, 0x6BA, intent, 0x8000000);

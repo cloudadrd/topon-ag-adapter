@@ -7,7 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-public class DebugCheck {
+public class  DebugCheck {
 
 
     private static final String TAG = "DebugCheck";

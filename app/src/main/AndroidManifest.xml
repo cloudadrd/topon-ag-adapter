@@ -5,6 +5,10 @@
 
     <uses-sdk tools:overrideLibrary="com.bun.miitmdid" />
 
+    <queries>
+        <package android:name="com.jingdong.app.mall" />
+    </queries>
+
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />

@@ -321,7 +321,6 @@ public class InnerWebViewActivity2 extends Activity {
         relativeLayout.addView(progressBar, layoutParams);
 
         //webview
-        webView = new CacheWebView(context);
         webView.setContext(this);
         webView.setId(WEB_VIEW);
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
